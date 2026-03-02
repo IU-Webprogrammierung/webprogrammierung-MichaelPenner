@@ -151,6 +151,10 @@ body:not(.is-landing) .navbar-right {
     justify-content: space-between;
   }
 
+  .navbar-right {
+    margin-right: -35vw;
+  }
+
   /* Floating Mobile State: Links drop to a second row under the logo */
   .navbar:not(.is-sticky) .navbar-center {
     width: 100%;

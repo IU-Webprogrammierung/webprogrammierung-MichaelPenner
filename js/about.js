@@ -30,13 +30,14 @@ document.addEventListener("DOMContentLoaded", () => {
     antialias: false,
     powerPreference: "high-performance"
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
   renderer.sortObjects = true;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap; // relatively cheap
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 
   const scene = new THREE.Scene();
@@ -49,8 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
   key.position.set(300, -400, 900);
   key.castShadow = true;
 
-  // Keep shadow map small-ish for performance
-  key.shadow.mapSize.set(256, 256);
+  // Keep shadow map small for performance
+  key.shadow.mapSize.set(512, 512);
 
   // Tune shadow camera to cover your scene region (pixel space around towers)
   key.shadow.camera.near = 100;
@@ -58,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Reduce acne;
   key.shadow.bias = -0.0006;
-
   scene.add(key);
 
   const fill = new THREE.DirectionalLight(0xffffff, 0.55);

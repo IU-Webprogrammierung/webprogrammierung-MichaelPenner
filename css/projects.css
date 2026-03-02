@@ -2,10 +2,10 @@
    PROJECTS
 ========================================= */
 :root {
-    --card-max-width: 1000px;
+    --card-max-width: 800px;
     --peek-right: 30px;
     --peek-top: 35px;
-    --scale-factor: 0.04;
+    --scale-factor: 0.03;
 }
 
 /* =========================
@@ -16,9 +16,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 50px 50px;
-    /* Make enough room for shadows*/
-    width: 100%;
+    padding: 0px 25px;
+    width: calc(100vw - 50px);
 }
 
 .stack-container {
@@ -27,10 +26,8 @@
     max-width: var(--card-max-width);
     /* Keeps the iframe proportional without hardcoding height */
     aspect-ratio: 16 / 10;
-    margin-top: 80px;
-    /* More space for top peeking */
+    margin-top: 100px;
     perspective: 1300px;
-    /* 3D depth */
 }
 
 /* =========================
@@ -68,21 +65,33 @@
     z-index: calc(10 - var(--i));
 }
 
+
+
+
+
 /* HOVER EFFECT */
-/* We only lift it slightly (-15px) relative to its calculated position */
-.project-card:hover {
-    transform:
-        translateX(calc(var(--i) * var(--peek-right))) translateY(calc((var(--i) * -1 * var(--peek-top)) - 15px)) scale(calc(1 - (var(--i) * var(--scale-factor)))) translateZ(calc(var(--i) * -50px));
+/* 1. When the user hovers ANYWHERE in the stack, dim ALL cards severely */
+.stack-container:hover .project-card {
+    filter: brightness(calc(0.6 - (var(--i) * 0.1))); /* Drops front card to 60% */
+}
+
+/* 2. BUT, for the specific card actually being touched, light it up! */
+.stack-container .project-card:hover {
+    transform: translateX(calc(var(--i) * var(--peek-right))) 
+               translateY(calc((var(--i) * -1 * var(--peek-top)) - 15px)) 
+               scale(calc(1 - (var(--i) * var(--scale-factor)))) 
+               translateZ(calc(var(--i) * -50px));
 
     filter: brightness(1);
-    /* Light up on hover */
 }
 
 /* Active Card (Front) Override */
-.project-card[data-index="0"]:hover {
-    transform: scale(1);
-    /* Don't move the front card on hover, just stay put */
+.stack-container .project-card[data-index="0"]:hover {
+    transform: scale(1); /* Don't lift the front card, just stay put */
+    filter: brightness(1);
 }
+
+
 
 /* =========================
    INTERNAL ELEMENTS
@@ -172,20 +181,20 @@ iframe {
 @media (max-width: 768px) {
     :root {
         /* Reduce peeking offsets so background cards don't slide off screen */
-        --peek-right: 30px;
+        --peek-right: 25px;
         --peek-top: 50px;
-        --scale-factor: 0.05;
+        --scale-factor: 0.03;
         /* slightly more scaling to distinct cards */
     }
 
     .stack-container {
         /* Make the cards taller on mobile since screens are vertical */
         aspect-ratio: 3 / 4;
-        width: 75%;
+        width: 80%;
     }
 
     iframe {
-        aspect-ratio: 3 / 4;
+        aspect-ratio: 3/4;
     }
 
     .projects-wrapper {

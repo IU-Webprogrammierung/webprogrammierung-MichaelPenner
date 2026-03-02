@@ -380,6 +380,9 @@ a:focus-visible::before{
 @media (max-width: 900px) {
   section {
     padding: 0px 6%;
+    height: 100dvh;
+    position: relative;
+    overflow: hidden;
   }
 
   .hero-portrait {
@@ -392,7 +395,7 @@ a:focus-visible::before{
 
   /* --- Mobile Cursor Deactivation --- */
   body {
-    cursor: auto;
+    cursor: none;
   }
 
   .cursor-dot,

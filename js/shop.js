@@ -1,8 +1,5 @@
 /* ------------------------------
    Main KitchenAid Viewer
-   - Fixed GLB cleanup
-   - Smoother rotation
-   - Improved lighting
 -------------------------------- */
 
 import * as THREE from 'three';
@@ -20,13 +17,14 @@ const renderer = new THREE.WebGLRenderer({
     antialias: true,
     alpha: true,
     powerPreference: "high-performance",
-    toneMapping: THREE.ACESFilmicToneMapping,
-    toneMappingExposure: 1.2
 });
-
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight, false);
+
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping,
+renderer.toneMappingExposure = 1.0;
+renderer.sortObjects = false;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -41,49 +39,41 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.set(0, 0.15, 3.3);
 
 /* ------------------------------
-   Premium Studio Lighting Setup
+   Lighting Setup
 -------------------------------- */
 
-// 1. Base Environment Light (Drastically reduced to let shadows live)
-// We removed AmbientLight entirely. The Hemisphere light gives a slight color gradient to the shadows.
+// 1. Base Environment Light
 const hemi = new THREE.HemisphereLight(0xffffff, 0x444455, 0.05);
 scene.add(hemi);
 
-// 2. Key Light (The sun/main studio strobe)
-// Increased intensity, moved slightly to cast a more dramatic angle
+// 2. Key Light
 const key = new THREE.DirectionalLight(0xfff5e6, 0.5);
 key.position.set(4, 5, 3);
 key.castShadow = true;
 
-// 3. Shadow Camera Tightening (CRITICAL FOR GOOD SHADOWS)
-key.shadow.mapSize.width = 2048;
-key.shadow.mapSize.height = 2048;
-// Tightly wrap the shadow camera around the mixer to concentrate resolution
+// 3. Shadow Camera Tightening
+key.shadow.mapSize.width = 1024;
+key.shadow.mapSize.height = 1024;
 key.shadow.camera.left = -2;
 key.shadow.camera.right = 2;
 key.shadow.camera.top = 2;
 key.shadow.camera.bottom = -2;
 key.shadow.camera.near = 0.1;
 key.shadow.camera.far = 15;
-key.shadow.bias = -0.0005; // Helps prevent shadow acne/striping
+
+  // Reduce acne;
+key.shadow.bias = -0.0006;
 scene.add(key);
 
 // 4. Fill Light (Softens the pitch-black shadows on the unlit side)
-// Keep intensity low to maintain the 3D contrast
 const fill = new THREE.DirectionalLight(0xe6f0ff, 0.075);
 fill.position.set(-4, 2, 2);
 scene.add(fill);
 
 // 5. Rim / Backlight (Separates the model from the background)
-// High intensity, positioned behind and above
 const rim = new THREE.DirectionalLight(0xffffff, 0.25);
 rim.position.set(0, 4, -4);
 scene.add(rim);
-
-// Point light for highlights
-//const highlight = new THREE.PointLight(0xffffff, 0.5, 10);
-//highlight.position.set(2, 1, 2);
-//scene.add(highlight);
 
 const modelCache = new Map();
 
@@ -91,19 +81,19 @@ let activeIndex = 0;
 let currentRoot = null;
 let desiredRotY = 0;
 
-// Shadow-receiving visible platform (Raised higher)
+// Shadow-receiving visible platform
 const floor = new THREE.Mesh(
     new THREE.CircleGeometry(1.4, 96),
     new THREE.MeshStandardMaterial({
         color: 0xf6f6f8,
-        roughness: 0.7,
+        roughness: 0.9,
         metalness: 0.1,
-        transparent: true,
-        opacity: 0.9
+        transparent: false,
+        opacity: 1.0
     })
 );
 floor.rotation.x = -Math.PI / 2;
-floor.position.y = -0.65; // Raised from -0.95
+floor.position.y = -0.65;
 floor.receiveShadow = true;
 floor.visible = true;
 scene.add(floor);
@@ -120,13 +110,12 @@ function createEnvironment() {
     const ctx = canvas.getContext('2d');
 
     // 1. Make the base environment DARK. 
-    // This stops it from acting like a massive ambient light and washing out shadows.
     ctx.fillStyle = '#111111';
     ctx.fillRect(0, 0, 1024, 512);
 
     // 2. Paint bright "Studio Softbox Lights" for specular reflections
     ctx.fillStyle = '#ffffff';
-    ctx.filter = 'blur(10px)'; // Soften the edges
+    ctx.filter = 'blur(10px)';
 
     // Left, Right, and Backlight softboxes
     ctx.fillRect(150, 100, 200, 150);
@@ -187,7 +176,6 @@ function loadGLB(url) {
                 child.castShadow = true;
                 child.receiveShadow = true;
 
-                // Improve material quality
                 if (child.material) {
                     // Boost environment reflections to make it look premium/shiny
                     child.material.envMapIntensity = 2.0;
@@ -729,57 +717,26 @@ scroller.addEventListener('scroll', updateNav, { passive: true });
     });
 })();
 
-
-
-
-
-
-
-
 /* ------------------------------
-   LANGUAGE
+   Mobile Glass Card Expand Logic
 -------------------------------- */
-let currentLang = 'en';
+document.querySelectorAll('.copy .glass-container').forEach(card => {
+    card.addEventListener('click', function(e) {
+        // Only run this interaction on mobile screens
+        if (window.innerWidth <= 768) {
+            
+            // If they clicked the 'Request to buy' button, don't close the card
+            if (e.target.closest('.cta')) return;
 
-function toggleLanguage() {
-    currentLang = currentLang === 'en' ? 'de' : 'en';
-
-    // Update all elements with data-en and data-de attributes
-    document.querySelectorAll('[data-en][data-de]').forEach(el => {
-        el.textContent = el.getAttribute(`data-${currentLang}`);
-    });
-
-    // Update placeholders
-    document.querySelectorAll('[data-placeholder-en][data-placeholder-de]').forEach(el => {
-        el.placeholder = el.getAttribute(`data-placeholder-${currentLang}`);
-    });
-
-    // Update CTA buttons in sections
-    document.querySelectorAll('.cta').forEach(el => {
-        if (el.hasAttribute('data-en') && el.hasAttribute('data-de')) {
-            el.textContent = el.getAttribute(`data-${currentLang}`);
+            // Toggle the expanded class to trigger the CSS height animation
+            this.classList.toggle('is-expanded');
+            
+            // Optional: Close other open cards if you scroll to a new section
+            document.querySelectorAll('.copy .glass-container.is-expanded').forEach(otherCard => {
+                if (otherCard !== this) {
+                    otherCard.classList.remove('is-expanded');
+                }
+            });
         }
     });
-
-    // Update language toggle button
-    const langToggle = document.querySelector('.lang-toggle');
-    langToggle.innerHTML = currentLang === 'en' ? '<span class="lang-flag">🇩🇪</span>' : '<span class="lang-flag">🇬🇧</span>';
-
-    // Save preference
-    localStorage.setItem('shopLang', currentLang);
-}
-
-// Expose toggleLanguage to global scope so it can be called from HTML onclick
-window.toggleLanguage = toggleLanguage;
-
-// Load saved language preference
-document.addEventListener('DOMContentLoaded', () => {
-    const savedLang = localStorage.getItem('shopLang');
-    if (savedLang) {
-        currentLang = savedLang;
-        // Trigger the toggle to apply saved language
-        if (savedLang === 'de') {
-            toggleLanguage();
-        }
-    }
 });

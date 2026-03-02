@@ -375,3 +375,99 @@ body.is-booting .snap-section .media {
         padding: 24px;
     }
 }
+
+
+
+/* ========================================= */
+/* --- MOBILE RESPONSIVE LOGIC  --- */
+/* ========================================= */
+@media (max-width: 768px) {
+
+  .content {
+    display: block; /* Disable flex layout */
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* 1. Glass Card: Anchored High Up */
+  .copy {
+    position: absolute;
+    top: 120px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    min-height: auto;
+  }
+  
+  /* 2. Media: Anchored to the strict bottom */
+  .media {
+    position: absolute;
+    bottom: 30px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: center; /* Centered nicely */
+    align-items: center;
+    flex-wrap: nowrap;
+    padding: 7px;
+    
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+  
+  .photo {
+    width: auto;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  /* --- Expandable Glass Card Logic --- */
+  .copy .glass-container {
+    padding: 16px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  /* Hide overlay text initially */
+  .overlay {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    margin-top: 0;
+  }
+  
+  /* Override desktop scroll animations */
+  .snap-section.show-overlay .overlay-inner {
+     opacity: 0; 
+     transform: none;
+     pointer-events: none;
+     animation: none;
+  }
+  
+  .overlay-inner {
+    overflow: hidden;
+    padding: 10px;
+    transition: opacity 0.3s ease, padding 0.3s ease;
+  }
+  
+  /* --- The Expanded State --- */
+  .glass-container.is-expanded .overlay {
+    grid-template-rows: 1fr;
+    margin-top: 14px;
+  }
+  
+  .glass-container.is-expanded .overlay-inner {
+    opacity: 1;
+    padding: 10px; /* Reset padding for neat alignment */
+    pointer-events: auto;
+  }
+}

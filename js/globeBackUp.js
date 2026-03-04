@@ -99,43 +99,13 @@ scene.add(globeRig);
 globeRig.add(globeOrbit);
 globeOrbit.add(globeIdle);
 
-// APPLY REAL EARTH TILT (23.5 degrees)
-globeRig.rotation.z = 23.5 * (Math.PI / 180);
-
 const globe = new ThreeGlobe()
     .showAtmosphere(true)
     .atmosphereColor("#9ad1ff")
     .atmosphereAltitude(0.12);
 
 globeIdle.add(globe);
-globeRig.scale.set(0.06, 0.06, 0.06);
-globeRig.position.set(0, 0, 0);
-
-// CREATE TRUE 3D GLOW
-const createGlowTexture = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 256; canvas.height = 256;
-    const ctx = canvas.getContext('2d');
-    const grad = ctx.createRadialGradient(128, 128, 64, 128, 128, 128);
-    // Adjust these colors if you want a warmer or cooler glow!
-    grad.addColorStop(0, 'rgba(154, 209, 255, 0.35)'); // Inner glow
-    grad.addColorStop(1, 'rgba(154, 209, 255, 0.0)');  // Fade out
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 256, 256);
-    return new THREE.Texture(canvas);
-};
-
-const glowMat = new THREE.SpriteMaterial({
-    map: createGlowTexture(),
-    color: 0xffffff,
-    transparent: true,
-    blending: THREE.AdditiveBlending, // Makes it behave like real light
-    depthWrite: false
-});
-const globeGlow = new THREE.Sprite(glowMat);
-// Since globe radius is ~6 (100 * 0.06), scale sprite to wrap around it beautifully
-globeGlow.scale.set(22, 22, 1); 
-globeRig.add(globeGlow); // Attached to Rig, so it follows the globe perfectly!
+globeRig.scale.set(0.005, 0.005, 0.005);
 
 if (typeof globe.globeMaterial === "function") {
     const m = globe.globeMaterial();
@@ -228,31 +198,34 @@ if (typeof globe.globeMaterial === "function") {
     }
 })();
 
-
-
-
 // CLOUDS
 const cloudRig = new THREE.Group();
 const cloudOrbit = new THREE.Group();
 const cloudIdle = new THREE.Group();
 scene.add(cloudRig); cloudRig.add(cloudOrbit); cloudOrbit.add(cloudIdle);
 
-const cloudMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, metalness: 0, transparent: true, opacity: 0.6, depthWrite: false });
+const cloudMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, metalness: 0, transparent: true, opacity: 0.9, depthWrite: false });
 const cloudGeo = new THREE.SphereGeometry(1.0, 12, 12);
 
 const clouds = [];
 
-for (let i = 0; i < 24; i++) {
+for (let i = 0; i < 18; i++) {
     const cloud = new THREE.Mesh(cloudGeo, cloudMat);
-    const s = 1.2 + Math.random() * 2.0;
+    const s = 0.7 + Math.random() * 0.9;
     cloud.scale.set(s, s, s);
-    
-    const radius = 14 + Math.random() * 12.0; 
+    const radius = 8 + Math.random() * 3.0;
     const angle = Math.random() * Math.PI * 2;
-    const yOff = (Math.random() - 0.5) * 12.0;
+    const yOff = (Math.random() - 0.5) * 3.5;
     const zFlat = 0.55 + Math.random() * 0.25;
 
-    cloud.userData = { radius, baseAngle: angle, yOff, zFlat, speed: 0.2 + Math.random() * 0.4 };
+    cloud.userData = {
+        radius,
+        baseAngle: angle,
+        yOff,
+        zFlat,
+        speed: 0.2 + Math.random() * 0.4
+    };
+
     clouds.push(cloud);
     cloudOrbit.add(cloud);
 }
@@ -265,7 +238,7 @@ cloudOrbit.rotation.set(0.15, 0, 0);
 let isGlobeVisible = false;
 let globeAnimationId = null;
 
-const globeSections = ['#globe-1', '#globe-2', '#globe-3', '#globe-4', '#contact'];
+const globeSections = ['#globe-1', '#globe-2', '#globe-3', '#globe-4'];
 
 globeSections.forEach((sectionId, index) => {
     ScrollTrigger.create({
@@ -354,7 +327,12 @@ function animate(currentTime) {
         c.rotation.z = Math.cos(time * 1.5 + i) * 0.15;
     });
 
+    camera.position.z = THREE.MathUtils.lerp(20, 11.5, sceneState.approach) + sceneState.depart * 5.0;
+
     renderer.render(scene, camera);
+    //renderer.autoClear = false;
+    //renderer.render(vignetteScene, vignetteCamera);
+    //renderer.autoClear = true;
 }
 
 function setGlobeContainerVisible(visible) {
@@ -372,92 +350,105 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-// Section 1: Fly through clouds to center stage
+// Section 1: Globe & Clouds form a centered blob
 gsap.timeline({
-    scrollTrigger: { trigger: "#globe-1", start: "top 75%", end: "bottom top", scrub: 0.8 }
+    scrollTrigger: {
+        trigger: "#globe-1",
+        start: "top top",
+        end: "bottom top",
+        scrub: 0.8
+    }
 })
-    .fromTo(camera.position, 
-        { z: 90 }, 
-        { z: 30, ease: "power2.out" }, 
+    .fromTo(globeRig.scale,
+        { x: 0.015, y: 0.015, z: 0.015 },
+        { x: 0.065, y: 0.065, z: 0.065, ease: "power2.out" },
         0
     )
-    .fromTo(cameraRig.position, 
-        { x: 0, y: 0 }, 
-        { x: 0, y: 0, ease: "power2.out" }, // Centered reveal
+    .fromTo(globeRig.position,
+        { y: 0 },
+        { y: -1.5, ease: "power2.out" },
+        0
+    )
+    .fromTo(cameraRig.position,
+        { z: 18 },
+        { z: 9, ease: "power2.out" },
         0
     )
     .fromTo(sceneParams,
-        { spread: 0.2, spin: 0.0 }, 
-        { spread: 1.2, spin: 0.4, ease: "power2.out" }, // Clouds part
+        { spread: 0.2, spin: 0.0 },
+        { spread: 1.0, spin: 0.6, ease: "power2.out" },
         0
     )
-    .to(".hero-title", { y: -120, autoAlpha: 0, filter: "blur(18px)", ease: "power2.out" }, 0.55)
-    .to("#vignette-overlay", { opacity: 1, ease: "power2.out" }, 0);
+
+    .to("#vignette-overlay", { opacity: 1, ease: "power2.out" }, 0)
+    .to(".hero-title", { y: -120, autoAlpha: 0, filter: "blur(18px)", ease: "power2.out" }, 0.55);
 
 
-// Section 2: Globe on the Right Border (2/3rds visible)
+// Section 2: Frontal view of spinning Globe & Clouds
 gsap.timeline({
-    scrollTrigger: { trigger: "#globe-2", start: "top 75%", end: "bottom top", scrub: 0.8 }
+    scrollTrigger: {
+        trigger: "#globe-2",
+        start: "top top",
+        end: "bottom top",
+        scrub: 0.8
+    }
 })
-    .fromTo("#globe-2 .copy-block", 
-        { autoAlpha: 0, y: 40, filter: "blur(12px)" }, 
-        { autoAlpha: 1, y: 0, filter: "blur(0px)", ease: "power2.out", duration: 0.3 }, 
+    .fromTo("#globe-2 .copy-block",
+        { autoAlpha: 0, y: 24, filter: "blur(10px)" },
+        { autoAlpha: 1, y: 0, filter: "blur(0px)", ease: "power2.out" },
         0
     )
-    .to(cameraOrbit.rotation, { y: 1.2, ease: "none" }, 0) 
-    .to(camera.position, { z: 40, ease: "power1.inOut" }, 0) 
-    // Moving the camera LEFT (-20) pushes the globe visually to the RIGHT
-    .to(cameraRig.position, { x: -20, y: 0, ease: "power2.inOut" }, 0) 
-    .to(sceneParams, { spin: "+=0.6", duration: 1 }, 0); 
+    .to(globeRig.rotation, { y: "+=1.2", ease: "none" }, 0)
+    .to(cloudMat, { opacity: 0.65, ease: "power1.out" }, 0)
+    .to(sceneParams, {
+        spread: 1.5,   // Drift outward
+        spin: "+=0.8", // Keep spinning smoothly
+        ease: "power2.inOut",
+        duration: 1,
+    }, 0);
 
-
-// Section 3: Transition & Rotation (Optional framing adjust)
+// Section 3: Top-down view - very close, bottom positioned
 gsap.timeline({
-    scrollTrigger: { trigger: "#globe-3", start: "top 75%", end: "bottom top", scrub: 0.8 }
+    scrollTrigger: {
+        trigger: "#globe-3",
+        start: "top top",
+        end: "bottom top",
+        scrub: 0.8
+    }
 })
-    .fromTo("#globe-3 .copy-block", 
-        { autoAlpha: 0, y: 40, filter: "blur(12px)" }, 
-        { autoAlpha: 1, y: 0, filter: "blur(0px)", ease: "power2.out", duration: 0.3 }, 
+    .fromTo("#globe-3 .copy-block",
+        { autoAlpha: 0, y: 24, filter: "blur(10px)" },
+        { autoAlpha: 1, y: 0, filter: "blur(0px)", ease: "power2.out" },
         0
     )
-    .to(cameraOrbit.rotation, { y: 2.4, ease: "none" }, 0) 
-    .to(camera.position, { z: 22, ease: "power2.inOut" }, 0) 
-    // Drift back toward center to prepare for final drop
-    .to(cameraRig.position, { x: 0, y: -1.0, ease: "power2.inOut" }, 0) 
-    .to(sceneParams, { spread: 1.5, ease: "power2.inOut" }, 0); 
+    .to(globeRig.rotation, { y: "+=1.2", ease: "none" }, 0)
+    .to(cameraOrbit.rotation, { x: -1.4, ease: "power2.inOut" }, 0)
+    .to(cameraRig.position, { z: 5.5, y: -3.5, ease: "power2.inOut" }, 0)
+    .to(globeRig.position, { y: -2.5, ease: "power2.inOut" }, 0)
+    .to(globeRig.scale, { x: 0.08, y: 0.08, z: 0.08, ease: "power2.inOut" }, 0)
+    .to(sceneParams, {
+        spread: 3.5,   // Push clouds far away from the camera!
+        spin: "+=1.2", // Give them an extra spin boost
+        ease: "power2.inOut",
+        duration: 1
+    }, 0);
 
 
-// Section 4: Globe against the Lower Border
+// Section 4: Contact - globe stays close
 gsap.timeline({
-    scrollTrigger: { trigger: "#globe-4", start: "top 75%", end: "bottom top", scrub: 0.8 }
+    scrollTrigger: {
+        trigger: "#globe-4",
+        start: "top top",
+        end: "bottom top",
+        scrub: 0.8
+    }
 })
     .to("#globe-4", { autoAlpha: 1 }, 0)
-    .to(cameraOrbit.rotation, { y: 3.4, ease: "none" }, 0) 
-    .to(camera.position, { z: 18, ease: "power2.inOut" }, 0) // Nice tight crop
-    // Moving camera UP (+5.0) pushes the globe to the BOTTOM edge of the screen
-    .to(cameraRig.position, { x: 0, y: 5.0, ease: "power2.inOut" }, 0) 
-    .to(cloudMat, { opacity: 0.15, ease: "power2.inOut" }, 0);
-
-
-
-
-
-
-
-
-
+    .to(globeRig.scale, { x: 0.055, y: 0.055, z: 0.055, ease: "power2.inOut" }, 0)
+    .to(cameraRig.position, { z: 10, y: -2, ease: "power2.inOut" }, 0)
+    .to(globeRig.position, { y: -1.8, ease: "power2.inOut" }, 0)
+    .to(sceneParams, { spread: 1.8, ease: "power2.inOut" }, 0)
+    .to(cloudMat, { opacity: 0.25, ease: "power2.inOut" }, 0.1);
 
 
 // Handle Resize

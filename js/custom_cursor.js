@@ -1,8 +1,5 @@
 /* =====================================================
    CUSTOM CURSOR
-   - Auto-loads GSAP if not present
-   - Disables on mobile/touch devices
-   - Creates cursor elements dynamically if not in DOM
 ===================================================== */
 
 // Check if device is mobile/touch-only (not a laptop with touchscreen)
@@ -89,6 +86,14 @@ async function initCursor() {
             gsap.set(dot, { x: e.clientX, y: e.clientY });
             xTo(e.clientX);
             yTo(e.clientY);
+        });
+
+        document.addEventListener('mouseleave', () => {
+            gsap.to([dot, outline], { opacity: 0, duration: 0.2 });
+        });
+
+        document.addEventListener('mouseenter', () => {
+            gsap.to([dot, outline], { opacity: 1, duration: 0.2 });
         });
 
         console.log('Custom cursor initialized');

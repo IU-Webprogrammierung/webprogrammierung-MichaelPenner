@@ -114,7 +114,8 @@
   border: 1px solid var(--glass-border);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   display: flex;
-  flex-direction: column-reverse; /* Put canvas above label on mobile */
+  flex-direction: column-reverse;
+  /* Put canvas above label on mobile */
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
@@ -124,7 +125,8 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-top: auto; /* Push label down */
+  margin-top: auto;
+  /* Push label down */
 }
 
 .tower-label .name {
@@ -171,9 +173,10 @@
   .about-aside {
     margin-top: 0;
   }
-  
+
   .skill-tower {
-    flex-direction: column; /* Restore normal order on desktop */
+    flex-direction: column;
+    /* Restore normal order on desktop */
   }
 
   .tower-label {

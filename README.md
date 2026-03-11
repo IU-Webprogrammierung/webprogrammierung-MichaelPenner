@@ -1,55 +1,64 @@
-# Persönlicher Webauftritt – Portfolio & Showcase
-# PHASE 1 (27.02)
+# Portfolio Webpage - Projektdokumentation
 
-Dieses Projekt ist ein persönlicher Webauftritt, der als Mischung aus **Portfolio**, **Showcase** und **Curriculum Vitae** dient. Ziel ist es, meine bisherigen Erfahrungen, Projekte aus meiner Hiwi-Tätigkeit sowie meine persönlichen Interessen strukturiert und ansprechend darzustellen.
+Diese README.md dokumentiert den Entwicklungsprozess, die eingesetzten Technologien und die wichtigsten Errungenschaften dieses Portfolio-Webauftritts gemäß den Projektanforderungen. 
 
-## Ziele des Projekts
-- Erstellung einer statischen, responsiven Website
-- Darstellung von persönlichen Informationen, Lebenslauf und Projekten
-- Technisch saubere Umsetzung mit HTML, CSS und optional JavaScript / Three.js
-- Versionierung mit Git und strukturierter Git-Workflow
+Die gesamte Webseite wurde ohne fertige CSS-Frameworks "from scratch" entwickelt, um ein tiefgreifendes Verständnis der Webentwicklungsgrundlagen zu demonstrieren.
 
-## Geplante Inhalte
-- **Über mich** – Vorstellung, Motivation, Kontext
-- **Lebenslauf** – tabellarische Übersicht über Werdegang und Skills
-- **Projekte / Showcase** – Präsentation zweier real umgesetzter Webprojekte aus meiner Hiwi-Tätigkeit
-- **Kontakt / Impressum**
+## 🛠️ Eingesetzte Technologien & Methoden
 
-## Technische Anforderungen & Umsetzung
-- HTML & CSS (keine Frameworks in Phase 1)
-- Responsive Design mit Media Queries
-- Nutzung von Flexbox / Grid
-- Barrierearme Gestaltung nach WCAG-Basiskriterien
-- Entwicklung unter Versionskontrolle (Git, GitHub)
+- **HTML5**: Semantisch korrekte Strukturierung der Inhalte.
+- **Vanilla CSS (Custom Properties / Variables)**: Aufbau eines globalen Design-Systems (Farben, Typography, Abstände) für konsistentes und modulares Styling.
+- **Responsive Web Design**: Einsatz komplexer **Media Queries** (Mobile-First Ansatz) zur fluiden Anpassung von Layouts, Schriftgrößen und Komponenten über mehrere Breakpoints hinweg (von 360px bis hin zu Ultra-Wide Displays).
+- **CSS Flexbox & CSS Grid**: Vollständiger Verzicht auf veraltete Layout-Methoden. Kombination von Flexbox (für 1D-Ausrichtung z.B. Navigation, Karten-Inhalte) und Grid (für 2D-Bereiche wie z.B. komplexe Projekt-Galerien).
+- **Vanilla JavaScript (ES6+)**: Entwicklung dynamischer Funktionen, Scroll-Events und komplexer Animationen komplett ohne jQuery.
+- **Git Versionskontrolle**: Kontinuierliche Datensicherung und strukturierte Dokumentation des Entwicklungsprozesses durch regelmäßige, semantische Commits.
+- **Barrierefreiheit (a11y)**: Einsatz von ARIA-Labels, `aria-hidden` für rein dekorative Elemente, logischer Heading-Struktur und hohem Farbkontrast. Unterstützung für `prefers-reduced-motion`.
 
-## Aktueller Stand
-- Grundstruktur des Projekts angelegt
-- Basisdateien erstellt
-- Konzeption und Struktur in Arbeit
+## ✨ Spezifische & Komplexe Features (Highlights)
 
-Weitere Funktionen und Design-Aspekte werden in den nächsten Phasen ergänzt.
+Besonderer Wert wurde auf Interaktivität, "Motion Design" und ein einzigartiges, immersives Erlebnis gelegt. Folgende Features waren besonders arbeitsintensiv in der Konzeption und Umsetzung:
 
+### 1. Interaktive Physik-basierte Timeline (Rope Simulation)
+Das Herzstück der "About Me"-Sektion ist eine komplett selbst programmierte, interaktive Timeline, die sich wie ein echtes Seil unter Spannung verhält.
+- **Custom Physics Engine**: Berechnung von Gravitation, Spannung ("Tension") und Dämpfung mittels JavaScript `requestAnimationFrame`.
+- **Dynamisches SVG-Rendering (Quadratic Bezier Curves)**: Das Seil wird live als glatte Bezier-Kurve gezeichnet und gebogen, ohne Ecken oder "harte" Kanten.
+- **Magnetischer Hover-Effekt**: Beim Überfahren der Milestone-Punkte berechnet ein Algorithmus einen sanften Einzug (Parabelfunktion), um das Seil natürlich um den Punkt herumzubiegen.
+- **Parallax & Scroll-Tension**: Schnelles Scrollen erzeugt physikalische Wellen im Seil. Erreicht man das Ende, "zerreißt" das Seil optisch und physikalisch in zwei Teile.
+- **IntersectionObserver (Staggered Entrance)**: Milestones werden erst elegant eingeblendet und schweben ein (CSS Transitions + JS Observer), wenn der Nutzer zu der entsprechenden Sektion scrollt, was Ressourcen schont und visuell ansprechend ist.
 
-# PHASE 2 (27.02)
+### 2. 3D Product Configurator & Scroll-Storytelling (Shop)
+Die `shop.html` beinhaltet einen hochkomplexen 3D-Produkt-Viewer für restaurierte KitchenAid-Maschinen.
+- **Scroll-Driven 3D-Modelle**: Beim Herunterscrollen ("Storytelling") rotieren die 3D-Maschinen passend zur Scrollposition. Ein IntersectionObserver lädt dynamisch und nahtlos komplett neue 3D-Modelle (GLB/GLTF) in die Szene, sobald eine neue Produktsektion betreten wird.
+- **Realistische Render-Engine (PBR)**: Nutzung von Three.js mit Physically Based Rendering (PBR), Environments Maps, und weichen dynamischen Schatten (`PCFSoftShadowMap`) für maximale Realismus und Reflexionen auf dem Lack.
+- **Multible WebGL-Kontexte**: Neben der Hauptszene rotieren in den Glaskarten zusätzlich kleine, unabhängige 3D-Zubehörteile auf separaten Canvases.
+- **Cinematic Transitions**: Einsatz von tiefgreifenden CSS-Filtern (Blur/Desaturate), die asynchron mit dem JavaScript Lade-Fortschritt der Modelle und Sektionen synchronisiert sind.
+- **Mobile-Handling**: Eine intelligente Klick-Logik (`is-expanded`), die es Nutzern auf mobilen Geräten erlaubt, die "Glassmorphism"-Karten auszuklappen, ohne die 3D-View zu verstellen.
 
-Dieser Webauftritt ist ein interaktives Portfolio und experimenteller Showcase. Er kombiniert modernes UI/UX-Design mit komplexen 3D-Web-Technologien und scroll-gesteuerten Animationen, um meine Erfahrungen, Projekte und technischen Fähigkeiten eindrucksvoll zu präsentieren.
+### 3. 3D Skill-Towers (Three.js WebGL)
+Eine stark visuelle Darstellung meiner Fähigkeiten (HTML, CSS, JS etc.) in Form von interaktiven 3D-Bauklötzen.
+- **Three.js Integration**: Aufbau einer WebGL-Szene direkt im DOM.
+- **Komplexes Lighting & Shadowing**: Eigener Schatten-Wurf der Klötze aufeinander mittels `DirectionalLight` und Shadow-Mapping.
+- **Mouse-Tracking & Parallax**: Die Kamera sowie das Licht reagieren subtil auf die Mausbewegungen des Nutzers in Echtzeit.
+- **Materialien**: Einsatz von `MeshStandardMaterial` für eine realistische Lichtreflexion (Plastic-Look), kombiniert mit HSL-Farbverschiebungen für die unteren Blöcke.
 
-## Kern-Features & interaktive Sektionen
-- 3D Skills (About): Eine WebGL-Szene mit fallenden 3D-Blöcken (inkl. Physik und Hover-Drift), die meine Kernkompetenzen interaktiv visualisieren – optimiert für Desktop und Mobile.
+### 4. Interactive 3D Globe (ThreeGlobe & WebGL)
+Eine beeindruckende visuelle 3D-Globus-Darstellung, um internationale Verbindungen und Orte zu visualisieren.
+- **ThreeGlobe / Three.js**: Rendering einer kompletten Erde inkl. Wolkenschicht (`MeshLambertMaterial`) und Atmosphäre.
+- **Data-Driven Visualization**: Polylinien (Flugrouten) und leuchtende Marker (Städte/Orte) werden asynchron aus einer JSON-Datenquelle ausgelesen und in die 3D-Geometrie übersetzt (`hexPolygonRes`, `arcsData`).
+- **Scroll-Linked Animation**: Die Rotation des Globus und der Kamerapositionierung interagieren mit den Scroll-Bereichen (`globeSections`). Der Animations-Loop wird zur Leistungsoptimierung pausiert (`cancelAnimationFrame`), sobald sich der Globus nicht im sichtbaren Bereich befindet.
 
-- Animierte Timeline (Lebenslauf): Eine dynamische, scroll-gesteuerte Zeitachse, die meinen Werdegang und meine Erfahrungen strukturiert und visuell ansprechend darstellt.
+### 5. Serverless Contact Form (EmailJS)
+Ein vollständig funktionierendes, clientseitiges Kontaktformular, welches ohne eigenen Node.js oder PHP-Backend-Server auskommt.
+- **EmailJS API Integration**: Direkte Anbindung an die EmailJS API per Vanilla JS (`js/contact.js`) zum asynchronen Versand von Kontaktanfragen.
+- **UX / State-Management**: Verriegelung des Submit-Buttons ("Sending...") zur Verhinderung von Doppel-Einsendungen, Error-Handling mit visuellem Feedback via `alert()`/Callbacks und Form-Reset bei Erfolg.
 
-- Cinematic Globe Sektion: Eine interaktive 3D-Weltkugel (ThreeGlobe) mit Wolken, Sternen-Parallax und Kamerafahrten. Die Animationen (Reveal, Approach, Explore) sind direkt an das Scroll-Verhalten (GSAP ScrollTrigger) gekoppelt.
+### 6. Mehrsprachigkeit (i18n System)
+Komplettes i18n-System in purem Javascript implementiert, welches nahtlos und ohne Page-Reload die gesamte Webseite zwischen Deutsch und Englisch umschaltet.
+- Speicherung der Präferenz lokal, Abgreifen von Data-Attributen auf allen relevanten DOM-Elementen.
 
-- Experimenteller Shop: Ein E-Commerce-Showcase mit CSS-Scroll-Snapping, edlem Glassmorphism-UI und nahtlosen Übergängen. Der 3D-Hintergrund reagiert hier mit dynamischen "Cinematic Blur"- und Belichtungs-Effekten auf die User-Interaktion.
+### 7. Custom Cursor & Hover-States
+- Ein globaler Custom-Cursor (Kreis + Punkt), der smooth der Maus folgt und bei klickbaren Elementen (Links, Timeline-Punkte, Projektkarten) dynamisch wächst, seine Farbe ändert oder den Text ("View") anzeigt.
 
-## Tech-Stack
--Das Projekt verzichtet in Phase 1 bewusst auf schwere Frontend-Frameworks und setzt auf eine performante, maßgeschneiderte Architektur:
-
--Core: Semantisches HTML5 & modernes CSS (CSS Grid/Flexbox, Custom Properties, CSS Scroll Snapping, Glassmorphism).
-
--3D & Render-Logik: Three.js (WebGL) für performantes Rendering, eigene Physik-Logiken und DOM-to-Canvas Mapping.
-
--Animation & State-Control: GSAP & ScrollTrigger für hochpräzise, scroll-basierte Timelines und State-Machines.
-
--Workflow: Git/GitHub, Mobile-First-Ansatz mit dynamischer JS-Skalierung für optimale Performance auf allen Endgeräten.
+### 8. Smooth Scroll & CSS Animations
+- Eigener Scroll-Handler zur ruckelfreien Navigation zwischen den Sektionen.
+- Umfangreicher Einsatz von Keyframe-Animationen, weichen Hover-Transitions, `transform: translate3d` und Backdrop-Filtern ("Glassmorphism") für ein extrem hochwertiges Look & Feel.

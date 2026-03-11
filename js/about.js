@@ -14,10 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 4 towers with different counts
   const TOWERS = {
-    web: { baseColor: 0x2ea8ff, blocks: ["HTML", "CSS", "JavaScript"] },
-    embedded: { baseColor: 0xff7a2e, blocks: ["Arduino", "C++", "Sensors", "Control"] },
-    visual: { baseColor: 0x7c5cff, blocks: ["Blender", "Photoshop"] },
-    proto: { baseColor: 0x33d18f, blocks: ["3D Printing", "Electronics", "Prototyping"] }
+    web: { baseColor: 0xff5f56, blocks: ["HTML", "CSS", "JavaScript"] },
+    embedded: { baseColor: 0xffbd2e, blocks: ["Arduino", "C++", "Sensors", "Control"] },
+    visual: { baseColor: 0x27c93f, blocks: ["Blender", "Photoshop"] },
+    proto: { baseColor: 0x2ea8ff, blocks: ["3D Printing", "Electronics", "Prototyping"] }
   };
 
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));

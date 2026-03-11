@@ -81,6 +81,14 @@
         <!-- HERO Page -->
         <section id="hero">
 
+            <!-- Hero Blobs -->
+            <div class="hero-blobs" aria-hidden="true">
+                <div class="blob blob-1"></div>
+                <div class="blob blob-2"></div>
+                <div class="blob blob-3"></div>
+                <div class="blob blob-4"></div>
+            </div>
+
             <!-- Blurred background portrait (behind glass) -->
             <div class="hero-bg" aria-hidden="true">
                 <img src="assets/images/michael-hero.jpg" alt="Blurred Background">
@@ -241,7 +249,9 @@
 
                 <!-- UNDERLAY: Line + Beam unter allem -->
                 <div class="timeline-underlay" aria-hidden="true">
-                    <div class="track-line"></div>
+                    <svg class="rope-svg" id="ropeSvg" preserveAspectRatio="none">
+                        <path id="ropePath" stroke="var(--text)" stroke-width="4" stroke-dasharray="8 4" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke"></path>
+                    </svg>
                     <div class="rainbow-beam"></div>
                 </div>
 

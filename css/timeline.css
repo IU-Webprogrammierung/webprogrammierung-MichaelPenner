@@ -49,7 +49,16 @@
     z-index: 3;
 }
 
-.track-line,
+.rope-svg,
+.rainbow-beam {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+}
 .rainbow-beam {
     top: 50%;
 }
@@ -121,34 +130,7 @@
     }
 }
 
-.tt-timespan {
-    margin-top: 6px;
-    padding-top: 6px;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-}
 
-.tt-timespan-bar {
-    position: relative;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-    margin-top: 4px;
-    overflow: hidden;
-}
-
-.tt-timespan-fill {
-    position: absolute;
-    height: 100%;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    border-radius: 2px;
-    transition: all 300ms ease;
-}
-
-.tt-timespan-duration {
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.6);
-    margin-top: 4px;
-}
 
 .rainbow-beam {
     display: none;
@@ -182,51 +164,24 @@
     top: 0;
     height: 100%;
     width: 1px;
-}
-
-.milestone-duration {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    height: 8px;
-    transform: translateY(-50%) scaleX(0);
-    transform-origin: left center;
-    background: linear-gradient(90deg,
-            rgba(0, 200, 255, 0.7),
-            rgba(160, 32, 240, 0.75) 33%,
-            rgba(255, 0, 150, 0.8) 66%,
-            rgba(255, 200, 0, 0.7));
-    border-radius: 999px;
     opacity: 0;
-    filter: blur(4px) drop-shadow(0 0 8px rgba(255, 0, 150, 0.5));
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
-    pointer-events: none;
-    z-index: 1;
+    margin-top: 30px;
+    will-change: opacity, margin-top;
+    transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), margin-top 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.milestone.is-in-view {
+    opacity: 1;
+    margin-top: 0;
+}
+.milestone.falling {
+    animation: milestoneFall 0.7s forwards cubic-bezier(0.5, 0, 1, 0.5);
+}
+@keyframes milestoneFall {
+    0% { transform: translateY(0) rotate(0); }
+    100% { transform: translateY(1500px) rotate(calc(var(--fall-dir, 1) * 60deg)); opacity: 0; }
 }
 
-.milestone:hover .milestone-duration {
-    transform: translateY(-50%) scaleX(1);
-    opacity: 0.8;
-    animation: beamWobble 6s ease-in-out infinite alternate;
-}
 
-@keyframes beamWobble {
-    0% {
-        filter: blur(3px) drop-shadow(0 0 8px rgba(255, 0, 150, 0.4)); /* Pink */
-    }
-
-    33% {
-        filter: blur(5px) drop-shadow(0 0 10px rgba(160, 32, 240, 0.6)); /* Purple */
-    }
-
-    66% {
-        filter: blur(7px) drop-shadow(0 0 12px rgba(0, 200, 255, 0.7)); /* Cyan */
-    }
-
-    100% {
-        filter: blur(5px) drop-shadow(0 0 10px rgba(255, 200, 0, 0.5)); /* Yellow */
-    }
-}
 
 
 .milestone-dot {
@@ -244,7 +199,19 @@
     z-index: 2;
     /* Needs to be above the duration bar */
 
-    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+    transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.9s ease, border-color 0.9s ease;
+}
+
+.milestone-dot::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    cursor: none;
 }
 
 .milestone-dot:hover {
@@ -253,15 +220,7 @@
     cursor: none;
 }
 
-.track-line {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    top: 50%;
-    height: 4px;
-    transform: translateY(-50%);
-    background: var(--text);
-}
+
 
 .milestone-label {
     position: absolute;
@@ -345,26 +304,7 @@
     width: fit-content;
 }
 
-.tt-timespan-bar {
-    display: block;
-    width: 100%;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 2px;
-    margin-top: 4px;
-    position: relative;
-    overflow: hidden;
-}
 
-.tt-timespan-bar::before {
-    content: "";
-    position: absolute;
-    left: var(--timespan-left, 0%);
-    width: var(--timespan-width, 20%);
-    height: 100%;
-    background: linear-gradient(90deg, rgba(0, 200, 255, 0.6), rgba(255, 0, 150, 0.6));
-    border-radius: 2px;
-}
 
 .tt-desc {
     font-size: 13px;

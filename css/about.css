@@ -44,11 +44,10 @@
   border-radius: 999px;
   opacity: 0.75;
   background: linear-gradient(90deg,
-      rgba(255, 0, 150, .65),
-      rgba(0, 200, 255, .65),
-      rgba(120, 255, 0, .55),
-      rgba(255, 200, 0, .55),
-      rgba(255, 0, 150, .65));
+      rgba(255, 95, 86, .75),
+      rgba(255, 189, 46, .75),
+      rgba(39, 201, 63, .65),
+      rgba(46, 168, 255, .65));
   filter: blur(6px);
 }
 
@@ -259,7 +258,7 @@
 /* 3. The glowing gradient line expands from the left like a laser */
 #about-skills .about-accent {
   width: 0%;
-  transition: width 1s cubic-bezier(0.8, 0, 0.2, 1);
+  transition: width 1.5s cubic-bezier(0.8, 0, 0.2, 1);
   transition-delay: 0.4s;
 }
 

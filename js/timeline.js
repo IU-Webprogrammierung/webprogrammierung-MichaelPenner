@@ -20,6 +20,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // =============================
   // 2) CONFIG & HELPERS
   // =============================
+  const GLOBAL_IMAGE_GROUPS = [
+    [{ src: "assets/images/timeline-animal.jpg" }, { src: "assets/images/timeline-animal2.jpg" }],
+    [{ src: "assets/images/timeline-food.jpg" }, { src: "assets/images/timeline-food2.jpg" }],
+    [{ src: "assets/images/timeline-friends.jpg" }, { src: "assets/images/timeline-friends(2).jpg" }, { src: "assets/images/timeline-friends(3).jpg" }, { src: "assets/images/timeline-friends.jpeg" }],
+    [{ src: "assets/images/timeline-travel.jpg" }, { src: "assets/images/timeline-soccer.jpg" }]
+  ];
   // Add 1 extra year of padding before birth to make start easier to read
   const START_DATE = new Date("1996-06-28");
   const END_DATE = new Date();
@@ -144,16 +150,24 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     });
+
+    GLOBAL_IMAGE_GROUPS.forEach(group => {
+        group.forEach(im => imageSources.add(im.src));
+    });
     
     // Preload each image to get dimensions
     const promises = Array.from(imageSources).map(src => getImageDimensions(src));
     await Promise.all(promises);
   };
   
-  // Generate randomized dimensions based on real image, scaled by 0.6-1.0
+  // Generate randomized dimensions based on real image, scaled
   const getRandomizedDimensions = (src) => {
     const dims = imageDimensionsCache[src] || { width: 220, height: 150 };
-    const scaleFactor = 0.4 + Math.random() * 0.3; // Random between 0.4 and 0.7
+    let isMobile = window.innerWidth < 900;
+    let scaleFactor = 0.25 + Math.random() * 0.20; 
+    if (isMobile) {
+       scaleFactor *= 0.55;
+    }
     return {
       width: Math.round(dims.width * scaleFactor),
       height: Math.round(dims.height * scaleFactor)
@@ -172,7 +186,25 @@ document.addEventListener("DOMContentLoaded", () => {
       updateTimelineState(); // Initial calculation
       updateMediaScale();
       startAmbient();
+      
+      const cvSection = document.getElementById('cv');
+      if (cvSection) {
+          const sectionObserver = new IntersectionObserver((entries, observer) => {
+              if (entries[0].isIntersecting) {
+                  const milestones = document.querySelectorAll('.milestone');
+                  if (milestones.length === 0) return; // safety check
+                  milestones.forEach((m, idx) => {
+                      setTimeout(() => {
+                          m.classList.add('is-in-view');
+                      }, idx * 150); // Stagger entrance visibly (150ms)
+                  });
+                  observer.disconnect();
+              }
+          }, { threshold: 0.1 });
+          sectionObserver.observe(cvSection);
+      }
     });
+
 
   function generateMilestones(items) {
     track.innerHTML = "";
@@ -218,9 +250,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const labelEn = item.en?.label || item.label || "";
 
       // Only insert the physical duration bar if we calculated a valid pixel width
-      const durationHtml = durationWidth > 0 
-          ? `<div class="milestone-duration" style="width: ${durationWidth}px;"></div>` 
-          : '';
+      // The user requested to remove the gradient duration bar completely.
+      const durationHtml = '';
+      
+      const niceStart = nice(item.start);
+      const niceEnd = item.end ? nice(item.end) : "";
+      const dateLabel = niceEnd ? `${niceStart} - ${niceEnd}` : niceStart;
 
       div.innerHTML = `
       ${durationHtml}
@@ -230,7 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
         data-desc-de="${descDe}" data-desc-en="${descEn}">
       </button>
       <span class="milestone-label">
-        ${nice(item.start)} • <span data-de="${labelDe}" data-en="${labelEn}">${labelDe}</span>
+        ${dateLabel} • <span data-de="${labelDe}" data-en="${labelEn}">${labelDe}</span>
       </span>
     `;
       track.appendChild(div);
@@ -275,6 +310,215 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const activeCards = new Set();
 
+  // =============================
+  // ROPE PHYSICS ENGINE
+  // =============================
+  const ropeSvg = document.getElementById("ropeSvg");
+  const ropePath = document.getElementById("ropePath");
+  
+  const NUM_ROPE_POINTS = 50;
+  const ropePoints = [];
+  let ropeSpacing = 0;
+  let ropeSnapped = false;
+  let hoveredDotElement = null;
+  let lastScrollTime = performance.now();
+  let scrollVelocity = 0;
+  let prevScrollLeft = viewport.scrollLeft;
+
+  window._timelineEdgeAcc = 0; 
+  window._timelineTriggerSnap = () => {
+      ropeSnapped = true;
+      window._timelineBroken = true;
+      const milestones = document.querySelectorAll(".milestone");
+      milestones.forEach(m => {
+          m.classList.add("falling");
+          m.style.setProperty("--fall-dir", (1 + Math.random()) * (Math.random() > 0.5 ? 1 : -1));
+      });
+      const rb = document.querySelector(".rainbow-beam");
+      if(rb) rb.style.opacity = "0";
+      const overlay = document.querySelector(".timeline-overlay");
+      if(overlay) overlay.style.opacity = "0";
+  };
+
+  function initRope() {
+      if(!ropeSvg) return;
+      ropeSpacing = window.innerWidth / (NUM_ROPE_POINTS - 1);
+      for(let i=0; i<NUM_ROPE_POINTS; i++) {
+          ropePoints.push({ x: i * ropeSpacing, y: 0, vy: 0 });
+      }
+  }
+
+  function updateRope() {
+      if (!ropeSvg || !ropePath) return;
+
+      const centerY = ropeSvg.clientHeight / 2;
+      
+      const BASE_TENSION = 0.08;
+      const DAMP = 0.84; // More fluid motion
+
+      let towTension = Math.min(0.5, Math.abs(scrollVelocity) * 0.002);
+      let edgeTension = (window._timelineEdgeAcc / 350) * 0.5; 
+      if (edgeTension < 0) edgeTension = 0;
+
+      let effectiveTension = Math.min(0.9, BASE_TENSION + towTension + edgeTension);
+      let time = performance.now() * 0.001;
+      
+      let lockedX = null;
+      let lockedIndex = -1;
+      if (hoveredDotElement && !ropeSnapped) {
+          const ropeRect = ropeSvg.getBoundingClientRect();
+          const dotRect = hoveredDotElement.getBoundingClientRect();
+          lockedX = dotRect.left + dotRect.width / 2 - ropeRect.left;
+          lockedIndex = Math.round(lockedX / ropeSpacing);
+      }
+
+      if (ropeSnapped) {
+          for(let i=0; i<NUM_ROPE_POINTS; i++) {
+              let p = ropePoints[i];
+              if (!p.snappedForceApplied) {
+                  // Subtle burst away from center
+                  let centerDist = (i - NUM_ROPE_POINTS/2) / (NUM_ROPE_POINTS/2);
+                  p.vy = -5 - Math.random() * 10; 
+                  p.vx = centerDist * 15; // move sideways
+                  p.snappedForceApplied = true;
+                  p.x += p.vx;
+              }
+              p.vy += 1.2; // Gravity during fall
+              p.y += p.vy;
+              if (p.vx) p.x += p.vx;
+          }
+      } else {
+          for(let i=0; i<NUM_ROPE_POINTS; i++) {
+              let p = ropePoints[i];
+
+              if (i === 0 || i === NUM_ROPE_POINTS - 1) {
+                  p.y = 0;
+                  continue;
+              }
+
+              let left = ropePoints[i-1];
+              let right = ropePoints[i+1];
+
+              let targetY = (left.y + right.y) / 2;
+              let force = (targetY - p.y) * effectiveTension;
+              
+              // Natural parabolic sag instead of constant gravity pulling down
+              let nx = (i / (NUM_ROPE_POINTS - 1)) * 2 - 1; // -1 to 1
+              let staticSag = (1 - nx * nx) * 60; // 60px sag in middle
+              let sagForce = (staticSag - p.y) * 0.05;
+
+              // Apply wobble based on scroll and time (lower frequency, higher amplitude)
+              let wobble = Math.sin(time * 2 + i * 0.15) * (Math.abs(scrollVelocity) * 0.04 + 0.6);
+              
+              force += sagForce + wobble;
+
+              if (window._timelineEdgeAcc > 0 && i > NUM_ROPE_POINTS / 2) {
+                  const factor = Math.min(1, window._timelineEdgeAcc / 350);
+                  force -= (p.y) * factor * 0.1;
+              }
+
+              p.vy += force;
+              p.vy *= DAMP;
+          }
+
+          for(let p of ropePoints) {
+              p.y += p.vy;
+              
+              if (lockedX !== null) {
+                  const distX = Math.abs(p.x - lockedX);
+                  if (distX < 90) { // approx 1 rope spacing radius
+                       let pull = 1 - (distX / 90);
+                       // smoothstep for a natural rounded curve
+                       pull = pull * pull * (3 - 2 * pull);
+                       p.y -= p.y * pull * 0.9; 
+                       // kill velocity heavily at the exact center to stop jitter
+                       p.vy *= (1 - pull); 
+                  }
+              }
+          }
+      }
+
+      // Draw SVG rope using smooth Quadratic Bezier curves
+      if (ropeSnapped) {
+          // Draw as two separate broken paths
+          let mid = Math.floor(NUM_ROPE_POINTS / 2);
+          
+          let d = `M ${ropePoints[0].x},${centerY + ropePoints[0].y}`;
+          for(let i=0; i<mid-1; i++) {
+              let p0 = ropePoints[i];
+              let p1 = ropePoints[i+1];
+              let mx = (p0.x + p1.x) / 2;
+              let my = (p0.y + p1.y) / 2;
+              if (i === 0) d += ` L ${mx},${centerY + my}`;
+              else d += ` Q ${p0.x},${centerY + p0.y} ${mx},${centerY + my}`;
+          }
+          d += ` L ${ropePoints[mid-1].x},${centerY + ropePoints[mid-1].y}`;
+          
+          d += ` M ${ropePoints[mid].x},${centerY + ropePoints[mid].y}`;
+          for(let i=mid; i<NUM_ROPE_POINTS-1; i++) {
+              let p0 = ropePoints[i];
+              let p1 = ropePoints[i+1];
+              let mx = (p0.x + p1.x) / 2;
+              let my = (p0.y + p1.y) / 2;
+              if (i === mid) d += ` L ${mx},${centerY + my}`;
+              else d += ` Q ${p0.x},${centerY + p0.y} ${mx},${centerY + my}`;
+          }
+          d += ` L ${ropePoints[NUM_ROPE_POINTS-1].x},${centerY + ropePoints[NUM_ROPE_POINTS-1].y}`;
+          
+          ropePath.setAttribute("d", d);
+      } else {
+          let d = `M 0,${centerY + ropePoints[0].y}`;
+          for(let i=0; i<NUM_ROPE_POINTS-1; i++) {
+              let p0 = ropePoints[i];
+              let p1 = ropePoints[i+1];
+              let mx = (p0.x + p1.x) / 2;
+              let my = (p0.y + p1.y) / 2;
+              if (i === 0) {
+                  d += ` L ${mx},${centerY + my}`;
+              } else {
+                  d += ` Q ${p0.x},${centerY + p0.y} ${mx},${centerY + my}`;
+              }
+          }
+          d += ` L ${ropePoints[NUM_ROPE_POINTS-1].x},${centerY + ropePoints[NUM_ROPE_POINTS-1].y}`;
+          ropePath.setAttribute("d", d);
+      }
+      
+      // Align milestone dots to rope
+      if (!ropeSnapped) {
+          const milestones = document.querySelectorAll('.milestone');
+          const ropeRect = ropeSvg.getBoundingClientRect();
+          
+          milestones.forEach(m => {
+              const mRect = m.getBoundingClientRect();
+              const screenX = mRect.left - ropeRect.left;
+              
+              const idx = screenX / ropeSpacing;
+              const i = Math.floor(idx);
+              let yOffset = 0;
+              
+              if (i >= 0 && i < NUM_ROPE_POINTS - 1) {
+                  const t = idx - i;
+                  yOffset = ropePoints[i].y * (1 - t) + ropePoints[i+1].y * t;
+              } else if (i < 0) {
+                  yOffset = ropePoints[0]?.y || 0;
+              } else if (i >= NUM_ROPE_POINTS - 1) {
+                  yOffset = ropePoints[NUM_ROPE_POINTS - 1]?.y || 0;
+              }
+              
+              const dot = m.querySelector('.milestone-dot');
+              if (dot) {
+                  dot.style.transform = `translate(-50%, calc(-50% + ${yOffset}px))`;
+              }
+              const label = m.querySelector('.milestone-label');
+              if (label) {
+                  label.style.transform = `translate(-50%, calc(var(--y, 0px) + ${yOffset}px))`;
+              }
+          });
+      }
+  }
+  
+  initRope();
+
   function animationLoop(t) {
     const now = t * 0.001;
     let dt = animationLoop.last ? now - animationLoop.last : 0.016;
@@ -286,6 +530,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dt > 0.1) dt = 0.016; 
     
     animationLoop.last = now;
+
+    scrollVelocity *= 0.9;
+    updateRope();
 
     activeCards.forEach(card => updateCard(card, dt, now));
 
@@ -327,21 +574,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function gatherCandidateImages() {
-    // 2-3 Milestones around center
     const closest = getClosestMilestones(3);
-
     const imgs = [];
+    
     for (const m of closest) {
       try {
         const arr = JSON.parse(m.dataset.images || "[]");
         for (const im of arr) {
-          // Filter out duplicates using the renderedImages Set
           if (im && im.src && !renderedImages.has(im.src)) {
             imgs.push(im);
           }
         }
       } catch (_) { }
     }
+
     return imgs;
   }
 
@@ -354,10 +600,23 @@ document.addEventListener("DOMContentLoaded", () => {
     return pick(free);
   }
 
+  function spawnCandidateGroups(group) {
+      if (!ambient) return;
+      let spawnedCount = 0;
+      for (const im of group) {
+         if (!renderedImages.has(im.src)) {
+             setTimeout(() => {
+                 spawnAmbientCard(im);
+             }, spawnedCount * 800); 
+             spawnedCount++;
+         }
+      }
+  }
+
   function spawnAmbientCard(forcedImage = null) {
     if (!ambient) return;
 
-    // Hard limit: never spawn more than 3 active ambient cards at a time to prevent flooding
+    // Hard limit
     if (activeCards.size >= 3) return;
 
     // Only when CV Section is visible
@@ -396,11 +655,11 @@ document.addEventListener("DOMContentLoaded", () => {
     card.style.top = `${s.y}%`;
     card.slotIndex = slotIndex;
 
-    // Use randomized dimensions with small random variation
+    // Use randomized dimensions maintaining original aspect ratio
     const w = dims.width;
     const h = dims.height;
-    card.style.setProperty("--w", `${Math.max(300, w)}px`);
-    card.style.setProperty("--h", `${Math.max(300, h)}px`);
+    card.style.setProperty("--w", `${w}px`);
+    card.style.setProperty("--h", `${h}px`);
 
     const img = document.createElement("img");
     img.src = im.src;
@@ -429,8 +688,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function startAmbient() {
     if (ambientTimer) return;
     ambientTimer = setInterval(() => {
-      if (Math.random() < 0.40) spawnAmbientCard();
-    }, 2000);
+      let r = Math.random();
+      if (r < 0.1) {
+          // Spawn group
+          spawnCandidateGroups(pick(GLOBAL_IMAGE_GROUPS));
+      } else if (r < 0.3) {
+          spawnAmbientCard();
+      }
+    }, 4500);
 
     // Custom hit-testing to trigger hover states on images since they are natively blocked by timeline z-index
     let hoveredCard = null;
@@ -588,6 +853,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const dateLeft = lerpDate(PADDED_START_DATE, END_DATE, t0);
     const dateRight = lerpDate(PADDED_START_DATE, END_DATE, t1);
 
+    // Manual 'is-in-view' class overrides removed - managed by IntersectionObserver now to allow transitions.
+
     // Custom window labels, override to hide the padded '95 year before actual birth
     if (windowStartEl && windowEndEl) {
         const d1 = dateLeft.getFullYear() < 1996 ? new Date("1996-01-01") : dateLeft;
@@ -600,10 +867,19 @@ document.addEventListener("DOMContentLoaded", () => {
     hideTooltip();
     updateTimelineState();
     updateMediaScale();
+    
+    let now = performance.now();
+    let dt = now - lastScrollTime;
+    if (dt > 0) {
+       scrollVelocity = (viewport.scrollLeft - prevScrollLeft) / dt;
+    }
+    prevScrollLeft = viewport.scrollLeft;
+    lastScrollTime = now;
   }, { passive: true });
 
-  // Tooltip Logic
   function showTooltip(dot) {
+    hoveredDotElement = dot;
+    
     const dotRect = dot.getBoundingClientRect();
     const area = dot.closest(".timeline-area");
     const areaRect = area.getBoundingClientRect();
@@ -653,7 +929,10 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch(e) { console.error(e); }
   }
 
-  function hideTooltip() { tooltip.classList.remove("active"); }
+  function hideTooltip() { 
+      tooltip.classList.remove("active"); 
+      hoveredDotElement = null;
+  }
 
   // Listen for global language toggles to refresh all static labels
   window.addEventListener('languageToggled', (e) => {
@@ -684,20 +963,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const getSnapSections = () => [...main.querySelectorAll("section")];
   const getSectionIndex = () => getSnapSections().indexOf(section);
-  const snapToIndex = (idx) => getSnapSections()[idx]?.scrollIntoView({ behavior: "smooth" });
+  const snapToIndex = (idx) => {
+      const tg = getSnapSections()[idx];
+      if(tg) tg.scrollIntoView({ behavior: "smooth" });
+  };
 
   const WHEEL_SPEED = 1.0;
   const RESISTANCE = 350;
 
   let edgeAccumulator = 0;
   let bounceTimeout;
+  let snapped = false;
 
   const onWheel = (e) => {
+    // If the rope is broken, let default vertical scrolling work naturally so they can move immediately to the next section
+    if (window._timelineBroken) return;
+    
+    if (snapped) return; 
     const r = section.getBoundingClientRect();
     if (r.top > window.innerHeight * 0.35 || r.bottom < window.innerHeight * 0.65) return;
 
     const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-    const max = viewport.scrollWidth - viewport.clientWidth;
+    const max = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
     const atStart = viewport.scrollLeft <= 2;
     const atEnd = viewport.scrollLeft >= max - 2;
 
@@ -708,12 +995,14 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       viewport.scrollLeft += delta * WHEEL_SPEED;
       edgeAccumulator = 0;
+      window._timelineEdgeAcc = 0;
       viewport.style.transform = `translateX(0px)`;
       return;
     }
 
     e.preventDefault();
     edgeAccumulator += delta;
+    window._timelineEdgeAcc = edgeAccumulator;
 
     const visualStretch = Math.max(-50, Math.min(50, edgeAccumulator * -0.5));
     viewport.style.transform = `translateX(${visualStretch}px)`;
@@ -722,14 +1011,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (Math.abs(edgeAccumulator) > RESISTANCE) {
       const idx = getSectionIndex();
-      if (goingForward && atEnd) snapToIndex(idx + 1);
-      else if (goingBack && atStart) snapToIndex(idx - 1);
-
+      if (goingForward && atEnd) {
+          snapped = true;
+          if (window._timelineTriggerSnap) window._timelineTriggerSnap();
+          setTimeout(() => {
+              snapToIndex(idx + 1);
+              setTimeout(() => { snapped = false; }, 1000);
+          }, 600);
+      } else if (goingBack && atStart) {
+          snapToIndex(idx - 1);
+      }
       edgeAccumulator = 0;
+      window._timelineEdgeAcc = 0;
       viewport.style.transform = `translateX(0px)`;
     } else {
       bounceTimeout = setTimeout(() => {
         edgeAccumulator = 0;
+        window._timelineEdgeAcc = 0;
         viewport.style.transform = `translateX(0px)`;
       }, 150);
     }

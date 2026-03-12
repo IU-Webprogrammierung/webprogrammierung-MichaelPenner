@@ -36,6 +36,16 @@ gsap.registerPlugin(ScrollTrigger);
       toggle.setAttribute('aria-label', 'Open menu');
     }
   });
+
+  // Trap focus in menu when open
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && navCenter.classList.contains('is-open')) {
+      navCenter.classList.remove('is-open');
+      toggle.classList.remove('is-active');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.focus();
+    }
+  });
 })();
 
 /* =====================================================
@@ -46,21 +56,15 @@ gsap.registerPlugin(ScrollTrigger);
   const nav = navbar?.querySelector("nav");
   if (!navbar || !nav) return;
 
-  // Check if this is a landing page (has hero section)
   const isLandingPage = document.querySelector("#hero") !== null;
   
-  // For non-landing pages, apply sticky state immediately
   if (!isLandingPage) {
     navbar.classList.add("is-sticky");
   }
 
-  // --- FLIP-style transition to sticky
   function flipSticky(makeSticky) {
     const first = navbar.getBoundingClientRect();
-
     navbar.classList.toggle("is-sticky", makeSticky);
-
-    // Force layout calculation after class change
     const last = navbar.getBoundingClientRect();
 
     const dx = first.left - last.left;
@@ -71,166 +75,110 @@ gsap.registerPlugin(ScrollTrigger);
     gsap.fromTo(
       navbar,
       { x: dx, y: dy, scaleX: sx, scaleY: sy, transformOrigin: "top left" },
-      {
-        x: 0,
-        y: 0,
-        scaleX: 1,
-        scaleY: 1,
-        duration: 0.45,
-        ease: "power2.out",
-        clearProps: "transform"
-      }
+      { x: 0, y: 0, scaleX: 1, scaleY: 1, duration: 0.45, ease: "power2.out", clearProps: "transform" }
     );
-
   }
 
-  // --- Sticky trigger: when leaving the hero section
   ScrollTrigger.create({
-      scroller: "#main", // Keep your custom scroller
-      trigger: "body",   // Use body or your main wrapper as the reference
-      start: "top top-=100", // "When Body Top is 100px above Viewport Top" (User scrolled 100px)
-      end: 99999,        // Keep it active indefinitely
+      scroller: "#main",
+      trigger: "body",
+      start: "top top-=100",
+      end: 99999,
       onEnter: () => flipSticky(true),
       onLeaveBack: () => flipSticky(false),
   });
-
 })();
-
-
 
 /* ========================
    TYPING EFFECT
 ======================== */
-
-const text = "Hello, I'm Michael";
-let index = 0;
+const heroText = "Hello, I'm Michael";
+let heroCharIndex = 0;
 const typingTarget = document.getElementById("typingText");
 
-function typing() {
-    if(index <= text.length){
-        typingTarget.innerHTML = text.slice(0, index);
-        index++;
-        setTimeout(typing, 80);
+function typeHeroText() {
+    if (heroCharIndex <= heroText.length) {
+        typingTarget.innerHTML = heroText.slice(0, heroCharIndex);
+        heroCharIndex++;
+        setTimeout(typeHeroText, 80);
     }
 }
-typing();
-
+typeHeroText();
 
 /* =====================================================
-   NEWS TICKER (Sliding Window Effect)
+   NEWS TICKER (shared fetch for both desktop & mobile)
 ===================================================== */
-const newsTarget = document.getElementById("navbarText");
+const desktopTarget = document.getElementById("navbarText");
+const MAX_VISIBLE_CHARS = 50;
+const TYPING_SPEED = 120;
+const RSS_FEED_URL = "https://www.theverge.com/rss/index.xml";
 
-// CONFIGURATION
-const MAX_VISIBLE_CHARS = 50; // Approx 5-7 words
-const TYPING_SPEED = 120;      // ms per character
-const RSS_FEED_URL = "https://www.theverge.com/rss/index.xml"; // Tech News Source
-// Alternative: "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml"
+// Shared news fetcher — single request, used by both tickers
+let cachedNewsString = null;
 
-async function initNewsTicker() {
-  let newsString = "Initializing news feed... ";
-
+async function fetchNewsString() {
+  if (cachedNewsString) return cachedNewsString;
+  
   try {
-    // 1. Fetch RSS data using a public proxy (rss2json) to avoid CORS errors
     const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_FEED_URL)}`);
     const data = await res.json();
-
     if (data.status === 'ok') {
-      // 2. Combine headlines into one long string separated by " +++ "
-      newsString = data.items
-        .map(item => item.title)
-        .join("  +++  ") + "  +++  (End of Stream)  +++  ";
+      cachedNewsString = data.items.map(item => item.title).join("  +++  ") + "  +++  ";
     } else {
       throw new Error("Feed load failed");
     }
   } catch (error) {
     console.warn("News fetch failed, using fallback.", error);
-    newsString = "Welcome to my portfolio +++ Current stack: HTML, CSS, JS, GSAP, Three.js +++ ";
+    cachedNewsString = "Welcome to my portfolio +++ Current stack: HTML, CSS, JS, GSAP, Three.js +++ ";
   }
+  return cachedNewsString;
+}
 
-  // 3. Start the animation loop
+async function initDesktopTicker() {
+  if (!desktopTarget) return;
+  
+  const newsString = await fetchNewsString();
   let cursor = 0;
 
   function typeTick() {
-    // Determine the start index:
-    // If we haven't typed enough chars yet, start at 0.
-    // If we have, move the start index so we only see the last MAX_VISIBLE_CHARS.
     const start = Math.max(0, cursor - MAX_VISIBLE_CHARS);
-    
-    // Slice the string window
-    const currentText = newsString.substring(start, cursor);
-
-    // Update DOM (Added a block cursor '█' for retro feel, remove if unwanted)
-    newsTarget.textContent = currentText;
-
+    desktopTarget.textContent = newsString.substring(start, cursor);
     cursor++;
-
-    // Loop logic: If we reached the end, reset.
     if (cursor <= newsString.length) {
       setTimeout(typeTick, TYPING_SPEED);
     } else {
-      cursor = 0; // Loop back to start
+      cursor = 0;
       setTimeout(typeTick, TYPING_SPEED);
     }
   }
-
   typeTick();
 }
 
-// Start the function
-initNewsTicker();
+initDesktopTicker();
 
 /* =====================================================
-   MOBILE TICKER (Bottom Bar on Mobile)
+   MOBILE TICKER (uses shared fetch)
 ===================================================== */
-function initMobileTicker() {
-  // Only create on mobile
+async function initMobileTicker() {
   if (window.innerWidth > 900) return;
-  
-  // Check if already exists
   if (document.querySelector('.mobile-ticker')) return;
-  
-  // Create the mobile ticker element
+
   const ticker = document.createElement('div');
   ticker.className = 'mobile-ticker';
+  ticker.setAttribute('aria-hidden', 'true');
   ticker.innerHTML = `
     <span class="mobile-ticker-label">NEWS:</span>
     <span class="mobile-ticker-content" id="mobileTickerContent"></span>
   `;
-  
   document.body.appendChild(ticker);
-  
-  // Get the content from the navbar ticker
+
   const mobileTickerContent = document.getElementById('mobileTickerContent');
-  
-  // Use the same news string logic
-  async function updateMobileTicker() {
-    let newsString = "Welcome to my portfolio +++ ";
-    
-    try {
-      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_FEED_URL)}`);
-      const data = await res.json();
-      
-      if (data.status === 'ok') {
-        newsString = data.items
-          .map(item => item.title)
-          .join("  +++  ") + "  +++  ";
-      }
-    } catch (error) {
-      newsString = "Welcome to my portfolio +++ Current stack: HTML, CSS, JS, GSAP, Three.js +++ ";
-    }
-    
-    // Double the content for seamless scroll
-    mobileTickerContent.textContent = newsString + newsString;
-  }
-  
-  updateMobileTicker();
+  const newsString = await fetchNewsString();
+  mobileTickerContent.textContent = newsString + newsString;
 }
 
-// Initialize on load
 initMobileTicker();
 
-// Re-check on resize
 window.addEventListener('resize', () => {
   setTimeout(initMobileTicker, 100);
 });

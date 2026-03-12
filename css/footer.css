@@ -3,9 +3,7 @@
 ==================================*/
 footer {
   position: relative;
-  padding: 50px 10%;
   text-align: center;
-  min-height: auto;
   overflow: visible;
 }
 
@@ -167,7 +165,11 @@ footer {
 
 .snap-footer {
   scroll-snap-align: start;
+  min-height: 30vh;
+  display: grid;
+  place-content: center;
   padding: clamp(40px, 6vw, 80px) 10%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 900px) {

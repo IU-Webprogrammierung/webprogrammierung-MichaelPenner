@@ -4,8 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Michael Krahn - Creative Developer Portfolio. Web Design, UI/UX, Interactive Experiences, 3D Web, and Smart Home projects.">
     <title>Michael Krahn - Portfolio Website</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400&display=swap"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -24,6 +28,9 @@
 </head>
 
 <body class="is-landing">
+
+    <!-- Skip Navigation -->
+    <a href="#main" class="skip-link" tabindex="0">Skip to main content</a>
 
     <!-- Custom Cursor -->
     <div class="cursor-dot"></div>
@@ -96,7 +103,7 @@
 
             <!-- Foreground portrait (right) -->
             <div class="hero-portrait" aria-hidden="true">
-                <img src="assets/images/michael-hero.jpg" alt="Michael Portrait">
+                <img src="assets/images/michael-hero.jpg" alt="Michael Portrait" fetchpriority="high">
             </div>
 
             <!-- Center typing headline -->
@@ -247,19 +254,19 @@
 
             <div class="timeline-area">
 
-                <!-- UNDERLAY: Line + Beam unter allem -->
+                <!-- UNDERLAY -->
                 <div class="timeline-underlay" aria-hidden="true">
                     <svg class="rope-svg" id="ropeSvg" preserveAspectRatio="none">
-                        <path id="ropePath" stroke="var(--text)" stroke-width="4" stroke-dasharray="8 4" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke"></path>
+                        <path id="ropePath" stroke="#888888" stroke-width="3.5" stroke-dasharray="8 4"
+                            stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke"></path>
                     </svg>
-                    <div class="rainbow-beam"></div>
                 </div>
 
-                <!-- AMBIENT (für neue Bilder, siehe unten) -->
+                <!-- AMBIENT (Bilder für Timeline) -->
                 <div class="timeline-ambient" id="timelineAmbient" aria-hidden="true"></div>
 
                 <!-- SCROLL: Milestones/Dots -->
-                <div id="timeline" class="timeline-scroll">
+                <div id="timeline" class="timeline-scroll" role="region" aria-label="Interactive timeline" tabindex="0">
                     <div id="timelineTrack" class="timeline-track"></div>
                 </div>
 
@@ -535,22 +542,22 @@
             originalWarn.apply(console, args);
         };
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://unpkg.com/three-globe@2.45.0/dist/three-globe.min.js"></script>
-    <script src="https://unpkg.com/topojson-client@3"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+    <script src="https://unpkg.com/three-globe@2.45.0/dist/three-globe.min.js" defer></script>
+    <script src="https://unpkg.com/topojson-client@3" defer></script>
 
-    <script src="js/globe.js" defer></script>
+    <script src="js/custom_cursor.js" defer></script>
+    <script src="js/language.js" defer></script>
     <script src="js/navbar.js" defer></script>
     <script src="js/hero.js" defer></script>
     <script src="js/timeline.js" defer></script>
     <script src="js/about.js" defer></script>
     <script src="js/projects.js" defer></script>
+    <script src="js/globe.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
     <script src="js/contact.js" defer></script>
-    <script src="js/custom_cursor.js" defer></script>
-    <script src="js/language.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 </body>
 

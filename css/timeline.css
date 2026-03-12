@@ -9,6 +9,20 @@
     margin-top: 18px;
 }
 
+.stick-figure-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 4;
+}
+
+.ambient-card.is-in {
+    opacity: 1;
+    transform: translate(-50%, -50%) translate3d(0, 0, 0) scale(1);
+}
+
 .timeline-underlay {
     position: absolute;
     inset: 0;
@@ -49,8 +63,7 @@
     z-index: 3;
 }
 
-.rope-svg,
-.rainbow-beam {
+.rope-svg {
     position: absolute;
     top: 0;
     left: 0;
@@ -58,9 +71,6 @@
     height: 100%;
     pointer-events: none;
     overflow: visible;
-}
-.rainbow-beam {
-    top: 50%;
 }
 
 #cv {
@@ -128,13 +138,6 @@
         flex-direction: column;
         align-items: flex-start;
     }
-}
-
-
-
-.rainbow-beam {
-    display: none;
-    /* User requested removal to prioritize milestone duration beams */
 }
 
 .timeline-window-label {
@@ -426,5 +429,23 @@
 
     .cv-facts {
         display: none;
+    }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .milestone {
+        transition: none;
+        opacity: 1;
+        margin-top: 0;
+    }
+    .milestone.falling {
+        animation: none;
+    }
+    .milestone-dot {
+        transition: none;
+    }
+    .ambient-card {
+        transition: none;
     }
 }

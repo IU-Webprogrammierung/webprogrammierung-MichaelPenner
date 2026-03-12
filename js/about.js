@@ -654,11 +654,47 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    if (towersVisible) {
-      renderer.render(scene, camera);
-    }
-    requestAnimationFrame(tick);
+    renderer.render(scene, camera);
+    tick.rafId = requestAnimationFrame(tick);
   }
 
-  requestAnimationFrame(tick);
+  function startAboutTick() {
+    if (!tick.rafId) {
+      last = performance.now();
+      tick.rafId = requestAnimationFrame(tick);
+    }
+  }
+
+  function stopAboutTick() {
+    if (tick.rafId) {
+      cancelAnimationFrame(tick.rafId);
+      tick.rafId = null;
+    }
+  }
+
+  const activeSections = new Set();
+  const aboutObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        activeSections.add(entry.target.id);
+      } else {
+        activeSections.delete(entry.target.id);
+      }
+    });
+
+    if (activeSections.size > 0) {
+      startAboutTick();
+    } else {
+      stopAboutTick();
+    }
+  }, { threshold: 0.01 });
+
+  aboutObserver.observe(section);
+  
+  // Also observe sections where blocks might still be falling
+  const timelineSec = document.getElementById("cv");
+  if (timelineSec) aboutObserver.observe(timelineSec);
+  
+  const heroSec = document.getElementById("hero");
+  if (heroSec) aboutObserver.observe(heroSec);
 });

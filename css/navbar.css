@@ -221,40 +221,64 @@ body:not(.is-landing) .navbar {
     display: none;
   }
 
+  /* ---- MOBILE MENU PANEL (Hamburger) ---- */
   .navbar.is-sticky .navbar-center,
   body:not(.is-landing) .navbar-center {
     position: fixed;
-    top: 70px;
+    top: 0;
     left: 0;
     width: 100%;
-    height: calc(100vh - 170px);
-    background: rgba(246, 246, 248, 0.8);
+    height: 100vh;
+    height: 100dvh;
+
+    background: rgba(246, 246, 248, 0.92);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+
+    display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    grid-template-columns: auto auto;
+    justify-content: center;
     align-items: center;
-    padding: 0px;
-    margin-top: 0px;
+    gap: 0;
+
+    padding: 0;
+    margin-top: 0;
+
     transform: translateX(-100%);
-    transition: transform 0.35s ease;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 9998;
   }
 
   .navbar.is-sticky .navbar-center.is-open,
   body:not(.is-landing) .navbar-center.is-open {
     transform: translateX(0);
-    z-index: -1;
+    z-index: 9998;
   }
 
   .navbar.is-sticky .navbar-center a,
   body:not(.is-landing) .navbar-center a {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
+    padding: 20px 0;
     text-align: center;
-    font-size: 1.2rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    transition: background 0.2s ease, color 0.2s ease;
   }
 
+  .navbar.is-sticky .navbar-center a:first-child,
+  body:not(.is-landing) .navbar-center a:first-child {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .navbar.is-sticky .navbar-center a:active,
+  body:not(.is-landing) .navbar-center a:active {
+    background: rgba(0, 0, 0, 0.04);
+  }
 
 }
 
@@ -326,7 +350,7 @@ body:not(.is-landing) .navbar {
   border: none;
   cursor: pointer;
   padding: 0;
-  z-index: 1000;
+  z-index: 99999;
 }
 
 .navbar-toggle span {

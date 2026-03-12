@@ -177,7 +177,7 @@ iframe {
 /* =========================
    MOBILE RESPONSIVENESS
 ========================= */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     :root {
         /* Reduce peeking offsets so background cards don't slide off screen */
         --peek-right: 21px;

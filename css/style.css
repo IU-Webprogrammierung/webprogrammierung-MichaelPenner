@@ -121,6 +121,11 @@ body {
   scrollbar-width: none;          /* Firefox */
   -ms-overflow-style: none;       /* IE / Edge legacy */
 }
+
+/* Disable snap while touch-scrolling the timeline on mobile */
+#main.timeline-active {
+  scroll-snap-type: none;
+}
 #main::-webkit-scrollbar{
   display: none;                  /* Chrome / Safari */
 }

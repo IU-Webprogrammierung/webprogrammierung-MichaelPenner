@@ -252,7 +252,7 @@ body:not(.is-landing) .navbar {
   .navbar.is-sticky .navbar-center.is-open,
   body:not(.is-landing) .navbar-center.is-open {
     transform: translateX(0);
-    z-index: 9998;
+    z-index: -1;
   }
 
   .navbar.is-sticky .navbar-center a,
@@ -409,7 +409,7 @@ body:not(.is-landing) .navbar {
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--glass-border);
   padding: 8px 12px;
-  z-index: 9998;
+  z-index: 10000;
   overflow: hidden;
 }
 

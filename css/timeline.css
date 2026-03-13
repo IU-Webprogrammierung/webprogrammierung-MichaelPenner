@@ -128,18 +128,6 @@
     font-weight: 600;
 }
 
-
-@media (max-width: 860px) {
-    .cv-facts {
-        grid-template-columns: 1fr;
-    }
-
-    .header-top {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
 .timeline-window-label {
     position: absolute;
     top: 10%;
@@ -172,16 +160,25 @@
     will-change: opacity, margin-top;
     transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), margin-top 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+
 .milestone.is-in-view {
     opacity: 1;
     margin-top: 0;
 }
+
 .milestone.falling {
     animation: milestoneFall 0.7s forwards cubic-bezier(0.5, 0, 1, 0.5);
 }
+
 @keyframes milestoneFall {
-    0% { transform: translateY(0) rotate(0); }
-    100% { transform: translateY(1500px) rotate(calc(var(--fall-dir, 1) * 60deg)); opacity: 0; }
+    0% {
+        transform: translateY(0) rotate(0);
+    }
+
+    100% {
+        transform: translateY(1500px) rotate(calc(var(--fall-dir, 1) * 60deg));
+        opacity: 0;
+    }
 }
 
 
@@ -379,10 +376,8 @@
     width: var(--w, 220px);
     height: var(--h, 150px);
     border-radius: 8px;
-    /* more minimal, less rounded corners */
     overflow: hidden;
 
-    /* Very subtle glass effect with thin border, removed heavy shadow */
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
@@ -390,7 +385,7 @@
     backdrop-filter: blur(4px);
 
     opacity: 0;
-    transform: translate(-50%, -50%) translate3d(0, 0, 0) scale(0.98);
+    transform: translate(-50%, -50%) translate3d(0, 0, 0) scale(0.97);
     transition: opacity 900ms ease, transform 900ms ease;
 }
 
@@ -400,35 +395,22 @@
     object-fit: cover;
     display: block;
     opacity: 0.85;
-    /* slight transparency for minimal look */
-    filter: grayscale(20%) contrast(1.1);
-    /* more modern, muted vibe */
-    transition: opacity 0.3s ease, filter 0.3s ease;
 }
-
-/* Fallback DOM hover, but prioritizing the JS-applied .is-hovered class */
-.ambient-card.is-hovered img,
-.ambient-card:hover img {
-    opacity: 1;
-    filter: grayscale(0%) contrast(1);
-}
-
-/* On touch devices where hover is impossible, just show full color by default */
-@media (hover: none) {
-    .ambient-card img {
-        opacity: 1;
-        filter: grayscale(0%) contrast(1);
-    }
-}
-
-/* Dynamic procedural animation replaces CSS drift */
-
 
 /* Media Query responsive Layout*/
 @media (max-width: 900px) {
 
     .cv-facts {
         display: none;
+    }
+
+    .header-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .timeline-window-label {
+        top: 25%;
     }
 }
 
@@ -439,12 +421,15 @@
         opacity: 1;
         margin-top: 0;
     }
+
     .milestone.falling {
         animation: none;
     }
+
     .milestone-dot {
         transition: none;
     }
+
     .ambient-card {
         transition: none;
     }

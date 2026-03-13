@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const WINDOW_SPAN = IS_MOBILE ? 0.18 : 0.08;
 
   // Rope
-  const ROPE_POINT_COUNT = 50;
+  const ROPE_POINT_COUNT = 150;
   const ROPE_BASE_TENSION = 0.08;
   const ROPE_DAMPING = 0.84;
   const ROPE_SAG_DEPTH = 60;
@@ -46,11 +46,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const STICKMAN_SIZE = IS_MOBILE ? 28 : 36;
   const STICKMAN_WALK_SPEED = 2.5;          // walk cycle animation speed (rad/s)
   const STICKMAN_RUN_SPEED = IS_MOBILE ? 250 : 400; // track px per second
-  // The stickman carries rope and runs until this point on the track
-  // (~95% of track, representing "current date")
+  const STICKMAN_WALKIN_SPEED = IS_MOBILE ? 80 : 120; // walk-in px per second (slower, deliberate)
   const STICKMAN_END_TRACK_X = VIRTUAL_TRACK_WIDTH * 0.95;
-  // He goes 10% past the right viewport edge before stopping
   const OFFSCREEN_MARGIN = 0.10;
+
+  // Rope/pole viewport margins
+  const ROPE_START_VW = IS_MOBILE ? 0.10 : 0.05;  // 10vw mobile, 5vw desktop
+  const ROPE_END_VW   = IS_MOBILE ? 0.90 : 0.95;   // 90vw mobile, 95vw desktop
 
   const monthYearFmt = new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric" });
   const yearFmt = new Intl.DateTimeFormat("de-DE", { year: "numeric" });
@@ -134,8 +136,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let stickmanRunning = false;
   let stickmanResting = false;
   let stickmanRestTimer = 0;
+  let stickmanPlanting = false;
+  let stickmanPlantTimer = 0;
+  let stickmanWalkingIn = false; // walk-in phase from off-screen left
+  let polePlanted = false;
+  let poleScreenTrackX = 0;   // track position where the pole was planted
+  let stickmanHandTrackX = 0; // track X of trailing hand (for rope attachment)
+  let stickmanHandYOffset = 0; // Y offset of trailing hand from rope center
   const STICKMAN_REST_DURATION = 0.6; // seconds to rest before running again
   const STICKMAN_STANDUP_DURATION = 0.3; // seconds for stand-up transition
+  const STICKMAN_PLANT_DURATION = 1.6; // seconds for pole planting animation
 
   let stickman = {
     walkPhase: 0,
@@ -148,8 +158,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function resizeStickCanvas() {
     if (!stickCanvas || !timelineArea) return;
-    stickCanvas.width = timelineArea.clientWidth;
-    stickCanvas.height = timelineArea.clientHeight;
+    const dpr = window.devicePixelRatio || 1;
+    const w = timelineArea.clientWidth;
+    const h = timelineArea.clientHeight;
+    stickCanvas.width = w * dpr;
+    stickCanvas.height = h * dpr;
+    stickCanvas.style.width = w + 'px';
+    stickCanvas.style.height = h + 'px';
+    stickCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   function getTextColor() {
@@ -172,11 +188,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const isWalking = Math.abs(walkPhase) > 0.01;
     const legSwing = isWalking ? Math.sin(walkPhase) * 0.45 : 0;
     const armSwing = isWalking ? Math.sin(walkPhase + Math.PI) * 0.4 : 0;
-    const bounce = isWalking ? Math.abs(Math.sin(walkPhase)) * 3 : 0;
+    const bounceY = isWalking ? Math.abs(Math.sin(walkPhase)) * 3 : 0;
 
-    const leanAngle = atEnd ? tension * 0.35 : tension * 0.25 * -dir;
+    // More dramatic lean when tugging at the end
+    const leanAngle = atEnd ? tension * 0.65 : tension * 0.25 * -dir;
 
-    ctx.translate(x, y - bounce);
+    ctx.translate(x, y - bounceY);
     ctx.rotate(leanAngle);
 
     // Head
@@ -192,31 +209,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Arms
     if (atEnd) {
-      // Facing RIGHT, leaning backward. Arms reach LEFT toward rope.
-      // Arms are longer to look like extended hands gripping.
-      const holdDist = limbLen * (1.0 + tension * 0.3);
+      // Facing RIGHT, leaning backward heavily. Arms reach forward (LEFT) toward rope.
+      // Make it look like a dramatic tug-of-war
+      const holdDist = limbLen * (1.2 + tension * 0.4);
       const handSize = 2;
 
-      // Upper arm
+      // Upper arm (pulling hard, extending forward)
       const arm1X = -holdDist;
-      const arm1Y = -bodyLen * 0.80 + tension * 4;
+      const arm1Y = -bodyLen * 0.85 + tension * 8;
       ctx.beginPath();
-      ctx.moveTo(0, -bodyLen * 0.75);
+      ctx.moveTo(0, -bodyLen * 0.70);
       ctx.lineTo(arm1X, arm1Y);
       ctx.stroke();
-      // Hand grip
       ctx.beginPath();
       ctx.arc(arm1X, arm1Y, handSize, 0, Math.PI * 2);
       ctx.fill();
 
-      // Lower arm
-      const arm2X = -holdDist * 0.85;
-      const arm2Y = -bodyLen * 0.55 + tension * 3;
+      // Lower arm (slightly offset)
+      const arm2X = -holdDist * 0.90;
+      const arm2Y = -bodyLen * 0.65 + tension * 6;
       ctx.beginPath();
-      ctx.moveTo(0, -bodyLen * 0.60);
+      ctx.moveTo(0, -bodyLen * 0.55);
       ctx.lineTo(arm2X, arm2Y);
       ctx.stroke();
-      // Hand grip
       ctx.beginPath();
       ctx.arc(arm2X, arm2Y, handSize, 0, Math.PI * 2);
       ctx.fill();
@@ -302,8 +317,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const obs = new IntersectionObserver((entries, o) => {
         if (entries[0].isIntersecting) { stickmanStarted = true; o.disconnect(); }
-      }, { threshold: 0.1 });
-      obs.observe(cvSection);
+      }, { threshold: 0.05 });
+      obs.observe(timelineArea);
     });
 
   function buildMilestones(items) {
@@ -396,7 +411,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function initializeRope() {
     if (!ropeSvg) return;
-    ropeSegmentSpacing = window.innerWidth / (ROPE_POINT_COUNT - 1);
+    // Space rope points across the full virtual track, not just the viewport
+    ropeSegmentSpacing = VIRTUAL_TRACK_WIDTH / (ROPE_POINT_COUNT - 1);
     ropePoints.length = 0;
     for (let i = 0; i < ROPE_POINT_COUNT; i++) {
       ropePoints.push({ x: i * ropeSegmentSpacing, y: 0, vy: 0 });
@@ -405,27 +421,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function simulateRopePhysics() {
     if (!ropeSvg || !ropePath) return;
+    // Don't draw rope until pole is planted (rope attaches to pole)
+    if (!polePlanted) { ropePath.setAttribute('d', ''); return; }
     const centerY = ropeSvg.clientHeight / 2;
-    const vw = window.innerWidth;
-
-    // How much rope is visible on screen?
-    // Rope extends from track 0 to stickmanTrackX.
-    // On screen: visible from 0 to (stickmanTrackX - scrollLeft).
     const scrollLeft = timelineViewport.scrollLeft;
-    const ropeEndOnScreen = stickmanTrackX - scrollLeft;
-    const ropeDrawFrac = clamp01(ropeEndOnScreen / vw);
-    const drawnCount = Math.max(2, Math.floor(ropeDrawFrac * ROPE_POINT_COUNT));
+
+    // Determine how many rope points are "laid out" based on stickman progress
+    const ropeTrackFrac = clamp01(stickmanTrackX / VIRTUAL_TRACK_WIDTH);
+    const drawnCount = Math.max(2, Math.floor(ropeTrackFrac * ROPE_POINT_COUNT));
+
+    // Redistribute all drawn rope points evenly between pole and hand
+    // This prevents: (1) points ending up behind the pole (half-circle loop)
+    //                 (2) sharp angle at the hand (uneven spacing)
+    if (drawnCount > 1 && !isRopeSnapped) {
+      const startX = poleScreenTrackX;
+      const endX = stickmanHandTrackX;
+      for (let i = 0; i < drawnCount; i++) {
+        ropePoints[i].x = startX + (endX - startX) * (i / (drawnCount - 1));
+      }
+    } else {
+      ropePoints[0].x = poleScreenTrackX;
+    }
 
     const scrollTens = Math.min(0.5, Math.abs(scrollVelocity) * 0.002);
     let edgeTens = Math.max(0, (window._timelineEdgeAcc / 350) * 0.5);
     const tension = Math.min(0.9, ROPE_BASE_TENSION + scrollTens + edgeTens);
     const time = performance.now() * 0.001;
 
-    let lockX = null;
+    // For dot hover lock, convert screen-space lockX to track-space
+    let lockTrackX = null;
     if (hoveredDotEl && !isRopeSnapped) {
       const rr = ropeSvg.getBoundingClientRect();
       const dr = hoveredDotEl.getBoundingClientRect();
-      lockX = dr.left + dr.width / 2 - rr.left;
+      lockTrackX = dr.left + dr.width / 2 - rr.left + scrollLeft;
     }
 
     if (isRopeSnapped) {
@@ -444,10 +472,10 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let i = 0; i < ROPE_POINT_COUNT; i++) {
         const pt = ropePoints[i];
         if (i > drawnCount) { pt.y = 0; pt.vy = 0; continue; }
-        if (i === 0) { pt.y = 0; continue; }
+        if (i === 0) { pt.y = 0; pt.vy = 0; continue; }
         // Pin the leading edge point
-        if (i >= drawnCount - 1 && ropeDrawFrac < 0.99) { pt.y = 0; pt.vy = 0; continue; }
-        if (ropeDrawFrac >= 0.99 && i === ROPE_POINT_COUNT - 1) { pt.y = 0; continue; }
+        if (i >= drawnCount - 1 && ropeTrackFrac < 0.99) { pt.y = 0; pt.vy = 0; continue; }
+        if (ropeTrackFrac >= 0.99 && i === ROPE_POINT_COUNT - 1) { pt.y = 0; continue; }
 
         const left = ropePoints[i - 1];
         const right = ropePoints[Math.min(i + 1, drawnCount)];
@@ -470,53 +498,65 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let i = 1; i <= Math.min(drawnCount, ROPE_POINT_COUNT - 1); i++) {
         const pt = ropePoints[i];
         pt.y += pt.vy;
-        if (lockX !== null) {
-          const dx = Math.abs(pt.x - lockX);
+        if (lockTrackX !== null) {
+          const dx = Math.abs(pt.x - lockTrackX);
           if (dx < 90) { const s = 1 - dx / 90; const ss = s * s * (3 - 2 * s); pt.y -= pt.y * ss * 0.9; pt.vy *= 1 - ss; }
         }
       }
+      // Re-pin pole anchor after integration
+      ropePoints[0].y = 0;
+      ropePoints[0].vy = 0;
     }
 
-    renderRopePath(centerY, drawnCount);
-    if (!isRopeSnapped) alignMilestonesToRope(drawnCount);
+    renderRopePath(centerY, drawnCount, scrollLeft);
+    if (!isRopeSnapped) alignMilestonesToRope(drawnCount, scrollLeft);
   }
 
-  function renderRopePath(cy, drawnCount) {
+  function renderRopePath(cy, drawnCount, scrollLeft) {
+    // Convert track-space x to screen-space x
+    const sx = (pt) => pt.x - scrollLeft;
+
     if (isRopeSnapped) {
       const mid = Math.floor(ROPE_POINT_COUNT / 2);
-      let d = `M ${ropePoints[0].x},${cy + ropePoints[0].y}`;
+      let d = `M ${sx(ropePoints[0])},${cy + ropePoints[0].y}`;
       for (let i = 0; i < mid - 1; i++) {
         const p = ropePoints[i], q = ropePoints[i + 1];
-        const mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2;
-        d += i === 0 ? ` L ${mx},${cy + my}` : ` Q ${p.x},${cy + p.y} ${mx},${cy + my}`;
+        const mx = (sx(p) + sx(q)) / 2, my = (p.y + q.y) / 2;
+        d += i === 0 ? ` L ${mx},${cy + my}` : ` Q ${sx(p)},${cy + p.y} ${mx},${cy + my}`;
       }
-      d += ` L ${ropePoints[mid - 1].x},${cy + ropePoints[mid - 1].y}`;
-      d += ` M ${ropePoints[mid].x},${cy + ropePoints[mid].y}`;
+      d += ` L ${sx(ropePoints[mid - 1])},${cy + ropePoints[mid - 1].y}`;
+      d += ` M ${sx(ropePoints[mid])},${cy + ropePoints[mid].y}`;
       for (let i = mid; i < ROPE_POINT_COUNT - 1; i++) {
         const p = ropePoints[i], q = ropePoints[i + 1];
-        const mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2;
-        d += i === mid ? ` L ${mx},${cy + my}` : ` Q ${p.x},${cy + p.y} ${mx},${cy + my}`;
+        const mx = (sx(p) + sx(q)) / 2, my = (p.y + q.y) / 2;
+        d += i === mid ? ` L ${mx},${cy + my}` : ` Q ${sx(p)},${cy + p.y} ${mx},${cy + my}`;
       }
-      d += ` L ${ropePoints[ROPE_POINT_COUNT - 1].x},${cy + ropePoints[ROPE_POINT_COUNT - 1].y}`;
+      d += ` L ${sx(ropePoints[ROPE_POINT_COUNT - 1])},${cy + ropePoints[ROPE_POINT_COUNT - 1].y}`;
       ropePath.setAttribute("d", d);
     } else if (drawnCount >= 2) {
-      let d = `M 0,${cy + ropePoints[0].y}`;
+      let d = `M ${sx(ropePoints[0])},${cy + ropePoints[0].y}`;
       for (let i = 0; i < drawnCount - 1; i++) {
         const p = ropePoints[i], q = ropePoints[i + 1];
-        const mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2;
-        d += i === 0 ? ` L ${mx},${cy + my}` : ` Q ${p.x},${cy + p.y} ${mx},${cy + my}`;
+        const mx = (sx(p) + sx(q)) / 2, my = (p.y + q.y) / 2;
+        d += i === 0 ? ` L ${mx},${cy + my}` : ` Q ${sx(p)},${cy + p.y} ${mx},${cy + my}`;
       }
-      d += ` L ${ropePoints[drawnCount - 1].x},${cy + ropePoints[drawnCount - 1].y}`;
+      // Last point: use hand Y offset so rope ends at the stickman's hand
+      const lastPt = ropePoints[drawnCount - 1];
+      const lastY = cy + lastPt.y + stickmanHandYOffset;
+      d += ` L ${sx(lastPt)},${lastY}`;
       ropePath.setAttribute("d", d);
     }
   }
 
-  function alignMilestonesToRope(drawnCount) {
+  function alignMilestonesToRope(drawnCount, scrollLeft) {
     const rr = ropeSvg.getBoundingClientRect();
     document.querySelectorAll('.milestone').forEach(m => {
       const mr = m.getBoundingClientRect();
-      const sx = mr.left - rr.left;
-      const ri = sx / ropeSegmentSpacing;
+      // Convert milestone screen position to track-space x
+      const screenX = mr.left - rr.left;
+      const trackX = screenX + scrollLeft;
+      // Find which rope segment this track position falls on
+      const ri = trackX / ropeSegmentSpacing;
       const fi = Math.floor(ri);
       let yo = 0;
       if (fi >= 0 && fi < drawnCount - 1) { const t = ri - fi; yo = ropePoints[fi].y * (1 - t) + ropePoints[fi + 1].y * t; }
@@ -537,14 +577,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const activeAmbientCards = new Set();
   let animFrameId = null;
 
+  let _frameCount = 0;
+
   function mainLoop(ts) {
     const now = ts * 0.001;
     let dt = mainLoop.last ? now - mainLoop.last : 0.016;
     if (dt > 0.1) dt = 0.016;
     mainLoop.last = now;
     scrollVelocity *= 0.9;
+
+    _frameCount++;
+    // Throttle: when idle (not scrolling, stickman not running/planting), run physics every 3rd frame
+    const isIdle = !stickmanRunning && !stickmanPlanting && !stickmanWalkingIn && Math.abs(scrollVelocity) < 0.01;
+    const shouldSimulate = !isIdle || (_frameCount % 3 === 0);
+
     updateStickFigure(dt);
-    simulateRopePhysics();
+    if (shouldSimulate) simulateRopePhysics();
     activeAmbientCards.forEach(c => updateAmbientCard(c, dt, now));
     renderStickFigure();
     animFrameId = requestAnimationFrame(mainLoop);
@@ -562,9 +610,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const vw = window.innerWidth;
     const scrollLeft = timelineViewport.scrollLeft;
     const screenX = stickmanTrackX - scrollLeft;
+    const limbLen = STICKMAN_SIZE * 0.28;
+    const bodyLen = STICKMAN_SIZE * 0.35;
 
-    // Dynamic end position: stickman ends at 90% of viewport from the right
-    const dynamicEndTrackX = VIRTUAL_TRACK_WIDTH - vw * 0.1;
+    // Dynamic end position: stickman ends near the right edge
+    const dynamicEndTrackX = VIRTUAL_TRACK_WIDTH - vw * (1 - ROPE_END_VW);
 
     // Has the stickman run out of rope?
     if (stickmanTrackX >= dynamicEndTrackX && !stickman.atEnd) {
@@ -577,17 +627,68 @@ document.addEventListener("DOMContentLoaded", () => {
     if (stickman.atEnd) {
       stickman.walkPhase = 0;
       stickman.facingRight = true;
+      // Compute hand position for at-end (arms reach LEFT/back toward rope)
+      const holdDist = limbLen * (1.2 + stickman.tension * 0.4);
+      stickmanHandTrackX = stickmanTrackX - holdDist;
+      stickmanHandYOffset = -(bodyLen * 0.85) + stickman.tension * 8;
       document.querySelectorAll('.milestone').forEach(m => m.classList.add('is-in-view'));
       return;
     }
 
     const offscreenThreshold = vw * (1 + OFFSCREEN_MARGIN);
 
-    // STATE MACHINE: resting → standing up → running → off-screen → resting...
-    if (!stickmanRunning && !stickmanResting && screenX < offscreenThreshold) {
-      // Just scrolled into view — start resting
-      stickmanResting = true;
-      stickmanRestTimer = 0;
+    // STATE MACHINE: walkIn → planting → running → off-screen → resting → running → ...
+    if (!stickmanRunning && !stickmanResting && !stickmanPlanting && !stickmanWalkingIn && screenX < offscreenThreshold) {
+      if (!polePlanted) {
+        // First time: walk in from off-screen left
+        stickmanWalkingIn = true;
+        stickmanTrackX = scrollLeft - STICKMAN_SIZE * 2; // start off-screen left
+        stickman.walkPhase = 0;
+        stickman.facingRight = true;
+      } else {
+        // Subsequent times: go straight to resting
+        stickmanResting = true;
+        stickmanRestTimer = 0;
+      }
+    }
+
+    // Walk-in phase: walk from off-screen left to pole position
+    if (stickmanWalkingIn) {
+      const targetX = scrollLeft + vw * ROPE_START_VW;
+      stickmanTrackX += STICKMAN_WALKIN_SPEED * dt;
+      stickman.walkPhase += dt * STICKMAN_WALK_SPEED;
+      stickman.facingRight = true;
+
+      // Update hand position during walk-in (no rope yet, but keep consistent)
+      stickmanHandTrackX = stickmanTrackX - limbLen * 0.8;
+      stickmanHandYOffset = -(bodyLen * 0.50);
+
+      if (stickmanTrackX >= targetX) {
+        stickmanTrackX = targetX;
+        stickmanWalkingIn = false;
+        stickmanPlanting = true;
+        stickmanPlantTimer = 0;
+      }
+      return;
+    }
+
+    if (stickmanPlanting) {
+      stickmanPlantTimer += dt;
+      stickman.walkPhase = 0;
+      stickman.facingRight = true;
+
+      // Update hand position during planting
+      stickmanHandTrackX = stickmanTrackX - limbLen * 0.8;
+      stickmanHandYOffset = -(bodyLen * 0.50);
+
+      if (stickmanPlantTimer >= STICKMAN_PLANT_DURATION) {
+        // Pole is planted! Start running immediately
+        stickmanPlanting = false;
+        polePlanted = true;
+        poleScreenTrackX = stickmanTrackX;
+        stickmanRunning = true;
+      }
+      return;
     }
 
     if (stickmanResting) {
@@ -620,6 +721,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     stickman.facingRight = true;
 
+    // Update hand position for rope attachment (trailing hand while running/walking)
+    stickmanHandTrackX = stickmanTrackX - limbLen * 0.8;
+    stickmanHandYOffset = -(bodyLen * 0.50);
+
     // Reveal milestones whose track position has been passed by the rope
     document.querySelectorAll('.milestone').forEach(m => {
       const mTrackX = parseFloat(m.dataset.trackX || "0");
@@ -627,6 +732,169 @@ document.addEventListener("DOMContentLoaded", () => {
         m.classList.add('is-in-view');
       }
     });
+  }
+
+  function drawPlantingStickFigure(ctx, x, y, size, progress) {
+    // progress: 0→1
+    // Phase 1 (0-0.35): Holding pole overhead, winding up
+    // Phase 2 (0.35-0.65): Driving pole into ground
+    // Phase 3 (0.65-1.0): Stepping back, admiring
+    ctx.save();
+    ctx.strokeStyle = getTextColor();
+    ctx.fillStyle = getTextColor();
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    const headR = size * 0.18;
+    const bodyLen = size * 0.35;
+    const limbLen = size * 0.28;
+    const poleLen = size * 1.4;
+
+    if (progress < 0.35) {
+      // Phase 1: Standing, holding pole overhead
+      const windUp = progress / 0.35; // 0→1
+      const sway = Math.sin(windUp * Math.PI) * 0.08;
+      ctx.translate(x, y);
+      ctx.rotate(sway);
+
+      // Head
+      ctx.beginPath(); ctx.arc(0, -bodyLen - headR, headR, 0, Math.PI * 2); ctx.stroke();
+      // Body
+      ctx.beginPath(); ctx.moveTo(0, -bodyLen); ctx.lineTo(0, 0); ctx.stroke();
+      // Both arms up holding pole
+      const armAngle = -0.3 - windUp * 0.5; // arms go higher as winding up
+      ctx.beginPath(); ctx.moveTo(0, -bodyLen * 0.75); ctx.lineTo(-limbLen * 0.5, -bodyLen - limbLen * 0.6); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, -bodyLen * 0.75); ctx.lineTo(limbLen * 0.5, -bodyLen - limbLen * 0.6); ctx.stroke();
+      // Legs apart slightly
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-limbLen * 0.35, limbLen); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(limbLen * 0.35, limbLen); ctx.stroke();
+
+      // Pole (held overhead, tilting back as winding up)
+      const poleTilt = -Math.PI / 2 + windUp * 0.4;
+      const poleBaseX = 0;
+      const poleBaseY = -bodyLen - limbLen * 0.5;
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(poleBaseX, poleBaseY);
+      ctx.lineTo(poleBaseX + Math.cos(poleTilt) * poleLen, poleBaseY + Math.sin(poleTilt) * poleLen);
+      ctx.stroke();
+      ctx.lineWidth = 2.5;
+    } else if (progress < 0.65) {
+      // Phase 2: Driving pole into ground
+      const drive = (progress - 0.35) / 0.3; // 0→1
+      const poleAngle = -Math.PI / 2 + 0.4 - (0.4 + Math.PI / 2) * drive; // overhead → vertical down
+      const plantDepth = drive * poleLen * 0.35;
+      ctx.translate(x, y);
+
+      // Body leans forward as driving
+      const lean = Math.sin(drive * Math.PI) * 0.15;
+      ctx.rotate(lean);
+
+      // Head
+      ctx.beginPath(); ctx.arc(0, -bodyLen - headR, headR, 0, Math.PI * 2); ctx.stroke();
+      // Body
+      ctx.beginPath(); ctx.moveTo(0, -bodyLen); ctx.lineTo(0, 0); ctx.stroke();
+      // Arms driving down
+      const armY = -bodyLen * 0.75 + drive * bodyLen * 0.35;
+      ctx.beginPath(); ctx.moveTo(0, -bodyLen * 0.75); ctx.lineTo(-limbLen * 0.3, armY); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, -bodyLen * 0.75); ctx.lineTo(limbLen * 0.3, armY); ctx.stroke();
+      // Legs
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-limbLen * 0.35, limbLen); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(limbLen * 0.35, limbLen); ctx.stroke();
+
+      // Pole going into ground
+      ctx.lineWidth = 3.5;
+      const tipX = limbLen * 0.15;
+      const tipY = limbLen + plantDepth;
+      const topX = tipX + Math.cos(-Math.PI / 2) * poleLen * (1 - drive * 0.35);
+      const topY = tipY + Math.sin(-Math.PI / 2) * poleLen * (1 - drive * 0.35);
+      ctx.beginPath(); ctx.moveTo(topX, topY); ctx.lineTo(tipX, tipY); ctx.stroke();
+      ctx.lineWidth = 2.5;
+    } else {
+      // Phase 3: Stepping back, admiring the pole
+      const back = (progress - 0.65) / 0.35; // 0→1
+      const stepBack = back * size * 0.4;
+      ctx.translate(x - stepBack, y);
+
+      // Head
+      ctx.beginPath(); ctx.arc(0, -bodyLen - headR, headR, 0, Math.PI * 2); ctx.stroke();
+      // Body
+      ctx.beginPath(); ctx.moveTo(0, -bodyLen); ctx.lineTo(0, 0); ctx.stroke();
+      // Arms: one on hip, one pointing at pole
+      ctx.beginPath(); ctx.moveTo(0, -bodyLen * 0.75); ctx.lineTo(-limbLen * 0.5, -bodyLen * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, -bodyLen * 0.75); ctx.lineTo(limbLen * 0.8, -bodyLen * 0.6); ctx.stroke();
+      // Legs
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-limbLen * 0.3, limbLen); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(limbLen * 0.3, limbLen); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // ===== SHADOW HELPERS =====
+  function drawFloorShadow(ctx, x, y, width, height) {
+    // Draws an elliptical shadow on the "floor" below an object
+    ctx.save();
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+    ctx.beginPath();
+    ctx.ellipse(x, y + height + 4, width * 0.6, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawStickmanShadow(ctx, x, y, size) {
+    ctx.save();
+    const limbLen = size * 0.28;
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.10)';
+    ctx.beginPath();
+    ctx.ellipse(x, y + limbLen + 4, size * 0.35, 3.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawPole(ctx, x, y, size) {
+    // Draw the planted pole at position (x, y = ropeCenterY)
+    ctx.save();
+    ctx.strokeStyle = getTextColor();
+    ctx.fillStyle = getTextColor();
+    ctx.lineWidth = 3.5;
+    ctx.lineCap = "round";
+
+    const poleHeight = size * 1.2;
+    const poleTop = y - poleHeight;
+    const poleBottom = y + size * 0.28 + size * 0.5; // goes into ground
+
+    // Shadow at base of pole
+    drawFloorShadow(ctx, x, y, size * 0.3, size * 0.28 + size * 0.5);
+
+    // Pole shaft
+    ctx.beginPath();
+    ctx.moveTo(x, poleTop);
+    ctx.lineTo(x, poleBottom);
+    ctx.stroke();
+
+    // Small flag/banner at top
+    ctx.lineWidth = 1.5;
+    const flagW = size * 0.45;
+    const flagH = size * 0.3;
+    ctx.beginPath();
+    ctx.moveTo(x, poleTop);
+    ctx.lineTo(x + flagW, poleTop + flagH * 0.3);
+    ctx.lineTo(x, poleTop + flagH);
+    ctx.closePath();
+    ctx.fillStyle = "#3e434dff";
+    ctx.fill();
+    ctx.strokeStyle = "#0f1115";
+    ctx.stroke();
+
+    // "★" star on flag
+    //ctx.fillStyle = '#fff';
+    //ctx.font = `${Math.round(size * 0.16)}px sans-serif`;
+    //ctx.textAlign = 'center';
+    //ctx.textBaseline = 'middle';
+    //ctx.fillText('★', x + flagW * 0.35, poleTop + flagH * 0.45);
+
+    ctx.restore();
   }
 
   function drawRestingStickFigure(ctx, x, y, size, restProgress, time) {
@@ -745,12 +1013,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderStickFigure() {
     if (!stickCtx || !stickCanvas.width) return;
-    stickCtx.clearRect(0, 0, stickCanvas.width, stickCanvas.height);
+    const cssW = stickCanvas.width / (window.devicePixelRatio || 1);
+    const cssH = stickCanvas.height / (window.devicePixelRatio || 1);
+    stickCtx.clearRect(0, 0, cssW, cssH);
     if (!stickmanStarted) return;
 
     const scrollLeft = timelineViewport.scrollLeft;
     const screenX = stickmanTrackX - scrollLeft;
     const ropeCenterY = (ropeSvg?.clientHeight || 250) / 2;
+
+    // Always draw the planted pole if it exists
+    if (polePlanted) {
+      const poleScreenX = poleScreenTrackX - scrollLeft;
+      if (poleScreenX > -STICKMAN_SIZE * 2 && poleScreenX < cssW + STICKMAN_SIZE * 2) {
+        drawPole(stickCtx, poleScreenX, ropeCenterY, STICKMAN_SIZE);
+      }
+    }
 
     if (stickman.hasFallen) {
       drawFallenStickFigure(stickCtx, screenX, ropeCenterY, STICKMAN_SIZE, Math.min(1, stickman.fallTime));
@@ -758,10 +1036,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Only draw when on-screen
-    if (screenX < -STICKMAN_SIZE * 2 || screenX > stickCanvas.width + STICKMAN_SIZE * 2) return;
+    if (screenX < -STICKMAN_SIZE * 2 || screenX > cssW + STICKMAN_SIZE * 2) return;
+
+    // Walk-in animation (walking from off-screen left to pole position)
+    if (stickmanWalkingIn) {
+      drawStickmanShadow(stickCtx, screenX, ropeCenterY, STICKMAN_SIZE);
+      drawStickFigure(
+        stickCtx, screenX, ropeCenterY,
+        STICKMAN_SIZE, stickman.walkPhase,
+        0, true, false, 0
+      );
+      return;
+    }
+
+    // Pole planting animation
+    if (stickmanPlanting) {
+      drawStickmanShadow(stickCtx, screenX, ropeCenterY, STICKMAN_SIZE);
+      const plantProgress = clamp01(stickmanPlantTimer / STICKMAN_PLANT_DURATION);
+      drawPlantingStickFigure(stickCtx, screenX, ropeCenterY, STICKMAN_SIZE, plantProgress);
+      return;
+    }
 
     // Resting animation
     if (stickmanResting) {
+      drawStickmanShadow(stickCtx, screenX, ropeCenterY, STICKMAN_SIZE);
       let restProgress = 0; // 0 = sleeping, 1 = standing
       if (stickmanRestTimer > STICKMAN_REST_DURATION) {
         // Standing up phase
@@ -771,9 +1069,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const dynamicEndTrackX = VIRTUAL_TRACK_WIDTH - window.innerWidth * 0.1;
+    const dynamicEndTrackX = VIRTUAL_TRACK_WIDTH - window.innerWidth * (1 - ROPE_END_VW);
     const ropeRemaining = 1 - clamp01(stickmanTrackX / dynamicEndTrackX);
 
+    drawStickmanShadow(stickCtx, screenX, ropeCenterY, STICKMAN_SIZE);
     drawStickFigure(
       stickCtx, screenX, ropeCenterY,
       STICKMAN_SIZE, stickman.walkPhase,
@@ -781,22 +1080,7 @@ document.addEventListener("DOMContentLoaded", () => {
       stickman.atEnd, ropeRemaining
     );
 
-    // Draw rope-to-hand connector (so rope attaches to hand, not body center)
-    if (!stickman.atEnd) {
-      const limbLen = STICKMAN_SIZE * 0.28;
-      const bodyLen = STICKMAN_SIZE * 0.35;
-      // Trailing hand position (behind stickman)
-      const handX = screenX - limbLen * 0.8;
-      const handY = ropeCenterY - bodyLen * 0.50;
-      stickCtx.beginPath();
-      stickCtx.strokeStyle = '#888888'; // match rope gray
-      stickCtx.lineWidth = 3;
-      stickCtx.setLineDash([6, 3]);
-      stickCtx.moveTo(screenX, ropeCenterY); // rope endpoint
-      stickCtx.lineTo(handX, handY); // trailing hand
-      stickCtx.stroke();
-      stickCtx.setLineDash([]);
-    }
+    // Rope now attaches directly to the hand via stickmanHandTrackX — no connector needed
   }
 
   function startTimelineAnimations() {
@@ -985,7 +1269,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // =====================================================
-// ELASTIC WHEEL HANDOFF
+// ELASTIC WHEEL HANDOFF  +  MOBILE TOUCH HANDOFF
 // =====================================================
 (function initElasticHandoff() {
   const main = document.querySelector("#main"), cv = document.querySelector("#cv"), tv = document.querySelector("#timeline");
@@ -994,7 +1278,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const getIdx = () => getSections().indexOf(cv);
   const snapTo = (i) => { const t = getSections()[i]; if (t) t.scrollIntoView({ behavior: "smooth" }); };
   const RESISTANCE = 350;
-  let acc = 0, bounce, snapped = false;
+  let acc = 0, snapped = false, decayAnim = null;
+
+  function decayEdgeAcc() {
+    if (Math.abs(acc) < 1) {
+      acc = 0; window._timelineEdgeAcc = 0;
+      tv.style.transform = "translateX(0)";
+      decayAnim = null;
+      return;
+    }
+    acc *= 0.8; // smooth exponential decay
+    window._timelineEdgeAcc = acc;
+    tv.style.transform = `translateX(${Math.max(-50, Math.min(50, acc * -0.5))}px)`;
+    decayAnim = requestAnimationFrame(decayEdgeAcc);
+  }
+
+  // ---- Desktop: wheel handler ----
   main.addEventListener("wheel", (e) => {
     if (window._timelineBroken || snapped) return;
     const sr = cv.getBoundingClientRect();
@@ -1003,15 +1302,172 @@ document.addEventListener("DOMContentLoaded", () => {
     const ms = Math.max(0, tv.scrollWidth - tv.clientWidth);
     const atS = tv.scrollLeft <= 2, atE = tv.scrollLeft >= ms - 2;
     const fwd = d > 0, bwd = d < 0;
-    if ((fwd && !atE) || (bwd && !atS)) { e.preventDefault(); tv.scrollLeft += d; acc = 0; window._timelineEdgeAcc = 0; tv.style.transform = "translateX(0)"; return; }
-    e.preventDefault(); acc += d; window._timelineEdgeAcc = acc;
+    
+    // Smoothly decay accumulator if scrolling in valid direction
+    if ((fwd && !atE) || (bwd && !atS)) { 
+      e.preventDefault(); tv.scrollLeft += d; 
+      if (!decayAnim) decayEdgeAcc();
+      return; 
+    }
+    
+    e.preventDefault(); 
+    if (decayAnim) { cancelAnimationFrame(decayAnim); decayAnim = null; }
+    acc += d; 
+    window._timelineEdgeAcc = acc;
     tv.style.transform = `translateX(${Math.max(-50, Math.min(50, acc * -0.5))}px)`;
-    if (bounce) clearTimeout(bounce);
+    
+    clearTimeout(main._wheelTimeout);
+    
     if (Math.abs(acc) > RESISTANCE) {
       const ci = getIdx();
       if (fwd && atE) { snapped = true; if (window._timelineTriggerSnap) window._timelineTriggerSnap(); setTimeout(() => { snapTo(ci + 1); setTimeout(() => snapped = false, 1000); }, 600); }
       else if (bwd && atS) snapTo(ci - 1);
       acc = 0; window._timelineEdgeAcc = 0; tv.style.transform = "translateX(0)";
-    } else { bounce = setTimeout(() => { acc = 0; window._timelineEdgeAcc = 0; tv.style.transform = "translateX(0)"; }, 150); }
+    } else { 
+      // Start decay almost immediately when scrolling stops
+      main._wheelTimeout = setTimeout(decayEdgeAcc, 50); 
+    }
   }, { passive: false });
+
+  // ---- Mobile: touch handler ----
+  const IS_MOBILE = window.innerWidth < 900;
+  if (!IS_MOBILE) return;
+
+  let touchStartX = 0, touchStartY = 0;
+  let touchLastX = 0, touchLastY = 0;
+  let touchActive = false;    // are we capturing this gesture?
+  let gestureAxis = null;     // 'h' or 'v' once determined
+  let snapTimer = null;       // re-enable scroll-snap after gesture ends
+
+  function isCvInView() {
+    const sr = cv.getBoundingClientRect();
+    return sr.top < window.innerHeight * 0.5 && sr.bottom > window.innerHeight * 0.5;
+  }
+
+  main.addEventListener("touchstart", (e) => {
+    if (window._timelineBroken || snapped) return;
+    if (!isCvInView()) { touchActive = false; return; }
+
+    touchActive = true;
+    gestureAxis = null;
+    touchStartX = touchLastX = e.touches[0].clientX;
+    touchStartY = touchLastY = e.touches[0].clientY;
+
+    // Disable scroll-snap so the page doesn't snap away mid-gesture
+    main.classList.add("timeline-active");
+    if (snapTimer) { clearTimeout(snapTimer); snapTimer = null; }
+  }, { passive: true });
+
+  main.addEventListener("touchmove", (e) => {
+    if (!touchActive || window._timelineBroken || snapped) return;
+
+    const x = e.touches[0].clientX;
+    const y = e.touches[0].clientY;
+    const dx = touchLastX - x;   // positive = swiping left (forward)
+    const dy = touchLastY - y;   // positive = swiping up (forward / scroll down)
+
+    // Determine gesture axis on first significant movement
+    if (!gestureAxis) {
+      const absDx = Math.abs(touchStartX - x);
+      const absDy = Math.abs(touchStartY - y);
+      if (absDx < 8 && absDy < 8) return; // not enough movement yet
+      gestureAxis = absDx > absDy ? "h" : "v";
+    }
+
+    const ms = Math.max(0, tv.scrollWidth - tv.clientWidth);
+    const atS = tv.scrollLeft <= 2;
+    const atE = tv.scrollLeft >= ms - 2;
+
+    if (gestureAxis === "v") {
+      // Vertical swipe → drive timeline horizontally
+      const fwd = dy > 0;  // swiping up = scrolling down = forward
+      const bwd = dy < 0;
+
+      if ((fwd && !atE) || (bwd && !atS)) {
+        // Still room to scroll the timeline
+        e.preventDefault();
+        tv.scrollLeft += dy * 1.8; // multiply for comfortable speed
+        acc = 0;
+        window._timelineEdgeAcc = 0;
+        tv.style.transform = "translateX(0)";
+      } else if (fwd && atE) {
+        // At the end — accumulate for rope snap
+        e.preventDefault();
+        acc += dy * 1.5;
+        window._timelineEdgeAcc = acc;
+        tv.style.transform = `translateX(${Math.max(-50, Math.min(50, acc * -0.15))}px)`;
+
+        if (Math.abs(acc) > RESISTANCE) {
+          snapped = true;
+          if (window._timelineTriggerSnap) window._timelineTriggerSnap();
+          const ci = getIdx();
+          setTimeout(() => {
+            snapTo(ci + 1);
+            setTimeout(() => { snapped = false; }, 1000);
+          }, 600);
+          acc = 0; window._timelineEdgeAcc = 0;
+          tv.style.transform = "translateX(0)";
+        }
+      } else if (bwd && atS) {
+        // At the start — allow navigating to previous section
+        e.preventDefault();
+        acc += dy * 1.5;
+        if (Math.abs(acc) > RESISTANCE) {
+          snapTo(getIdx() - 1);
+          acc = 0; window._timelineEdgeAcc = 0;
+        }
+      }
+    } else {
+      // Horizontal swipe — native scroll handles it,
+      // but at edges we accumulate for rope snap
+      if (atE && dx > 0) {
+        e.preventDefault();
+        acc += dx * 1.5;
+        window._timelineEdgeAcc = acc;
+        tv.style.transform = `translateX(${Math.max(-50, Math.min(50, acc * -0.15))}px)`;
+
+        if (Math.abs(acc) > RESISTANCE) {
+          snapped = true;
+          if (window._timelineTriggerSnap) window._timelineTriggerSnap();
+          const ci = getIdx();
+          setTimeout(() => {
+            snapTo(ci + 1);
+            setTimeout(() => { snapped = false; }, 1000);
+          }, 600);
+          acc = 0; window._timelineEdgeAcc = 0;
+          tv.style.transform = "translateX(0)";
+        }
+      } else if (atS && dx < 0) {
+        // swiping right at start — go to previous section
+        acc += dx * 1.5;
+        if (Math.abs(acc) > RESISTANCE) {
+          snapTo(getIdx() - 1);
+          acc = 0; window._timelineEdgeAcc = 0;
+        }
+      } else {
+        // In the middle — reset accumulator
+        acc = 0; window._timelineEdgeAcc = 0;
+        tv.style.transform = "translateX(0)";
+      }
+    }
+
+    touchLastX = x;
+    touchLastY = y;
+  }, { passive: false });
+
+  main.addEventListener("touchend", () => {
+    if (!touchActive) return;
+    touchActive = false;
+    gestureAxis = null;
+
+    // Start decay immediately
+    if (decayAnim) cancelAnimationFrame(decayAnim);
+    decayEdgeAcc();
+
+    // Re-enable scroll-snap after a short delay
+    if (snapTimer) clearTimeout(snapTimer);
+    snapTimer = setTimeout(() => {
+      main.classList.remove("timeline-active");
+    }, 400);
+  }, { passive: true });
 })();

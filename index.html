@@ -51,7 +51,7 @@
     <header id="nav">
         <div class="navbar">
             <div class="navbar-left">
-                <img class="logo" src="assets/Logo.png" alt="logo">
+                <a href="index.html"><img class="logo" src="assets/Logo.png" alt="Michael Krahn - Home"></a>
                 <span class="nav-separator">|</span>
                 <a href="shop.html" class="nav-btn nav-btn-left" data-en="Shop" data-de="Shop">Shop</a>
             </div>
@@ -98,12 +98,12 @@
 
             <!-- Blurred background portrait (behind glass) -->
             <div class="hero-bg" aria-hidden="true">
-                <img src="assets/images/michael-hero.jpg" alt="Blurred Background">
+                <img src="assets/images/michael-hero.jpg" alt="">
             </div>
 
             <!-- Foreground portrait (right) -->
             <div class="hero-portrait" aria-hidden="true">
-                <img src="assets/images/michael-hero.jpg" alt="Michael Portrait" fetchpriority="high">
+                <img src="assets/images/michael-hero.jpg" alt="Portrait of Michael Krahn" fetchpriority="high">
             </div>
 
             <!-- Center typing headline -->
@@ -310,7 +310,7 @@
                             </div>
                         </div>
                         <div class="project-content">
-                            <iframe title="kinderuni-koblenz" data-src="https://synchronized.studio/" width="100%"
+                            <iframe title="synchronized.studio" data-src="https://synchronized.studio/" width="100%"
                                 height="100%" loading="lazy" referrerpolicy="no-referrer"></iframe>
                             <div class="click-overlay"></div>
                         </div>
@@ -402,32 +402,44 @@
 
         <!--      Globe & Clouds     -->
         <section id="globe-1" class="globe-section">
-            <h1 class="hero-title">Michael Krahn</h1>
+            <div class="globe-intro">
+                <h1 class="hero-title" data-en="Explore My Journey" data-de="Entdecke meine Reise">Explore My Journey</h1>
+                <p class="hero-subtitle" data-en="Scroll down to travel the world with me"
+                    data-de="Scrolle nach unten und reise mit mir um die Welt">Scroll down to travel the world with me</p>
+            </div>
         </section>
 
         <section id="globe-2" class="globe-section">
             <div class="copy-block copy-left">
-                <h2 data-en="The World" data-de="Die Welt">The World</h2>
-                <p data-en="As I travelled our great planet..."
-                    data-de="Auf meinen Reisen über unseren großartigen Planeten...">As I travelled our great planet...
+                <h2 data-en="The World Through My Eyes" data-de="Die Welt durch meine Augen">The World Through My Eyes</h2>
+                <p data-en="Every journey shapes how I see design and technology. From the neon streets of Tokyo to the ancient medinas of Morocco — each culture inspired a new way of thinking about user experiences."
+                    data-de="Jede Reise prägt meinen Blick auf Design und Technologie. Von den Neonstraßen Tokios bis zu den alten Medinas Marokkos — jede Kultur inspirierte ein neues Denken über Nutzererlebnisse.">
+                    Every journey shapes how I see design and technology. From the neon streets of Tokyo to the ancient
+                    medinas of Morocco — each culture inspired a new way of thinking about user experiences.
                 </p>
             </div>
         </section>
 
         <section id="globe-3" class="globe-section">
-            <div class="copy-block copy-right">
-                <h2 data-en="Footprint" data-de="Fußabdruck">Footprint</h2>
-                <p data-en="... this is my natural footprint &amp; places I wish are yet to come."
-                    data-de="... ist dies mein natürlicher Fußabdruck &amp; Orte, die ich noch bereisen möchte.">...
-                    this is my natural footprint & places I wish are yet to come.</p>
+            <div class="travel-showcase">
+                <h2 data-en="My Footprint" data-de="Mein Fußabdruck">My Footprint</h2>
+                <p class="travel-subtitle"
+                    data-en="18 countries, countless memories. Click a card to explore."
+                    data-de="18 Länder, unzählige Erinnerungen. Klicke eine Karte zum Erkunden.">
+                    18 countries, countless memories. Click a card to explore.
+                </p>
+                <div class="travel-gallery" id="travelGallery" role="region" aria-label="Travel destinations">
+                    <!-- Country cards populated by globe.js -->
+                </div>
             </div>
         </section>
 
         <section id="globe-4" class="globe-section">
             <div class="globe-4-content">
                 <h2 data-en="Got your attention?" data-de="Aufmerksamkeit geweckt?">Got your attention?</h2>
-                <h3 data-en="Feel free to leave me a message." data-de="Schreib mir gerne eine Nachricht.">Feel free to
-                    leave me a message.</h3>
+                <h3 data-en="Let's create something extraordinary together."
+                    data-de="Lass uns gemeinsam etwas Außergewöhnliches schaffen.">Let's create something extraordinary together.</h3>
+                <a href="#contact" class="cta-button" data-en="Let's Connect" data-de="Kontakt aufnehmen">Let's Connect</a>
             </div>
         </section>
 

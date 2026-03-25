@@ -181,6 +181,14 @@ let travelData = { countries: [], cities: [] };
 let visitedCountrySet = new Set();
 let countryNameMap = {};
 
+// Country code to flag emoji lookup
+const COUNTRY_FLAGS = {
+    276:'🇩🇪',250:'🇫🇷',724:'🇪🇸',840:'🇺🇸',392:'🇯🇵',156:'🇨🇳',36:'🇦🇺',
+    756:'🇨🇭',764:'🇹🇭',360:'🇮🇩',380:'🇮🇹',784:'🇦🇪',826:'🇬🇧',578:'🇳🇴',
+    616:'🇵🇱',100:'🇧🇬',442:'🇱🇺',504:'🇲🇦',188:'🇨🇷',418:'🇱🇦',144:'🇱🇰',
+    300:'🇬🇷',528:'🇳🇱',470:'🇲🇹',191:'🇭🇷',818:'🇪🇬',458:'🇲🇾'
+};
+
 // LOAD DATA
 (async function loadGlobeData() {
     try {
@@ -257,6 +265,9 @@ let countryNameMap = {};
                 .pointColor(() => "rgba(255, 255, 255, 1.0)");
         }
 
+        // Build the travel gallery cards after data is loaded
+        buildTravelGallery();
+
     } catch (err) {
         console.error("Critical error loading globe data:", err);
     }
@@ -283,23 +294,28 @@ document.body.appendChild(countryImageEl);
 
 let currentHighlightedCountry = null;
 let highlightTimer = 0;
-const HIGHLIGHT_MIN_DURATION = 4000; // minimum 4 seconds per country
+const HIGHLIGHT_MIN_DURATION = 5000; // auto-advance every 5 seconds
+let galleryAutoTimer = null;
+let galleryManualPause = 0; // timestamp of last manual interaction
+const GALLERY_MANUAL_PAUSE_MS = 8000; // pause auto-cycling 8s after manual click
+let galleryCardIndex = 0;
+let galleryCards = [];
 
-// Highlight colors for the selected country on the 3D globe
-const HIGHLIGHT_CAP = "rgba(80, 200, 240, 0.95)";    // bright cyan
-const HIGHLIGHT_SIDE = "rgba(60, 180, 220, 0.90)";
-const HIGHLIGHT_STROKE = "rgba(120, 230, 255, 1.0)";
-const HIGHLIGHT_ALT = 0.035;
+// Highlight colors — darker fill, bright border highlight
+const HIGHLIGHT_CAP = "rgba(10, 15, 20, 0.85)";     // dark fill
+const HIGHLIGHT_SIDE = "rgba(5, 10, 15, 0.80)";       // dark fill
+const HIGHLIGHT_STROKE = "rgba(255, 95, 120, 1.0)";   // warm bright line
+const HIGHLIGHT_ALT = 0.025;
 
 // Normal colors
 const VISITED_CAP = "rgba(246, 246, 248, 0.90)";
 const VISITED_SIDE = "rgba(200, 200, 202, 0.80)";
 const VISITED_STROKE = "rgba(255, 255, 255, 1.0)";
-const VISITED_ALT = 0.020;
+const VISITED_ALT = 0.015;
 const DEFAULT_CAP = "rgba(20, 22, 26, 0.75)";
 const DEFAULT_SIDE = "rgba(10, 12, 15, 0.60)";
 const DEFAULT_STROKE = "rgba(45, 49, 57, 0.50)";
-const DEFAULT_ALT = 0.010;
+const DEFAULT_ALT = 0.005;
 
 function applyGlobeHighlight(highlightCode) {
     // Re-set the polygon accessors so ThreeGlobe re-renders with updated colors
@@ -344,89 +360,156 @@ function buildCountryLongitudes() {
 }
 
 function getVisibleLongitude() {
-    const globeRotY = globeIdle.rotation.y + cameraOrbit.rotation.y;
-    const normalizedRot = ((globeRotY % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-    return ((normalizedRot / (Math.PI * 2)) * 360 - 180);
+    const globeRotY = typeof globeIdle !== 'undefined' ? globeIdle.rotation.y : 0;
+    const camRotY = typeof cameraOrbit !== 'undefined' ? cameraOrbit.rotation.y : 0;
+    const totalY = globeRotY + camRotY;
+    const normalizedRot = ((totalY % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    let lng = -normalizedRot * (180 / Math.PI);
+    while (lng > 180) lng -= 360;
+    while (lng < -180) lng += 360;
+    return lng;
+}
+
+// ================================================
+// TRAVEL GALLERY — Build cards from travel data
+// ================================================
+function buildTravelGallery() {
+    const galleryEl = document.getElementById('travelGallery');
+    if (!galleryEl) return;
+
+    const lang = document.body.getAttribute('data-current-lang') || 'de';
+    const countries = travelData.countries || [];
+    galleryEl.innerHTML = '';
+    galleryCards = [];
+
+    countries.forEach((country, idx) => {
+        const card = document.createElement('div');
+        card.className = 'country-card' + (country.wishlist ? ' wishlist' : '');
+        card.dataset.code = String(country.code);
+        card.dataset.index = idx;
+
+        const flag = COUNTRY_FLAGS[country.code] || '🌍';
+        const name = lang === 'en' ? (country.nameEn || country.name) : country.name;
+        const tag = country.wishlist
+            ? (lang === 'en' ? 'Wishlist' : 'Wunschliste')
+            : (lang === 'en' ? 'Visited' : 'Besucht');
+
+        card.innerHTML = `
+            <span class="card-flag">${flag}</span>
+            <span class="card-name">${name}</span>
+            <span class="card-tag">${tag}</span>
+        `;
+
+        card.addEventListener('click', () => selectGalleryCard(idx));
+        galleryEl.appendChild(card);
+        galleryCards.push(card);
+    });
+
+    // Start auto-cycling
+    startGalleryAutoCycle();
+}
+
+function selectGalleryCard(idx) {
+    if (idx < 0 || idx >= galleryCards.length) return;
+    const countries = travelData.countries || [];
+    const country = countries[idx];
+    if (!country) return;
+
+    // Update active state
+    galleryCards.forEach(c => c.classList.remove('active'));
+    galleryCards[idx].classList.add('active');
+    galleryCardIndex = idx;
+
+    // Scroll card into view
+    galleryCards[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
+    const code = String(country.code);
+    currentHighlightedCountry = code;
+
+    // Highlight on globe
+    applyGlobeHighlight(code);
+
+    // Rotate globe to face this country
+    rotateGlobeTo(code);
+
+    // Update label overlay
+    const lang = document.body.getAttribute('data-current-lang') || 'de';
+    const countryInfo = countryNameMap[code];
+    if (countryInfo) {
+        const name = lang === 'en' ? (countryInfo.nameEn || countryInfo.name) : countryInfo.name;
+        countryLabelEl.textContent = name;
+        countryLabelEl.style.opacity = '1';
+
+        if (countryInfo.image) {
+            countryImageEl.innerHTML = `<img src="${countryInfo.image}" alt="${name}" loading="lazy">`;
+            countryImageEl.style.opacity = '1';
+            countryImageEl.style.bottom = '20%';
+            countryImageEl.style.right = '5%';
+            countryImageEl.style.top = 'auto';
+            countryImageEl.style.left = 'auto';
+        } else {
+            countryImageEl.style.opacity = '0';
+        }
+    }
+}
+
+function rotateGlobeTo(countryCode) {
+    if (typeof gsap === 'undefined' || typeof globeIdle === 'undefined' || typeof cameraOrbit === 'undefined') return;
+    if (Object.keys(countryLongitudes).length === 0) buildCountryLongitudes();
+    const targetLng = countryLongitudes[countryCode];
+    if (targetLng === undefined) return;
+
+    const targetGlobalRot = -targetLng * (Math.PI / 180);
+    const currentCameraRot = cameraOrbit.rotation.y;
+    const currentGlobeRot = globeIdle.rotation.y;
+
+    const desiredCameraRot = targetGlobalRot - currentGlobeRot;
+
+    // Find shortest rotation path
+    let diff = desiredCameraRot - (currentCameraRot % (Math.PI * 2));
+    while (diff > Math.PI) diff -= Math.PI * 2;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+
+    // Smooth rotation over 1.5 seconds
+    const targetFinal = currentCameraRot + diff;
+    gsap.to(cameraOrbit.rotation, {
+        y: targetFinal,
+        duration: 1.5,
+        ease: 'power2.inOut',
+        overwrite: 'auto'
+    });
+}
+
+function startGalleryAutoCycle() {
+    if (galleryAutoTimer) clearInterval(galleryAutoTimer);
+    galleryAutoTimer = setInterval(() => {
+        // Skip if not in globe-3 view
+        if (globeScrollProgress < 0.35 || globeScrollProgress > 0.75) return;
+
+        const countries = travelData.countries || [];
+        if (countries.length === 0) return;
+
+        galleryCardIndex = (galleryCardIndex + 1) % countries.length;
+        selectGalleryCard(galleryCardIndex);
+    }, HIGHLIGHT_MIN_DURATION);
+}
+
+// Override click to reset auto-cycling entirely
+function onGalleryManualClick(idx) {
+    selectGalleryCard(idx);
+    startGalleryAutoCycle(); // Resets the 5s timer
 }
 
 function updateCountryHighlight(scrollProgress) {
-    // Only show during globe-3 travel showcase section
-    if (scrollProgress < 0.4 || scrollProgress > 0.85) {
+    // Clear highlights when outside globe sections
+    if (scrollProgress < 0.1 || scrollProgress > 0.95) {
         if (currentHighlightedCountry) {
-            // Clear highlight — revert globe colors
             applyGlobeHighlight(null);
         }
-        countryLabelEl.style.opacity = "0";
-        countryImageEl.style.opacity = "0";
+        countryLabelEl.style.opacity = '0';
+        countryImageEl.style.opacity = '0';
         currentHighlightedCountry = null;
-        highlightTimer = 0;
         return;
-    }
-
-    const now = performance.now();
-
-    // If no country is shown, or timer expired — pick a new one
-    if (!currentHighlightedCountry || (now - highlightTimer) > HIGHLIGHT_MIN_DURATION) {
-        const visitedCodes = Array.from(visitedCountrySet);
-        if (visitedCodes.length === 0) return;
-
-        // Build longitude lookup if not done yet
-        if (Object.keys(countryLongitudes).length === 0) buildCountryLongitudes();
-
-        // Get currently visible longitude on the globe
-        const visibleLng = getVisibleLongitude();
-
-        // Filter to countries roughly visible (within ±120°)
-        const visibleCodes = visitedCodes.filter(code => {
-            const lng = countryLongitudes[code];
-            if (lng === undefined) return true;
-            let diff = Math.abs(lng - visibleLng);
-            if (diff > 180) diff = 360 - diff;
-            return diff < 120;
-        });
-
-        const pool = visibleCodes.length > 0 ? visibleCodes : visitedCodes;
-
-        // Pick a random country different from the current one
-        let newCode = pool[Math.floor(Math.random() * pool.length)];
-        if (pool.length > 1) {
-            let attempts = 0;
-            while (newCode === currentHighlightedCountry && attempts < 5) {
-                newCode = pool[Math.floor(Math.random() * pool.length)];
-                attempts++;
-            }
-        }
-
-        const countryInfo = countryNameMap[newCode];
-        if (!countryInfo) return;
-
-        currentHighlightedCountry = newCode;
-        highlightTimer = now;
-
-        // === HIGHLIGHT THE COUNTRY ON THE 3D GLOBE ===
-        applyGlobeHighlight(newCode);
-
-        // Update label
-        const lang = document.body.getAttribute('data-current-lang') || 'de';
-        const name = lang === 'en' ? (countryInfo.nameEn || countryInfo.name) : countryInfo.name;
-        countryLabelEl.textContent = name;
-        countryLabelEl.style.opacity = "1";
-
-        // Update image
-        if (countryInfo.image) {
-            countryImageEl.innerHTML = `<img src="${countryInfo.image}" alt="${name}" loading="lazy">`;
-            countryImageEl.style.opacity = "1";
-            const corners = [
-                { top: "10%", left: "5%", right: "auto", bottom: "auto" },
-                { top: "10%", right: "5%", left: "auto", bottom: "auto" },
-                { bottom: "20%", left: "5%", top: "auto", right: "auto" },
-                { bottom: "20%", right: "5%", top: "auto", left: "auto" }
-            ];
-            const corner = corners[Math.floor(Math.random() * corners.length)];
-            Object.assign(countryImageEl.style, corner);
-        } else {
-            countryImageEl.style.opacity = "0";
-        }
     }
 }
 

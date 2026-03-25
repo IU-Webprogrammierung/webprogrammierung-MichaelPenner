@@ -39,16 +39,45 @@
   position: absolute;
   left: 0;
   bottom: 0;
-  height: 2px;
+  height: 3px;
   width: 100%;
   border-radius: 999px;
-  opacity: 0.75;
+  opacity: 0.85;
   background: linear-gradient(90deg,
-      rgba(255, 95, 86, .75),
-      rgba(255, 189, 46, .75),
-      rgba(39, 201, 63, .65),
-      rgba(46, 168, 255, .65));
-  filter: blur(6px);
+      rgba(255, 95, 86, .85),
+      rgba(255, 189, 46, .85),
+      rgba(39, 201, 63, .75),
+      rgba(46, 168, 255, .75),
+      rgba(180, 120, 255, .75));
+  background-size: 200% 100%;
+  box-shadow:
+      0 0 8px rgba(255, 95, 86, 0.5),
+      0 0 16px rgba(255, 189, 46, 0.3),
+      0 0 24px rgba(39, 201, 63, 0.25),
+      0 0 32px rgba(46, 168, 255, 0.3),
+      0 0 48px rgba(180, 120, 255, 0.2);
+  animation: accentGlow 4s ease-in-out infinite alternate;
+}
+
+.about-accent::after {
+  content: "";
+  position: absolute;
+  inset: -8px -4px;
+  border-radius: 999px;
+  background: inherit;
+  filter: blur(16px);
+  opacity: 0.4;
+  animation: accentPulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes accentGlow {
+  0%   { background-position: 0% 50%; box-shadow: 0 0 8px rgba(255, 95, 86, 0.5), 0 0 16px rgba(255, 189, 46, 0.3), 0 0 24px rgba(39, 201, 63, 0.25), 0 0 32px rgba(46, 168, 255, 0.3); }
+  100% { background-position: 100% 50%; box-shadow: 0 0 12px rgba(180, 120, 255, 0.5), 0 0 20px rgba(46, 168, 255, 0.35), 0 0 28px rgba(39, 201, 63, 0.3), 0 0 40px rgba(255, 95, 86, 0.25); }
+}
+
+@keyframes accentPulse {
+  from { opacity: 0.3; }
+  to   { opacity: 0.6; }
 }
 
 /* Layout */

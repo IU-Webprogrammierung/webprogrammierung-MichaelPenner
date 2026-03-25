@@ -97,4 +97,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     });
 
+    // =====================
+    // Scroll-triggered entrance animation
+    // =====================
+    const projectsSection = document.getElementById('projects');
+    if (projectsSection) {
+        const scrollContainer = document.querySelector('#main') || window;
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    projectsSection.classList.add('is-visible');
+                }
+            });
+        }, {
+            root: scrollContainer === window ? null : scrollContainer,
+            threshold: 0.15
+        });
+        observer.observe(projectsSection);
+    }
+
 });

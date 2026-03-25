@@ -473,16 +473,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const pt = ropePoints[i];
         if (i > drawnCount) { pt.y = 0; pt.vy = 0; continue; }
         if (i === 0) { pt.y = 0; pt.vy = 0; continue; }
-        // Pin the leading edge point
-        if (i >= drawnCount - 1 && ropeTrackFrac < 0.99) { pt.y = 0; pt.vy = 0; continue; }
-        if (ropeTrackFrac >= 0.99 && i === ROPE_POINT_COUNT - 1) { pt.y = 0; continue; }
+        // Pin the leading edge point to stickman's hand Y offset
+        if (i >= drawnCount - 1 && ropeTrackFrac < 0.99) { pt.y = stickmanHandYOffset; pt.vy = 0; continue; }
+        if (ropeTrackFrac >= 0.99 && i === ROPE_POINT_COUNT - 1) { pt.y = stickmanHandYOffset; continue; }
 
         const left = ropePoints[i - 1];
         const right = ropePoints[Math.min(i + 1, drawnCount)];
         let force = ((left.y + right.y) / 2 - pt.y) * tension;
         const nx = (i / (drawnCount || 1)) * 2 - 1;
         force += ((1 - nx * nx) * ROPE_SAG_DEPTH - pt.y) * 0.05;
-        force += Math.sin(time * 2 + i * 0.15) * (Math.abs(scrollVelocity) * ROPE_SCROLL_SENSITIVITY + 0.6);
+
+        // Dampen oscillation near the stickman's hand (last 15% of rope)
+        const handFrac = drawnCount > 0 ? i / drawnCount : 0;
+        const handDampen = handFrac > 0.85 ? ((handFrac - 0.85) / 0.15) : 0; // 0 → 1 near hand
+        const oscillationStrength = (1 - handDampen) * (Math.abs(scrollVelocity) * ROPE_SCROLL_SENSITIVITY + 0.6);
+        force += Math.sin(time * 2 + i * 0.15) * oscillationStrength;
 
         if (window._timelineEdgeAcc > 0 && i > drawnCount / 2) {
           const tf = Math.min(1, window._timelineEdgeAcc / 350);
@@ -492,7 +497,8 @@ document.addEventListener("DOMContentLoaded", () => {
           stickman.tension = Math.max(0, stickman.tension - 0.05);
         }
 
-        pt.vy = (pt.vy + force) * ROPE_DAMPING;
+        // Apply extra damping near the hand
+        pt.vy = (pt.vy + force) * (ROPE_DAMPING - handDampen * 0.3);
       }
 
       for (let i = 1; i <= Math.min(drawnCount, ROPE_POINT_COUNT - 1); i++) {
@@ -506,6 +512,12 @@ document.addEventListener("DOMContentLoaded", () => {
       // Re-pin pole anchor after integration
       ropePoints[0].y = 0;
       ropePoints[0].vy = 0;
+      // Re-pin hand anchor after integration
+      if (drawnCount >= 2) {
+        const lastPt = ropePoints[drawnCount - 1];
+        lastPt.y = stickmanHandYOffset;
+        lastPt.vy = 0;
+      }
     }
 
     renderRopePath(centerY, drawnCount, scrollLeft);
@@ -540,9 +552,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const mx = (sx(p) + sx(q)) / 2, my = (p.y + q.y) / 2;
         d += i === 0 ? ` L ${mx},${cy + my}` : ` Q ${sx(p)},${cy + p.y} ${mx},${cy + my}`;
       }
-      // Last point: use hand Y offset so rope ends at the stickman's hand
+      // Last point: Physics already pins y to stickmanHandYOffset
       const lastPt = ropePoints[drawnCount - 1];
-      const lastY = cy + lastPt.y + stickmanHandYOffset;
+      const lastY = cy + lastPt.y;
       d += ` L ${sx(lastPt)},${lastY}`;
       ropePath.setAttribute("d", d);
     }

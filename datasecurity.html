@@ -16,7 +16,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 
-<body class="legal-page"></body>
+<body class="legal-page">
 
 <div class="cursor-dot"></div>
 <div class="cursor-outline"></div>
@@ -24,8 +24,8 @@
 <header id="nav">
     <div class="navbar">
         <div class="navbar-left">
-            <a href="index.html">
-                <img class="logo" src="assets/Logo.png" alt="logo">
+            <a href="index.html" id="logo-link">
+                <img class="logo" src="assets/Logo.png" alt="Michael Krahn - Back">
             </a>
             <span class="nav-separator">|</span>
             <a href="index.html" class="nav-btn nav-btn-left" data-en="Portfolio" data-de="Portfolio">Portfolio</a>
@@ -105,6 +105,16 @@
     </p>
 </section>
 
+<script>
+    // Detect referrer page and update logo link accordingly
+    (function() {
+        const ref = document.referrer;
+        const link = document.getElementById('logo-link');
+        if (link && ref && ref.includes('shop.html')) {
+            link.href = 'shop.html';
+        }
+    })();
+</script>
 <script src="js/navbar.js" defer></script>
 <script src="js/custom_cursor.js" defer></script>
 <script src="js/language.js" defer></script>

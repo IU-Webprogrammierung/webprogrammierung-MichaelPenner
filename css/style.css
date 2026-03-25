@@ -8,6 +8,14 @@
   --text: #0f1115;
   --accent: #8ed0ff;
 
+  /* Shared Rainbow Gradient */
+  --gradient-rainbow: linear-gradient(90deg,
+      rgba(255, 95, 86, 0.85),
+      rgba(255, 189, 46, 0.85),
+      rgba(39, 201, 63, 0.75),
+      rgba(46, 168, 255, 0.75),
+      rgba(180, 120, 255, 0.75));
+
   /* Glass Effect */
   --glass: rgba(255, 255, 255, 0.12);
   --glass-border: rgba(255, 255, 255, 0.25);
@@ -44,15 +52,25 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: 'Inter', sans-serif;
-  line-height: 1.6;
-  font-size: 1.00rem;
+  line-height: 1.4;
+  font-size: 0.9rem;
   background-color: var(--bg);
   color: var(--text);
 }
 
 body {
-  cursor: none;
+  cursor: auto;
   overflow: hidden;
+}
+
+@media (min-width: 900px) {
+  html, body {
+    line-height: 1.6;
+    font-size: 1.00rem;
+  }
+  body {
+    cursor: none;
+  }
 }
 
 /* Skip Navigation Link */
@@ -253,17 +271,30 @@ body::before{
 
 /* --- SECTIONS --- */
 section {
-    padding: 0px 10%;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
+    padding: 0px 6%;
+    height: 100dvh;
+    position: relative;
     overflow: hidden;
-    min-height: 100vh;   /* fallback */
-    min-height: 100dvh;  /* modern mobile-safe viewport */
     display: grid;
     justify-content: center;
     align-items: center;
+}
 
-    /*border: 1px solid red; /* Debug to see trigger positions */
+@media (min-width: 600px) {
+    section {
+        padding: 0px 8%;
+    }
+}
+
+@media (min-width: 900px) {
+    section {
+        padding: 0px 10%;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+        min-height: 100vh;
+        min-height: 100dvh;
+        height: auto;
+    }
 }
 
 
@@ -278,8 +309,22 @@ h3 {
 h1 {
     font-size: 8vw;
     text-transform: uppercase;
-    letter-spacing: -2px;
+    letter-spacing: -3px;
     text-align: center;
+}
+
+@media (min-width: 600px) {
+    h1 {
+        font-size: 7vw;
+        letter-spacing: -2.5px;
+    }
+}
+
+@media (min-width: 900px) {
+    h1 {
+        font-size: 8vw;
+        letter-spacing: -2px;
+    }
 }
 
 /* =========================
@@ -479,44 +524,11 @@ a:focus-visible::before{
 
 
 /* =========================================
-   RESPONSIVE
-========================================= */
-
-/* =========================================
-   MOBILE LAYOUT
+   MOBILE INTERACTION INDICATORS
 ========================================= */
 @media (max-width: 900px) {
-  html, body {
-    line-height: 1.4;
-    font-size: 0.9rem;
-  }
-
-  /* Typography */
-  h1,
-  h2,
-  h3 {
-    letter-spacing: -0.5px;
-    font-size: clamp(1.8rem, 2.5vw, 3rem);
-  }
-  h1 {
-      font-size: 6vw;
-      letter-spacing: -3px;
-  }
-
-  section {
-    padding: 0px 6%;
-    height: 100dvh;
-    position: relative;
-    overflow: hidden;
-  }
-
   .navbar-center {
     flex-wrap: wrap;
-  }
-
-  /* --- Mobile Cursor Deactivation --- */
-  body {
-    cursor: none;
   }
 
   .cursor-dot,
@@ -524,7 +536,6 @@ a:focus-visible::before{
     display: none;
   }
 
-  /* --- Mobile Clickable Indicators --- */
   /* Add visual indicator for clickable elements on mobile */
   a,
   .btn,
@@ -558,14 +569,8 @@ a:focus-visible::before{
     opacity: 1;
   }
 
-  /* Add underline indicator for links on mobile */
-  a {
-    cursor: pointer;
-  }
-
   /* Make buttons more prominent on mobile */
   .btn {
-    cursor: pointer;
     /* Add a visual border indicator */
     border: 2px solid transparent;
     transition: border-color 0.2s ease;
@@ -576,10 +581,6 @@ a:focus-visible::before{
   }
 
   /* Touch feedback for project cards */
-  .project-card {
-    cursor: pointer;
-  }
-
   .project-card:active {
     transform: scale(0.98);
   }

@@ -23,21 +23,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const AMBIENT_IMAGE_GROUPS = [
     [{ src: "assets/images/timeline-animal.jpg" }, { src: "assets/images/timeline-animal2.jpg" }],
     [{ src: "assets/images/timeline-food.jpg" }, { src: "assets/images/timeline-food2.jpg" }],
-    [{ src: "assets/images/timeline-friends.jpg" }, { src: "assets/images/timeline-friends(2).jpg" }, { src: "assets/images/timeline-friends(3).jpg" }, { src: "assets/images/timeline-friends.jpeg" }],
+    [{ src: "assets/images/timeline-friends.jpg" }, { src: "assets/images/timeline-friends(2).jpg" }, { src: "assets/images/timeline-friends(3).jpg"}],
     [{ src: "assets/images/timeline-travel.jpg" }, { src: "assets/images/timeline-soccer.jpg" }]
   ];
 
-  const END_DATE = new Date(); END_DATE.setMonth(END_DATE.getMonth() + 6);
-  const PADDED_START = new Date("1995-06-28");
+  const END_DATE = new Date(); END_DATE.setMonth(END_DATE.getMonth());
+  const PADDED_START = new Date("1996-01-28");
   const TOTAL_TIMESPAN_MS = END_DATE.getTime() - PADDED_START.getTime();
 
   const VIRTUAL_TRACK_WIDTH = 4000;
   timelineTrack.style.width = `${VIRTUAL_TRACK_WIDTH}px`;
-  const WINDOW_SPAN = IS_MOBILE ? 0.18 : 0.08;
+  const WINDOW_SPAN = IS_MOBILE ? 0.18 : 0.12;
 
   // Rope
   const ROPE_POINT_COUNT = 150;
-  const ROPE_BASE_TENSION = 0.08;
+  const ROPE_BASE_TENSION = 0.1;
   const ROPE_DAMPING = 0.84;
   const ROPE_SAG_DEPTH = 60;
   const ROPE_SCROLL_SENSITIVITY = IS_MOBILE ? 0.12 : 0.04;
@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const armSwing = isWalking ? Math.sin(walkPhase + Math.PI) * 0.4 : 0;
     const bounceY = isWalking ? Math.abs(Math.sin(walkPhase)) * 3 : 0;
 
-    // More dramatic lean when tugging at the end
+    // Dramatic lean when tugging at the end
     const leanAngle = atEnd ? tension * 0.65 : tension * 0.25 * -dir;
 
     ctx.translate(x, y - bounceY);
@@ -209,7 +209,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Arms
     if (atEnd) {
-      // Facing RIGHT, leaning backward heavily. Arms reach forward (LEFT) toward rope.
       // Make it look like a dramatic tug-of-war
       const holdDist = limbLen * (1.2 + tension * 0.4);
       const handSize = 2;
@@ -827,6 +826,32 @@ document.addEventListener("DOMContentLoaded", () => {
       // Phase 3: Stepping back, admiring the pole
       const back = (progress - 0.65) / 0.35; // 0→1
       const stepBack = back * size * 0.4;
+
+      // Draw the planted pole FIRST (behind the stickman)
+      const poleHeight = size * 1.2;
+      const poleBottom = limbLen + size * 0.5;
+      ctx.save();
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(x, y - poleHeight);
+      ctx.lineTo(x, y + poleBottom);
+      ctx.stroke();
+      // Small flag at top
+      ctx.lineWidth = 1.5;
+      const flagW = size * 0.45;
+      const flagH = size * 0.3;
+      ctx.beginPath();
+      ctx.moveTo(x, y - poleHeight);
+      ctx.lineTo(x + flagW, y - poleHeight + flagH * 0.3);
+      ctx.lineTo(x, y - poleHeight + flagH);
+      ctx.closePath();
+      ctx.fillStyle = "#3e434dff";
+      ctx.fill();
+      ctx.strokeStyle = "#0f1115";
+      ctx.stroke();
+      ctx.restore();
+
+      // Now draw the stickman stepping back
       ctx.translate(x - stepBack, y);
 
       // Head
@@ -898,13 +923,6 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.fill();
     ctx.strokeStyle = "#0f1115";
     ctx.stroke();
-
-    // "★" star on flag
-    //ctx.fillStyle = '#fff';
-    //ctx.font = `${Math.round(size * 0.16)}px sans-serif`;
-    //ctx.textAlign = 'center';
-    //ctx.textBaseline = 'middle';
-    //ctx.fillText('★', x + flagW * 0.35, poleTop + flagH * 0.45);
 
     ctx.restore();
   }

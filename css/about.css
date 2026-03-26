@@ -39,45 +39,69 @@
   position: absolute;
   left: 0;
   bottom: 0;
-  height: 3px;
+  height: 4px;
   width: 100%;
   border-radius: 999px;
-  opacity: 0.85;
+  opacity: 0.4;
   background: linear-gradient(90deg,
-      rgba(255, 95, 86, .85),
-      rgba(255, 189, 46, .85),
-      rgba(39, 201, 63, .75),
-      rgba(46, 168, 255, .75),
-      rgba(180, 120, 255, .75));
-  background-size: 200% 100%;
+      rgba(255, 95, 86, .80),
+      rgba(255, 189, 46, .80),
+      rgba(39, 201, 63, .70),
+      rgba(46, 168, 255, .70),
+      rgba(180, 120, 255, .70),
+      rgba(255, 95, 86, .80));
+  background-size: 300% 100%;
   box-shadow:
-      0 0 8px rgba(255, 95, 86, 0.5),
-      0 0 16px rgba(255, 189, 46, 0.3),
-      0 0 24px rgba(39, 201, 63, 0.25),
-      0 0 32px rgba(46, 168, 255, 0.3),
-      0 0 48px rgba(180, 120, 255, 0.2);
-  animation: accentGlow 4s ease-in-out infinite alternate;
+    0 0 4px rgba(255, 95, 86, 0.35),
+    0 0 10px rgba(255, 189, 46, 0.25),
+    0 0 16px rgba(39, 201, 63, 0.20),
+    0 0 20px rgba(46, 168, 255, 0.25),
+    0 0 30px rgba(180, 120, 255, 0.15);
+  animation: accentGlow 8s ease-in-out infinite;
 }
 
+/* Soft close glow */
 .about-accent::after {
   content: "";
   position: absolute;
   inset: -8px -4px;
   border-radius: 999px;
   background: inherit;
-  filter: blur(16px);
-  opacity: 0.4;
-  animation: accentPulse 3s ease-in-out infinite alternate;
+  filter: blur(12px);
+  opacity: 0.15;
+  animation: accentPulse 5s ease-in-out infinite alternate;
+}
+
+/* Wide ambient bloom */
+.about-accent::before {
+  content: "";
+  position: absolute;
+  inset: -24px -12px;
+  border-radius: 999px;
+  background: inherit;
+  filter: blur(40px);
+  opacity: 0.12;
+  animation: accentPulse 7s ease-in-out infinite alternate-reverse;
 }
 
 @keyframes accentGlow {
-  0%   { background-position: 0% 50%; box-shadow: 0 0 8px rgba(255, 95, 86, 0.5), 0 0 16px rgba(255, 189, 46, 0.3), 0 0 24px rgba(39, 201, 63, 0.25), 0 0 32px rgba(46, 168, 255, 0.3); }
-  100% { background-position: 100% 50%; box-shadow: 0 0 12px rgba(180, 120, 255, 0.5), 0 0 20px rgba(46, 168, 255, 0.35), 0 0 28px rgba(39, 201, 63, 0.3), 0 0 40px rgba(255, 95, 86, 0.25); }
+  0% {
+    background-position: 0% 50%;
+    box-shadow: 0 0 6px rgba(255, 95, 86, 0.35), 0 0 14px rgba(255, 189, 46, 0.25), 0 0 22px rgba(39, 201, 63, 0.20), 0 0 30px rgba(46, 168, 255, 0.25);
+  }
+  50% {
+    background-position: 100% 50%;
+    box-shadow: 0 0 10px rgba(180, 120, 255, 0.40), 0 0 18px rgba(46, 168, 255, 0.30), 0 0 26px rgba(39, 201, 63, 0.25), 0 0 36px rgba(255, 95, 86, 0.20);
+  }
+  100% {
+    background-position: 0% 50%;
+    box-shadow: 0 0 6px rgba(255, 95, 86, 0.35), 0 0 14px rgba(255, 189, 46, 0.25), 0 0 22px rgba(39, 201, 63, 0.20), 0 0 30px rgba(46, 168, 255, 0.25);
+  }
 }
 
 @keyframes accentPulse {
-  from { opacity: 0.3; }
-  to   { opacity: 0.6; }
+  from { opacity: 0.25; }
+  to   { opacity: 0.55; }
 }
 
 /* Layout */

@@ -21,48 +21,56 @@ footer {
   height: 3px;
 
   background: linear-gradient(90deg,
-      rgba(255, 95, 86, 0.85),
-      rgba(255, 189, 46, 0.85),
-      rgba(39, 201, 63, 0.85),
-      rgba(46, 168, 255, 0.85));
-  background-size: 240% 100%;
-  filter: blur(6px);
-  opacity: 0.55;
+      rgba(255, 95, 86, 0.80),
+      rgba(255, 189, 46, 0.80),
+      rgba(39, 201, 63, 0.75),
+      rgba(46, 168, 255, 0.75),
+      rgba(180, 120, 255, 0.75),
+      rgba(255, 95, 86, 0.80));
+  background-size: 300% 100%;
+  filter: blur(4px);
+  opacity: 0.65;
 
-  animation: footerFlow 10s ease-in-out infinite alternate;
+  animation: footerFlow 10s ease-in-out infinite;
 }
 
+/* Close glow */
 .footer-rainbow::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
-  top: -16px;
-  height: 34px;
+  top: -18px;
+  height: 40px;
   background: inherit;
-  filter: blur(22px);
-  opacity: 0.18;
-  animation: footerPulse 14s ease-in-out infinite alternate;
+  filter: blur(24px);
+  opacity: 0.20;
+  animation: footerPulse 6s ease-in-out infinite alternate;
+}
+
+/* Wide ambient bloom */
+.footer-rainbow::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -36px;
+  height: 70px;
+  background: inherit;
+  filter: blur(50px);
+  opacity: 0.08;
+  animation: footerPulse 9s ease-in-out infinite alternate-reverse;
 }
 
 @keyframes footerPulse {
-  from {
-    opacity: .20
-  }
-
-  to {
-    opacity: .65
-  }
+  from { opacity: .15; }
+  to   { opacity: .50; }
 }
 
 @keyframes footerFlow {
-  from {
-    background-position: 0% 50%
-  }
-
-  to {
-    background-position: 100% 50%
-  }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 

@@ -28,6 +28,8 @@
   position: relative;
   z-index: 2;
   align-items: center;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 #globe canvas,
@@ -124,9 +126,9 @@ main,
   border-color: rgba(255, 255, 255, 0.4);
   transform: translateY(-2px);
   box-shadow:
-      0 0 12px rgba(255, 95, 86, 0.3),
-      0 0 24px rgba(46, 168, 255, 0.2),
-      0 14px 40px rgba(0, 0, 0, 0.3);
+    0 0 12px rgba(255, 95, 86, 0.3),
+    0 0 24px rgba(46, 168, 255, 0.2),
+    0 14px 40px rgba(0, 0, 0, 0.3);
 }
 
 .hero-title {
@@ -185,7 +187,28 @@ main,
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 
   opacity: 0;
-  transition: opacity 0.8s ease;
+  transition: opacity 0.8s ease, top 1s ease, bottom 1s ease, left 1s ease, right 1s ease;
+  animation: highlightImageFloat 8s ease-in-out infinite;
+}
+
+@keyframes highlightImageFloat {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  25% {
+    transform: translateY(-8px) rotate(0.5deg);
+  }
+
+  50% {
+    transform: translateY(-4px) rotate(-0.3deg);
+  }
+
+  75% {
+    transform: translateY(-10px) rotate(0.4deg);
+  }
 }
 
 .country-highlight-image img {
@@ -217,28 +240,44 @@ main,
 /* =========================================
    TRAVEL SHOWCASE (Section 3)
 ========================================= */
+/* Travel Header — Fixed above carousel */
+#globe-3 {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  grid-template-columns: 1fr;
+  align-items: end;
+  overflow: visible;
+}
+
+.travel-header {
+  z-index: 4;
+  text-align: left;
+  pointer-events: none;
+  padding-left: clamp(20px, 5vw, 80px);
+  padding-bottom: 8px;
+}
+
+.travel-header h2 {
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  margin: 0 0 4px 0;
+  font-size: clamp(1.4rem, 3vw, 2.8rem);
+}
+
+.travel-header .travel-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: clamp(0.75rem, 1.5vw, 0.95rem);
+  margin: 0;
+}
+
 .travel-showcase {
   position: relative;
   z-index: 3;
   width: 100%;
   max-width: 100vw;
   text-align: left;
-  align-self: end;
-  justify-self: stretch;
   margin-bottom: 12vh;
-}
-
-.travel-showcase h2 {
-  color: rgba(255, 255, 255, 0.92);
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  padding-left: clamp(20px, 5vw, 80px);
-}
-
-.travel-subtitle {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.95rem;
-  margin-bottom: 20px;
-  padding-left: clamp(20px, 5vw, 80px);
 }
 
 /* Travel Gallery — Horizontal Scroll */
@@ -250,12 +289,13 @@ main,
   /* Full width breakout */
   width: 100vw;
   margin-left: calc(-50vw + 50%);
-  padding: 12px calc(50vw - 80px) 30px; /* Start centered */
+  padding: 12px calc(50vw - 80px) 30px;
+  /* Start centered */
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -ms-overflow-style: none;
   -webkit-overflow-scrolling: touch;
-  
+
   /* Edge fade */
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
   mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
@@ -273,15 +313,14 @@ main,
   border-radius: 16px;
   text-align: center;
   cursor: pointer;
-  scroll-snap-align: center;
 
   background: rgba(255, 255, 255, 0.08);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
 
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .country-card:hover {
@@ -290,14 +329,51 @@ main,
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
 }
 
+/* Animated rainbow border on active card — conic-gradient travels around perimeter */
 .country-card.active {
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-color: transparent;
+  position: relative;
+  z-index: 1;
   background-clip: padding-box;
-  box-shadow:
-      0 0 10px 2px rgba(255, 95, 86, 0.6),
-      0 0 20px 4px rgba(255, 189, 46, 0.5),
-      0 0 30px 6px rgba(46, 168, 255, 0.4),
-      0 14px 40px rgba(0, 0, 0, 0.5);
+}
+
+.country-card.active::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 19px;
+  background: conic-gradient(from var(--rainbow-angle, 0deg),
+      rgba(255, 95, 86, 0.50),
+      rgba(255, 189, 46, 0.50),
+      rgba(39, 201, 63, 0.50),
+      rgba(46, 168, 255, 0.50),
+      rgba(180, 120, 255, 0.50),
+      rgba(255, 95, 86, 0.50));
+  filter: blur(6px);
+  z-index: -1;
+  animation: rainbowBorderSpin 6s linear infinite;
+}
+
+.country-card.active::after {
+  content: "";
+  position: absolute;
+  inset: 0px;
+  border-radius: 14px;
+  background: rgba(200, 200, 200);
+  z-index: -1;
+}
+
+@keyframes rainbowBorderSpin {
+  to {
+    --rainbow-angle: 360deg;
+  }
+}
+
+/* Register the custom property for animation */
+@property --rainbow-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
 }
 
 .country-card .card-flag {
@@ -371,19 +447,55 @@ main,
     height: 75px;
   }
 
+  .travel-header {
+    padding-left: clamp(16px, 4vw, 40px);
+  }
+
   .travel-showcase {
-    max-width: 95%;
+    margin-bottom: 4vh;
+  }
+
+  .travel-gallery {
+    padding: 8px clamp(16px, 4vw, 40px) 20px;
+    margin-left: 0;
+    width: 100%;
   }
 
   .country-card {
-    width: clamp(120px, 28vw, 150px);
-    padding: 12px 8px;
+    width: clamp(100px, 25vw, 140px);
+    padding: 10px 8px;
+  }
+
+  .country-card .card-flag {
+    font-size: 1.5rem;
+  }
+
+  .country-card .card-name {
+    font-size: 0.75rem;
+  }
+
+  .country-card .card-tag {
+    font-size: 0.6rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .about-accent,
-  .about-accent::after {
+  .about-accent::after,
+  .about-accent::before {
     animation: none !important;
+  }
+
+  .country-card.active {
+    animation: none !important;
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 10px 2px rgba(46, 168, 255, 0.5), 0 12px 36px rgba(0, 0, 0, 0.45);
+  }
+
+  .country-card.active::before,
+  .country-card.active::after {
+    animation: none !important;
+    display: none;
   }
 }

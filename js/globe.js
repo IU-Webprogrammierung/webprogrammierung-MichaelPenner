@@ -1,5 +1,5 @@
 /* =====================================================
-   GLOBE + Clouds — Mobile-Optimized with Travel Highlights
+   GLOBE + Clouds
 ===================================================== */
 gsap.registerPlugin(ScrollTrigger);
 
@@ -181,6 +181,11 @@ let travelData = { countries: [], cities: [] };
 let visitedCountrySet = new Set();
 let countryNameMap = {};
 
+// GeoJSON from world-atlas uses zero-padded 3-digit numeric IDs (e.g. "036" for Australia)
+function padCountryCode(code) {
+    return String(code).padStart(3, '0');
+}
+
 // Country code to flag emoji lookup
 const COUNTRY_FLAGS = {
     276:'🇩🇪',250:'🇫🇷',724:'🇪🇸',840:'🇺🇸',392:'🇯🇵',156:'🇨🇳',36:'🇦🇺',
@@ -212,10 +217,11 @@ const COUNTRY_FLAGS = {
             if (travelRes.ok) {
                 travelData = await travelRes.json();
                 (travelData.countries || []).forEach(country => {
+                    const paddedCode = padCountryCode(country.code);
                     if (country.visited) {
-                        visitedCountrySet.add(String(country.code));
+                        visitedCountrySet.add(paddedCode);
                     }
-                    countryNameMap[String(country.code)] = {
+                    countryNameMap[paddedCode] = {
                         name: country.name,
                         nameEn: country.nameEn,
                         image: country.image || ""
@@ -230,7 +236,7 @@ const COUNTRY_FLAGS = {
                 if (visitedRes.ok) {
                     const visitedJSON = await visitedRes.json();
                     (visitedJSON.visited || []).forEach(code => {
-                        visitedCountrySet.add(String(code));
+                        visitedCountrySet.add(padCountryCode(code));
                     });
                 }
             } catch (_) { /* ignore */ }
@@ -294,30 +300,42 @@ document.body.appendChild(countryImageEl);
 
 let currentHighlightedCountry = null;
 let highlightTimer = 0;
-const HIGHLIGHT_MIN_DURATION = 5000; // auto-advance every 5 seconds
+const HIGHLIGHT_MIN_DURATION = 8000; // auto-advance every 8 seconds
 let galleryAutoTimer = null;
 let galleryManualPause = 0; // timestamp of last manual interaction
-const GALLERY_MANUAL_PAUSE_MS = 8000; // pause auto-cycling 8s after manual click
+const GALLERY_MANUAL_PAUSE_MS = 12000; // pause auto-cycling 8s after manual click
 let galleryCardIndex = 0;
 let galleryCards = [];
 
-// Highlight colors — darker fill, bright border highlight
+// Highlight colors — darker fill, animated rainbow border
 const HIGHLIGHT_CAP = "rgba(10, 15, 20, 0.85)";     // dark fill
 const HIGHLIGHT_SIDE = "rgba(5, 10, 15, 0.80)";       // dark fill
-const HIGHLIGHT_STROKE = "rgba(255, 95, 120, 1.0)";   // warm bright line
-const HIGHLIGHT_ALT = 0.025;
+const HIGHLIGHT_ALT = 0.015;
+
+// Rainbow stroke colours (cycled in animation loop)
+const RAINBOW_STROKES = [
+    "rgba(255, 95, 86, 0.8)",
+    "rgba(255, 189, 46, 0.8)",
+    "rgba(39, 201, 63, 0.8)",
+    "rgba(46, 168, 255, 0.8)",
+    "rgba(180, 120, 255, 0.8)"
+];
+let highlightStrokeIndex = 0;
+let highlightFrameCounter = 0;
+let isRotatingToCountry = false;
 
 // Normal colors
 const VISITED_CAP = "rgba(246, 246, 248, 0.90)";
 const VISITED_SIDE = "rgba(200, 200, 202, 0.80)";
 const VISITED_STROKE = "rgba(255, 255, 255, 1.0)";
-const VISITED_ALT = 0.015;
+const VISITED_ALT = 0.010;
 const DEFAULT_CAP = "rgba(20, 22, 26, 0.75)";
 const DEFAULT_SIDE = "rgba(10, 12, 15, 0.60)";
 const DEFAULT_STROKE = "rgba(45, 49, 57, 0.50)";
 const DEFAULT_ALT = 0.005;
 
-function applyGlobeHighlight(highlightCode) {
+function applyGlobeHighlight(highlightCode, strokeColor) {
+    const currentStroke = strokeColor || RAINBOW_STROKES[0];
     // Re-set the polygon accessors so ThreeGlobe re-renders with updated colors
     globe
         .polygonCapColor(feature => {
@@ -334,7 +352,7 @@ function applyGlobeHighlight(highlightCode) {
         })
         .polygonStrokeColor(feature => {
             const fid = String(feature.id);
-            if (highlightCode && fid === highlightCode) return HIGHLIGHT_STROKE;
+            if (highlightCode && fid === highlightCode) return currentStroke;
             if (visitedCountrySet.has(fid)) return VISITED_STROKE;
             return DEFAULT_STROKE;
         })
@@ -344,17 +362,52 @@ function applyGlobeHighlight(highlightCode) {
             if (visitedCountrySet.has(fid)) return VISITED_ALT;
             return DEFAULT_ALT;
         })
-        .polygonsTransitionDuration(500);
+        .polygonsTransitionDuration(0);
 }
 
-// Build a lookup of approximate longitude per country code (using cities data)
+// Build a lookup of approximate longitude AND latitude per country code
+// Uses cities data first, then falls back to COUNTRY_COORDINATES
+const COUNTRY_COORDINATES = {
+    // Fallback coordinates for countries without city entries
+    '250': { lat: 46.6, lng: 2.2 },      // France (Paris area)
+    '36':  { lat: -25.3, lng: 133.8 },    // Australia
+    '756': { lat: 46.8, lng: 8.2 },       // Switzerland
+    '784': { lat: 24.5, lng: 54.4 },      // UAE (Abu Dhabi)
+    '578': { lat: 60.5, lng: 8.5 },       // Norway
+    '616': { lat: 52.0, lng: 19.4 },      // Poland
+    '100': { lat: 42.7, lng: 25.5 },      // Bulgaria
+    '442': { lat: 49.6, lng: 6.1 },       // Luxembourg
+    '144': { lat: 7.9, lng: 80.8 },       // Sri Lanka
+    '392': { lat: 36.2, lng: 138.3 },     // Japan
+};
+
 let countryLongitudes = {};
+let countryLatitudes = {};
 function buildCountryLongitudes() {
     countryLongitudes = {};
+    countryLatitudes = {};
+    // First pass: from country entries (now have lat/lng directly)
+    for (const country of (travelData.countries || [])) {
+        const code = padCountryCode(country.code);
+        if (country.lng !== undefined && country.lat !== undefined) {
+            countryLongitudes[code] = country.lng;
+            countryLatitudes[code] = country.lat;
+        }
+    }
+    // Second pass: from cities data (fills in any missing)
     for (const city of (travelData.cities || [])) {
-        const code = String(city.countryCode);
+        const code = padCountryCode(city.countryCode);
         if (!countryLongitudes[code]) {
             countryLongitudes[code] = city.lng;
+            countryLatitudes[code] = city.lat;
+        }
+    }
+    // Third pass: fill from fallback COUNTRY_COORDINATES
+    for (const [rawCode, coords] of Object.entries(COUNTRY_COORDINATES)) {
+        const code = padCountryCode(rawCode);
+        if (!countryLongitudes[code]) {
+            countryLongitudes[code] = coords.lng;
+            countryLatitudes[code] = coords.lat;
         }
     }
 }
@@ -400,7 +453,7 @@ function buildTravelGallery() {
             <span class="card-tag">${tag}</span>
         `;
 
-        card.addEventListener('click', () => selectGalleryCard(idx));
+        card.addEventListener('click', () => onGalleryManualClick(idx));
         galleryEl.appendChild(card);
         galleryCards.push(card);
     });
@@ -421,9 +474,18 @@ function selectGalleryCard(idx) {
     galleryCardIndex = idx;
 
     // Scroll card into view
-    galleryCards[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    // Scroll card into center of gallery (NOT scrollIntoView, which moves the whole section)
+    const gallery = document.getElementById('travelGallery');
+    if (gallery) {
+        const card = galleryCards[idx];
+        const cardLeft = card.offsetLeft;
+        const cardWidth = card.offsetWidth;
+        const galleryWidth = gallery.clientWidth;
+        const targetScroll = cardLeft - (galleryWidth / 2) + (cardWidth / 2);
+        gallery.scrollTo({ left: targetScroll, behavior: 'smooth' });
+    }
 
-    const code = String(country.code);
+    const code = padCountryCode(country.code);
     currentHighlightedCountry = code;
 
     // Highlight on globe
@@ -443,10 +505,20 @@ function selectGalleryCard(idx) {
         if (countryInfo.image) {
             countryImageEl.innerHTML = `<img src="${countryInfo.image}" alt="${name}" loading="lazy">`;
             countryImageEl.style.opacity = '1';
-            countryImageEl.style.bottom = '20%';
-            countryImageEl.style.right = '5%';
-            countryImageEl.style.top = 'auto';
-            countryImageEl.style.left = 'auto';
+
+            // Randomize image position from a pool of placements
+            const positions = [
+                { top: 'auto', bottom: '18%', left: 'auto', right: '5%' },
+                { top: 'auto', bottom: '22%', left: 'auto', right: '12%' },
+                { top: '15%',  bottom: 'auto', left: 'auto', right: '6%' },
+                { top: 'auto', bottom: '25%', left: '5%',   right: 'auto' },
+                { top: '20%',  bottom: 'auto', left: '4%',  right: 'auto' },
+            ];
+            const pos = positions[Math.floor(Math.random() * positions.length)];
+            countryImageEl.style.top = pos.top;
+            countryImageEl.style.bottom = pos.bottom;
+            countryImageEl.style.left = pos.left;
+            countryImageEl.style.right = pos.right;
         } else {
             countryImageEl.style.opacity = '0';
         }
@@ -454,30 +526,74 @@ function selectGalleryCard(idx) {
 }
 
 function rotateGlobeTo(countryCode) {
-    if (typeof gsap === 'undefined' || typeof globeIdle === 'undefined' || typeof cameraOrbit === 'undefined') return;
+    if (typeof gsap === 'undefined' || typeof globeIdle === 'undefined') return;
     if (Object.keys(countryLongitudes).length === 0) buildCountryLongitudes();
     const targetLng = countryLongitudes[countryCode];
     if (targetLng === undefined) return;
 
-    const targetGlobalRot = -targetLng * (Math.PI / 180);
-    const currentCameraRot = cameraOrbit.rotation.y;
+    // ThreeGlobe uses standard geographic convention:
+    //   longitude 0° = positive X axis on the globe sphere
+    // The camera looks from +Z.
+    //   To face longitude L, the globe surface at L must point toward +Z (camera).
+    //   This means globeIdle.rotation.y must bring that longitude to face +Z.
+    //
+    // Without any parent rotations, to show longitude L:
+    //   globeIdle.rotation.y = (90 - L) * π/180
+    // Because rotating Y by 90° brings X-axis to face Z-axis.
+    //
+    // cameraOrbit.rotation.y is set by scroll-driven GSAP and shifts the view.
+    // We add it to compensate: the camera orbits right, so globe must rotate
+    // further right to keep the target country facing the camera.
+    const cameraOrbitY = cameraOrbit ? cameraOrbit.rotation.y : 0;
+    const targetGlobeRot = (135 + targetLng) * (Math.PI / 180) + cameraOrbitY;
     const currentGlobeRot = globeIdle.rotation.y;
 
-    const desiredCameraRot = targetGlobalRot - currentGlobeRot;
-
-    // Find shortest rotation path
-    let diff = desiredCameraRot - (currentCameraRot % (Math.PI * 2));
+    // Find shortest rotation path to avoid long spins
+    let diff = targetGlobeRot - currentGlobeRot;
+    // Normalize accumulated rotation first
+    const fullTurns = Math.round(diff / (Math.PI * 2));
+    diff -= fullTurns * Math.PI * 2;
     while (diff > Math.PI) diff -= Math.PI * 2;
     while (diff < -Math.PI) diff += Math.PI * 2;
 
-    // Smooth rotation over 1.5 seconds
-    const targetFinal = currentCameraRot + diff;
-    gsap.to(cameraOrbit.rotation, {
+    const targetFinal = currentGlobeRot + diff;
+
+    // Pause idle rotation during the tween
+    isRotatingToCountry = true;
+    gsap.to(globeIdle.rotation, {
         y: targetFinal,
-        duration: 1.5,
+        duration: 1.2,
         ease: 'power2.inOut',
-        overwrite: 'auto'
+        overwrite: 'auto',
+        onComplete: () => {
+            isRotatingToCountry = false;
+        }
     });
+
+    // Tilt earth axis for high-latitude NORTHERN countries.
+    // Default: globeRig.rotation.z = 23.5° (equator/south visible).
+    // For northern countries: smoothly tilt from +23.5° → -25° as lat goes 20° → 65°.
+    const DEFAULT_TILT_DEG = 23.5;
+    const MAX_REVERSE_DEG = -25;   // max reverse tilt for ~65°N countries
+    const SWEEP_MIN_LAT = 20;      // start tilting above 20°N
+    const SWEEP_MAX_LAT = 65;      // full reverse at 65°N
+    const targetLat = countryLatitudes[countryCode];
+    if (targetLat !== undefined && globeRig) {
+        let tiltDeg;
+        if (targetLat > SWEEP_MIN_LAT) {
+            const factor = Math.min(1, (targetLat - SWEEP_MIN_LAT) / (SWEEP_MAX_LAT - SWEEP_MIN_LAT));
+            // Interpolate from default tilt to max reverse
+            tiltDeg = DEFAULT_TILT_DEG + factor * (MAX_REVERSE_DEG - DEFAULT_TILT_DEG);
+        } else {
+            tiltDeg = DEFAULT_TILT_DEG;
+        }
+        gsap.to(globeRig.rotation, {
+            z: tiltDeg * (Math.PI / 180),
+            duration: 1.4,
+            ease: 'power2.inOut',
+            overwrite: 'auto'
+        });
+    }
 }
 
 function startGalleryAutoCycle() {
@@ -485,6 +601,9 @@ function startGalleryAutoCycle() {
     galleryAutoTimer = setInterval(() => {
         // Skip if not in globe-3 view
         if (globeScrollProgress < 0.35 || globeScrollProgress > 0.75) return;
+
+        // Skip if manual pause is active (12 seconds after last click)
+        if (Date.now() - galleryManualPause < GALLERY_MANUAL_PAUSE_MS) return;
 
         const countries = travelData.countries || [];
         if (countries.length === 0) return;
@@ -494,10 +613,10 @@ function startGalleryAutoCycle() {
     }, HIGHLIGHT_MIN_DURATION);
 }
 
-// Override click to reset auto-cycling entirely
+// Manual click: select card and pause auto-cycling
 function onGalleryManualClick(idx) {
+    galleryManualPause = Date.now();
     selectGalleryCard(idx);
-    startGalleryAutoCycle(); // Resets the 5s timer
 }
 
 function updateCountryHighlight(scrollProgress) {
@@ -608,8 +727,21 @@ function animate() {
     starField.position.y = sceneParams.starY * 0.5;
     starField.rotation.y += 0.0005;
 
-    globeIdle.rotation.y += 0.002;
+    // Only idle-spin the globe when not tweening to a country
+    if (!isRotatingToCountry) {
+        globeIdle.rotation.y += 0.002;
+    }
     cloudRig.rotation.y += 0.005;
+
+    // Animate rainbow stroke on highlighted country — smooth HSL hue cycling
+    if (currentHighlightedCountry) {
+        highlightFrameCounter++;
+        if (highlightFrameCounter % 3 === 0) {
+            const hue = (highlightFrameCounter * 0.5) % 360;
+            const strokeColor = `hsl(${hue}, 85%, 60%)`;
+            applyGlobeHighlight(currentHighlightedCountry, strokeColor);
+        }
+    }
 
     clouds.forEach((cloud, i) => {
         const data = cloud.userData;

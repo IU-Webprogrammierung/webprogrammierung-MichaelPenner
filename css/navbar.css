@@ -267,8 +267,32 @@ body:not(.is-landing) .navbar {
     font-weight: 600;
     letter-spacing: 1px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    transition: background 0.2s ease, color 0.2s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: background 0.2s ease, color 0.2s ease, opacity 0.4s ease, transform 0.4s ease;
   }
+
+  /* Staggered entrance for links when menu is open */
+  .navbar.is-sticky .navbar-center.is-open a,
+  body:not(.is-landing) .navbar-center.is-open a {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .navbar.is-sticky .navbar-center.is-open a:nth-child(1),
+  body:not(.is-landing) .navbar-center.is-open a:nth-child(1) { transition-delay: 0.1s; }
+
+  .navbar.is-sticky .navbar-center.is-open a:nth-child(2),
+  body:not(.is-landing) .navbar-center.is-open a:nth-child(2) { transition-delay: 0.15s; }
+
+  .navbar.is-sticky .navbar-center.is-open a:nth-child(3),
+  body:not(.is-landing) .navbar-center.is-open a:nth-child(3) { transition-delay: 0.2s; }
+
+  .navbar.is-sticky .navbar-center.is-open a:nth-child(4),
+  body:not(.is-landing) .navbar-center.is-open a:nth-child(4) { transition-delay: 0.25s; }
+
+  .navbar.is-sticky .navbar-center.is-open a:nth-child(5),
+  body:not(.is-landing) .navbar-center.is-open a:nth-child(5) { transition-delay: 0.3s; }
 
   .navbar.is-sticky .navbar-center a:first-child,
   body:not(.is-landing) .navbar-center a:first-child {

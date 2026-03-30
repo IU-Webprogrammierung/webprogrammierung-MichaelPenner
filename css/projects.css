@@ -242,25 +242,25 @@ iframe {
 
 #projects.is-visible .project-card:nth-child(1) {
     opacity: 1;
-    transition-delay: 0.4s;
+    transition-delay: 0.40s;
 }
 
 #projects.is-visible .project-card:nth-child(2) {
     opacity: 1;
-    transition-delay: 0.45s;
+    transition-delay: 0.60s;
 }
 
 #projects.is-visible .project-card:nth-child(3) {
     opacity: 1;
-    transition-delay: 0.6s;
+    transition-delay: 0.80s;
 }
 
 #projects.is-visible .project-card:nth-child(4) {
     opacity: 1;
-    transition-delay: 0.75s;
+    transition-delay: 1.00s;
 }
 
 #projects.is-visible .project-card:nth-child(5) {
     opacity: 1;
-    transition-delay: 0.90s;
+    transition-delay: 1.20s;
 }

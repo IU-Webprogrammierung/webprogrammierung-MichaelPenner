@@ -439,12 +439,13 @@ main,
 
   .country-highlight-label {
     font-size: 1rem;
-    bottom: 10%;
+    bottom: auto;
+    top: 10%;
   }
 
   .country-highlight-image {
-    width: 100px;
-    height: 75px;
+    width: 130px;
+    height: auto;
   }
 
   .travel-header {

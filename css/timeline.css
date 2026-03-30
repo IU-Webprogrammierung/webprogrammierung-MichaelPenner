@@ -76,7 +76,7 @@
 #cv {
     position: relative;
     --progress: 0;
-    scroll-snap-align: start;
+    /*scroll-snap-align: start;*/
     position: relative;
 }
 

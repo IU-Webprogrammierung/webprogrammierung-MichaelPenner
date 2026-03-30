@@ -27,21 +27,21 @@ const CAMERA_CONFIG = {
     fov: IS_MOBILE_GLOBE ? 55 : 45,
     section1: {
         startZ: 90,
-        endZ: IS_MOBILE_GLOBE ? 35 : 30,
+        endZ: IS_MOBILE_GLOBE ? 28 : 30,
     },
     section2: {
-        cameraZ: IS_MOBILE_GLOBE ? 45 : 40,
+        cameraZ: IS_MOBILE_GLOBE ? 35 : 40,
         rigX: IS_MOBILE_GLOBE ? -10 : -20,
         orbitY: IS_MOBILE_GLOBE ? 0.8 : 1.2,
     },
     section3: {
-        cameraZ: IS_MOBILE_GLOBE ? 28 : 22,
+        cameraZ: IS_MOBILE_GLOBE ? 22 : 22,
         rigX: 0,
         rigY: IS_MOBILE_GLOBE ? -0.5 : -1.0,
         orbitY: IS_MOBILE_GLOBE ? 1.8 : 2.4,
     },
     section4: {
-        cameraZ: IS_MOBILE_GLOBE ? 22 : 18,
+        cameraZ: IS_MOBILE_GLOBE ? 16 : 18,
         rigY: IS_MOBILE_GLOBE ? 3.5 : 5.0,
         orbitY: IS_MOBILE_GLOBE ? 2.8 : 3.4,
     }
@@ -73,7 +73,7 @@ const renderer = new THREE.WebGLRenderer({
     alpha: true,
     powerPreference: "high-performance"
 });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, IS_MOBILE_GLOBE ? 1.2 : 1.5));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, IS_MOBILE_GLOBE ? 2.0 : 1.5));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -545,7 +545,7 @@ function rotateGlobeTo(countryCode) {
     // We add it to compensate: the camera orbits right, so globe must rotate
     // further right to keep the target country facing the camera.
     const cameraOrbitY = cameraOrbit ? cameraOrbit.rotation.y : 0;
-    const targetGlobeRot = (135 + targetLng) * (Math.PI / 180) + cameraOrbitY;
+    const targetGlobeRot = (-targetLng) * (Math.PI / 180) + cameraOrbitY;
     const currentGlobeRot = globeIdle.rotation.y;
 
     // Find shortest rotation path to avoid long spins

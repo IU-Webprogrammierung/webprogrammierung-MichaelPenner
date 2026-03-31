@@ -7,7 +7,7 @@
       "visited": true,
       "lat": 51.2,
       "lng": 9.9,
-      "image": ""
+      "image": "assets/images/globe-deutschland.jpg"
     },
     {
       "code": 250,
@@ -25,7 +25,7 @@
       "visited": true,
       "lat": 40.0,
       "lng": -3.7,
-      "image": "assets/images/globe-spain(1).jpg"
+      "image": "assets/images/globe-spanien.jpg"
     },
     {
       "code": 840,
@@ -34,7 +34,7 @@
       "visited": true,
       "lat": 40.7,
       "lng": -74.0,
-      "image": "assets/images/globe-usa(4).jpg"
+      "image": "assets/images/globe-usa.jpg"
     },
     {
       "code": 392,
@@ -61,7 +61,7 @@
       "visited": true,
       "lat": -25.3,
       "lng": 133.8,
-      "image": "assets/images/timeline-australia.jpg"
+      "image": "assets/images/globe-australia.jpg"
     },
     {
       "code": 756,
@@ -70,7 +70,7 @@
       "visited": true,
       "lat": 46.8,
       "lng": 8.2,
-      "image": ""
+      "image": "assets/images/globe-schweiz.jpg"
     },
     {
       "code": 764,
@@ -79,7 +79,7 @@
       "visited": true,
       "lat": 13.7,
       "lng": 100.5,
-      "image": ""
+      "image": "assets/images/globe-thailand.jpg"
     },
     {
       "code": 360,
@@ -88,7 +88,7 @@
       "visited": true,
       "lat": -8.5,
       "lng": 115.3,
-      "image": ""
+      "image": "assets/images/globe-indonesien.jpg"
     },
     {
       "code": 380,
@@ -97,7 +97,7 @@
       "visited": true,
       "lat": 41.9,
       "lng": 12.5,
-      "image": ""
+      "image": "assets/images/globe-italien.jpg"
     },
     {
       "code": 784,
@@ -106,7 +106,7 @@
       "visited": true,
       "lat": 24.5,
       "lng": 54.4,
-      "image": ""
+      "image": "assets/images/globe-uae.jpg"
     },
     {
       "code": 826,
@@ -124,7 +124,7 @@
       "visited": true,
       "lat": 60.5,
       "lng": 8.5,
-      "image": ""
+      "image": "assets/images/globe-norwegen.jpg"
     },
     {
       "code": 616,
@@ -163,6 +163,15 @@
       "image": "assets/images/globe-marrakech.jpg"
     },
     {
+      "code": 470,
+      "name": "Malta",
+      "nameEn": "Malta",
+      "visited": true,
+      "lat": 35.9,
+      "lng": 14.4,
+      "image": "assets/images/globe-malta.jpg"
+    },
+    {
       "code": 144,
       "name": "Sri Lanka",
       "nameEn": "Sri Lanka",
@@ -170,6 +179,34 @@
       "wishlist": true,
       "lat": 7.9,
       "lng": 80.8,
+      "image": ""
+    },
+    {
+      "code": 818,
+      "name": "Ägypten",
+      "nameEn": "Egypt",
+      "visited": true,
+      "lat": 26.8,
+      "lng": 30.8,
+      "image": ""
+    },
+    {
+      "code": 300,
+      "name": "Griechenland",
+      "nameEn": "Greece",
+      "visited": true,
+      "lat": 39.0,
+      "lng": 22.0,
+      "image": ""
+    },
+    {
+      "code": 417,
+      "name": "Kirgistan",
+      "nameEn": "Kyrgyzstan",
+      "visited": false,
+      "wishlist": true,
+      "lat": 41.2,
+      "lng": 74.7,
       "image": ""
     }
   ],
@@ -211,7 +248,7 @@
       "countryCode": 276
     },
     {
-      "name": "Ubud (Bali)",
+      "name": "Ubud",
       "lat": -8.519268,
       "lng": 115.263298,
       "countryCode": 360
@@ -253,7 +290,7 @@
       "countryCode": 528
     },
     {
-      "name": "Malta (Valletta)",
+      "name": "Valletta",
       "lat": 35.884445,
       "lng": 14.506944,
       "countryCode": 470
@@ -353,6 +390,12 @@
       "lat": 27.257896,
       "lng": 33.811607,
       "countryCode": 818
+    },
+    {
+      "name": "Berlin",
+      "lat": 52.520008,
+      "lng": 13.404954,
+      "countryCode": 276
     }
   ]
 }

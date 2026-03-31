@@ -457,7 +457,7 @@ main,
   }
 
   .travel-gallery {
-    padding: 8px clamp(16px, 4vw, 40px) 20px;
+    padding: 8px clamp(16px, 4vw, 40px) 30px;
     margin-left: 0;
     width: 100%;
   }

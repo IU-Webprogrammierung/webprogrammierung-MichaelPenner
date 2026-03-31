@@ -266,9 +266,9 @@ const COUNTRY_FLAGS = {
                 .pointsData(cityPoints)
                 .pointLat(d => d.lat)
                 .pointLng(d => d.lng)
-                .pointAltitude(0.085)
-                .pointRadius(0.20)
-                .pointColor(() => "rgba(255, 255, 255, 1.0)");
+                .pointAltitude(0.07)
+                .pointRadius(0.3)
+                .pointColor(() => "rgba(10, 12, 15, 0.85)");
         }
 
         // Build the travel gallery cards after data is loaded
@@ -325,13 +325,13 @@ let highlightFrameCounter = 0;
 let isRotatingToCountry = false;
 
 // Normal colors
-const VISITED_CAP = "rgba(246, 246, 248, 0.90)";
-const VISITED_SIDE = "rgba(200, 200, 202, 0.80)";
-const VISITED_STROKE = "rgba(255, 255, 255, 1.0)";
+const VISITED_CAP = "rgba(20, 22, 26, 0.75)";
+const VISITED_SIDE = "rgba(10, 12, 15, 0.60)";
+const VISITED_STROKE = "rgba(45, 49, 57, 0.50)";
 const VISITED_ALT = 0.010;
-const DEFAULT_CAP = "rgba(20, 22, 26, 0.75)";
-const DEFAULT_SIDE = "rgba(10, 12, 15, 0.60)";
-const DEFAULT_STROKE = "rgba(45, 49, 57, 0.50)";
+const DEFAULT_CAP = "rgba(246, 246, 248, 0.90)";
+const DEFAULT_SIDE = "rgba(200, 200, 202, 0.80)";
+const DEFAULT_STROKE = "rgba(255, 255, 255, 1.0)";
 const DEFAULT_ALT = 0.005;
 
 function applyGlobeHighlight(highlightCode, strokeColor) {
@@ -365,28 +365,12 @@ function applyGlobeHighlight(highlightCode, strokeColor) {
         .polygonsTransitionDuration(0);
 }
 
-// Build a lookup of approximate longitude AND latitude per country code
-// Uses cities data first, then falls back to COUNTRY_COORDINATES
-const COUNTRY_COORDINATES = {
-    // Fallback coordinates for countries without city entries
-    '250': { lat: 46.6, lng: 2.2 },      // France (Paris area)
-    '36':  { lat: -25.3, lng: 133.8 },    // Australia
-    '756': { lat: 46.8, lng: 8.2 },       // Switzerland
-    '784': { lat: 24.5, lng: 54.4 },      // UAE (Abu Dhabi)
-    '578': { lat: 60.5, lng: 8.5 },       // Norway
-    '616': { lat: 52.0, lng: 19.4 },      // Poland
-    '100': { lat: 42.7, lng: 25.5 },      // Bulgaria
-    '442': { lat: 49.6, lng: 6.1 },       // Luxembourg
-    '144': { lat: 7.9, lng: 80.8 },       // Sri Lanka
-    '392': { lat: 36.2, lng: 138.3 },     // Japan
-};
-
 let countryLongitudes = {};
 let countryLatitudes = {};
 function buildCountryLongitudes() {
     countryLongitudes = {};
     countryLatitudes = {};
-    // First pass: from country entries (now have lat/lng directly)
+    // First pass: from country entries (have lat/lng directly)
     for (const country of (travelData.countries || [])) {
         const code = padCountryCode(country.code);
         if (country.lng !== undefined && country.lat !== undefined) {
@@ -400,14 +384,6 @@ function buildCountryLongitudes() {
         if (!countryLongitudes[code]) {
             countryLongitudes[code] = city.lng;
             countryLatitudes[code] = city.lat;
-        }
-    }
-    // Third pass: fill from fallback COUNTRY_COORDINATES
-    for (const [rawCode, coords] of Object.entries(COUNTRY_COORDINATES)) {
-        const code = padCountryCode(rawCode);
-        if (!countryLongitudes[code]) {
-            countryLongitudes[code] = coords.lng;
-            countryLatitudes[code] = coords.lat;
         }
     }
 }

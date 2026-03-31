@@ -12,11 +12,7 @@
       "desc": "Geboren in einem kleinen Dorf namens Waldbreitbach. Ich bleibe meinen Wurzeln treu.",
       "label": "Geburt"
     },
-    "images": [
-      { "src": "assets/images/timeline-australia.jpg" },
-      { "src": "assets/images/timeline-australia2.jpg" },
-      { "src": "assets/images/timeline-australia3.jpg" }
-    ]
+    "images": []
   },
   {
     "start": "2004-01",
@@ -32,9 +28,15 @@
       "label": "Grundschule Waldbreitbach"
     },
     "images": [
-      { "src": "assets/images/timeline-primaryshool.jpg" },
-      { "src": "assets/images/timeline-primaryshool2.jpg" },
-      { "src": "assets/images/timeline-primaryshool3.jpg" }
+      {
+        "src": "assets/images/timeline-primaryshool.jpg"
+      },
+      {
+        "src": "assets/images/timeline-primaryshool2.jpg"
+      },
+      {
+        "src": "assets/images/timeline-primaryshool3.jpg"
+      }
     ]
   },
   {
@@ -79,9 +81,15 @@
       "label": "Work and Travel"
     },
     "images": [
-      { "src": "assets/images/timeline-australia.jpg" },
-      { "src": "assets/images/timeline-australia2.jpg" },
-      { "src": "assets/images/timeline-australia3.jpg" }
+      {
+        "src": "assets/images/timeline-australia.jpg"
+      },
+      {
+        "src": "assets/images/timeline-australia2.jpg"
+      },
+      {
+        "src": "assets/images/timeline-australia3.jpg"
+      }
     ]
   },
   {
@@ -112,7 +120,9 @@
       "label": "Maschinenbau"
     },
     "images": [
-      { "src": "assets/images/timeline-dhbw.jpg" }
+      {
+        "src": "assets/images/timeline-dhbw.jpg"
+      }
     ]
   },
   {
@@ -185,8 +195,12 @@
       "label": "Hochzeit"
     },
     "images": [
-      { "src": "assets/images/timeline-wedding.jpg" },
-      { "src": "assets/images/timeline-wedding2.jpg" }
+      {
+        "src": "assets/images/timeline-wedding.jpg"
+      },
+      {
+        "src": "assets/images/timeline-wedding2.jpg"
+      }
     ]
   }
 ]

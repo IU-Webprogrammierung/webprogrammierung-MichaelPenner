@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const VIRTUAL_TRACK_WIDTH = 4000;
   timelineTrack.style.width = `${VIRTUAL_TRACK_WIDTH}px`;
-  const WINDOW_SPAN = IS_MOBILE ? 0.18 : 0.12;
+  const WINDOW_SPAN = IS_MOBILE ? 0.24 : 0.16;
 
   // Rope
   const ROPE_POINT_COUNT = 150;
@@ -351,7 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
           data-desc-de="${dDe}" data-desc-en="${dEn}"
           aria-label="${tDe}"></button>
         <span class="milestone-label">
-          ${dateDisp} • <span data-de="${lDe}" data-en="${lEn}">${lDe}</span>
+          <span data-de="${lDe}" data-en="${lEn}">${lDe}</span>
         </span>`;
       timelineTrack.appendChild(el);
 
@@ -1259,7 +1259,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const ms = timelineViewport.scrollWidth - timelineViewport.clientWidth;
     const p = ms > 0 ? clamp01(timelineViewport.scrollLeft / ms) : 0;
     cvSection.style.setProperty('--progress', p);
-    const d0 = lerpDate(PADDED_START, END_DATE, p), d1 = lerpDate(PADDED_START, END_DATE, clamp01(p + WINDOW_SPAN));
+    const leftFrac = p * (1 - WINDOW_SPAN);
+    const d0 = lerpDate(PADDED_START, END_DATE, leftFrac);
+    const d1 = lerpDate(PADDED_START, END_DATE, leftFrac + WINDOW_SPAN);
     if (windowStartLabel && windowEndLabel) {
       windowStartLabel.textContent = monthYearFmt.format(d0.getFullYear() < 1996 ? new Date("1996-01-01") : d0);
       windowEndLabel.textContent = monthYearFmt.format(d1);

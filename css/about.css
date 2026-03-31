@@ -42,66 +42,62 @@
   height: 4px;
   width: 100%;
   border-radius: 999px;
-  opacity: 0.4;
+  opacity: 0.8;
+  filter: blur(2px);
   background: linear-gradient(90deg,
-      rgba(255, 95, 86, .80),
-      rgba(255, 189, 46, .80),
-      rgba(39, 201, 63, .70),
-      rgba(46, 168, 255, .70),
-      rgba(180, 120, 255, .70),
-      rgba(255, 95, 86, .80));
+      rgba(255, 95, 86, 0.9) 0%,
+      rgba(255, 189, 46, 0.9) 20%,
+      rgba(39, 201, 63, 0.8) 40%,
+      rgba(46, 168, 255, 0.8) 60%,
+      rgba(180, 120, 255, 0.8) 80%,
+      rgba(255, 95, 86, 0.9) 100%);
   background-size: 300% 100%;
-  box-shadow:
-    0 0 4px rgba(255, 95, 86, 0.35),
-    0 0 10px rgba(255, 189, 46, 0.25),
-    0 0 16px rgba(39, 201, 63, 0.20),
-    0 0 20px rgba(46, 168, 255, 0.25),
-    0 0 30px rgba(180, 120, 255, 0.15);
-  animation: accentGlow 8s ease-in-out infinite;
+  animation: gradientPan 5s ease-in-out alternate infinite;
 }
 
-/* Soft close glow */
+/* Base soft glow for the entire line */
 .about-accent::after {
   content: "";
   position: absolute;
-  inset: -8px -4px;
+  inset: -2px -6px;
   border-radius: 999px;
   background: inherit;
-  filter: blur(12px);
-  opacity: 0.15;
-  animation: accentPulse 5s ease-in-out infinite alternate;
+  filter: blur(8px);
+  opacity: 0.6;
+  animation: gradientPan 5s ease-in-out alternate infinite;
 }
 
-/* Wide ambient bloom */
+/* Moving color wave that shines brightly with identical colors */
 .about-accent::before {
   content: "";
   position: absolute;
-  inset: -24px -12px;
+  inset: -6px 0; /* Cover the whole line but taller */
   border-radius: 999px;
   background: inherit;
-  filter: blur(40px);
-  opacity: 0.12;
-  animation: accentPulse 7s ease-in-out infinite alternate-reverse;
+  filter: blur(5px);
+  opacity: 0.8;
+  
+  /* Mask to only reveal a small moving window of the bright background */
+  -webkit-mask-image: radial-gradient(ellipse 50% 100% at 50% 50%, black 0%, transparent 70%);
+  mask-image: radial-gradient(ellipse 50% 100% at 50% 50%, black 0%, transparent 70%);
+  -webkit-mask-size: 25% 100%;
+  mask-size: 25% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  
+  /* Pan the gradient background exactly like the parent, AND sweep the mask position */
+  animation: gradientPan 5s ease-in-out alternate infinite, waveMask 4.5s linear infinite;
+  pointer-events: none;
 }
 
-@keyframes accentGlow {
-  0% {
-    background-position: 0% 50%;
-    box-shadow: 0 0 6px rgba(255, 95, 86, 0.35), 0 0 14px rgba(255, 189, 46, 0.25), 0 0 22px rgba(39, 201, 63, 0.20), 0 0 30px rgba(46, 168, 255, 0.25);
-  }
-  50% {
-    background-position: 100% 50%;
-    box-shadow: 0 0 10px rgba(180, 120, 255, 0.40), 0 0 18px rgba(46, 168, 255, 0.30), 0 0 26px rgba(39, 201, 63, 0.25), 0 0 36px rgba(255, 95, 86, 0.20);
-  }
-  100% {
-    background-position: 0% 50%;
-    box-shadow: 0 0 6px rgba(255, 95, 86, 0.35), 0 0 14px rgba(255, 189, 46, 0.25), 0 0 22px rgba(39, 201, 63, 0.20), 0 0 30px rgba(46, 168, 255, 0.25);
-  }
+@keyframes waveMask {
+  0%   { -webkit-mask-position: -50% 0; mask-position: -50% 0; }
+  100% { -webkit-mask-position: 150% 0; mask-position: 150% 0; }
 }
 
-@keyframes accentPulse {
-  from { opacity: 0.25; }
-  to   { opacity: 0.55; }
+@keyframes gradientPan {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
 }
 
 /* Layout */

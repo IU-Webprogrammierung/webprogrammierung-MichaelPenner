@@ -130,7 +130,7 @@
 
 .timeline-window-label {
     position: absolute;
-    top: 10%;
+    top: 18%;
     font-weight: 700;
     padding: 0 10px;
     z-index: 3;
@@ -245,11 +245,11 @@
 }
 
 .milestone.up .milestone-label {
-    bottom: 62%;
+    bottom: 54%;
 }
 
 .milestone.down .milestone-label {
-    top: 62%;
+    top: 54%;
 }
 
 /* ================================
@@ -410,7 +410,7 @@
     }
 
     .timeline-window-label {
-        top: 25%;
+        top: 36%;
     }
 }
 

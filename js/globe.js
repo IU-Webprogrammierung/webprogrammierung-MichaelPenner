@@ -246,14 +246,14 @@ const COUNTRY_FLAGS = {
             .polygonsData(countryFeatures)
             .polygonAltitude(feature => visitedCountrySet.has(String(feature.id)) ? 0.020 : 0.010)
             .polygonCapColor(feature => visitedCountrySet.has(String(feature.id))
-                ? "rgba(246, 246, 248, 0.90)"
-                : "rgba(20, 22, 26, 0.75)")
+                ? "rgba(20, 22, 26, 0.75)"
+                : "rgba(246, 246, 248, 0.90)")
             .polygonSideColor(feature => visitedCountrySet.has(String(feature.id))
-                ? "rgba(200, 200, 202, 0.80)"
-                : "rgba(10, 12, 15, 0.60)")
+                ? "rgba(10, 12, 15, 0.60)"
+                : "rgba(200, 200, 202, 0.80)")
             .polygonStrokeColor(feature => visitedCountrySet.has(String(feature.id))
-                ? "rgba(255, 255, 255, 1.0)"
-                : "rgba(45, 49, 57, 0.50)")
+                ? "rgba(45, 49, 57, 0.50)"
+                : "rgba(255, 255, 255, 1.0)")
             .polygonsTransitionDuration(0);
 
         // Load city points

@@ -25,19 +25,19 @@ const sceneParams = {
 const CAMERA_CONFIG = {
     fov: IS_MOBILE_GLOBE ? 55 : 45,
     section1: {
-        startZ: 90,
-        endZ: IS_MOBILE_GLOBE ? 28 : 24, // Full intro blow-in. Distance = 24
+        startZ: IS_MOBILE_GLOBE ? 140 : 90,
+        endZ: IS_MOBILE_GLOBE ? 50 : 24,
     },
     //Section 2: Blank Globe View (Shift right for text, mid-distance)
     section2: {
-        cameraZ: IS_MOBILE_GLOBE ? 35 : 20,
+        cameraZ: IS_MOBILE_GLOBE ? 28 : 20,
         rigX: IS_MOBILE_GLOBE ? -10 : -8,
         rigY: IS_MOBILE_GLOBE ? 0.0 : 0.0,
         orbitY: IS_MOBILE_GLOBE ? 0.8 : 0.4,
     },
     //Section 3: Country Highlights (Close-up, slightly right of center)
     section3: {
-        cameraZ: IS_MOBILE_GLOBE ? 22 : 16,
+        cameraZ: IS_MOBILE_GLOBE ? 28 : 16,
         rigX: IS_MOBILE_GLOBE ? 0 : -2,
         rigY: IS_MOBILE_GLOBE ? -0.5 : 2.0, 
         orbitY: IS_MOBILE_GLOBE ? 1.8 : 1.2,

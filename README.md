@@ -4,6 +4,20 @@ Diese README.md dokumentiert den Entwicklungsprozess, die eingesetzten Technolog
 
 Die gesamte Webseite wurde ohne fertige CSS-Frameworks "from scratch" entwickelt, um ein tiefgreifendes Verständnis der Webentwicklungsgrundlagen zu demonstrieren.
 
+## 🏁 Projektabschluss & Persönliche Reflexion
+
+Nach der Behebung letzter Fehler und Layout-Anpassungen reiche ich das Projekt nun fristgerecht in seinem aktuellen Stand ein. Ich betrachte diese Portfolio-Webseite keineswegs als "fertig", sondern als lebendiges Projekt, an dem ich auch in Zukunft weiterarbeiten und neue Ideen erproben werde. Für den Moment und angesichts der Abgabefrist habe ich jedoch einen Schlussstrich gezogen und präsentiere das Projekt in diesem Milestone. 
+
+Insgesamt bin ich mit dem Ergebnis sehr zufrieden. Aufgrund der schieren Größe des Projekts und der Vielzahl an komplexen Animationen und Zustandsänderungen gibt es sicherlich noch Raum für Optimierungen. Ein paar wenige Layout-Probleme ließen sich in der zur Verfügung stehenden Zeit nicht mehr bis zur absoluten Perfektion beheben, weshalb ich mich auf die Kernfunktionalitäten und das Gesamterlebnis fokussiert habe.
+
+### Zum Entwicklungsprozess und KI-Einsatz
+
+Zu einer meiner früheren Versionen erhielt ich das wertvolle Feedback, dass ich mir zwar sehr viel vorgenommen hätte, das Projekt jedoch stellenweise bruchstückhaft wirke und schwer erkennbar sei, wie viel Eigenleistung im Vergleich zur Nutzung von LLMs (Large Language Models) eingeflossen ist. 
+
+Um hier volle Transparenz zu schaffen: Ja, ich habe LLMs als Hilfsmittel genutzt, insbesondere beim Debugging und zur Lösung spezifischer programmiertechnischer Hürden. Die kreativen Ideen, das Gesamtkonzept, die Design-Entscheidungen und die Architektur stammen jedoch vollständig von mir. Ich habe nicht die Führung an eine KI abgegeben oder mir große Teile des Codes einfach generieren lassen, sondern sie als Assistenzwerkzeug genutzt, um meine eigenen, oft ambitionierten Visionen technisch umzusetzen.
+
+Dass sich mein Repository und das Projekt eher stückweise aufgebaut haben, spiegelt meine persönliche Arbeits- und Denkweise wider. Als kreativer Mensch folge ich im Entwicklungsprozess stark meiner aktuellen Inspiration. Ich arbeite an den Modulen weiter, wo mich meine Ideen gerade hintreiben, wodurch sich das Portfolio iterativ und oft sprunghaft zusammengesetzt hat. Ein starres, im Vorfeld detailliert ausgearbeitetes Konzept streng abzuarbeiten, fällt mir schwerer – ich stürze mich lieber direkt in die Umsetzung und lasse die Dinge organisch wachsen. Mir ist völlig bewusst, dass diese Vorgehensweise aus Sicht klassischer Projektmanagement-Methoden unkonventionell ist, sie ist jedoch der ehrliche Grund für den dynamischen Entstehungsprozess und die Struktur dieses Portfolios.
+
 ## 🛠️ Eingesetzte Technologien & Methoden
 
 - **HTML5**: Semantisch korrekte Strukturierung der Inhalte.

@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
         cards.forEach(card => {
             if (card !== frontCard) {
                 const otherIframe = card.querySelector('iframe');
-                if (otherIframe && otherIframe.hasAttribute('src')) {
-                    otherIframe.removeAttribute('src');
+                if (otherIframe && otherIframe.getAttribute('src') && otherIframe.getAttribute('src') !== 'about:blank') {
+                    otherIframe.setAttribute('src', 'about:blank');
                 }
             }
         });

@@ -5,8 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const overlay = document.querySelector("#skills-overlay");
   if (!overlay) return;
 
-  gsap.registerPlugin(ScrollTrigger);
-
   let sectionState = "outside";
   let towersVisible = false;
   // outside → entering → inside → leaving
@@ -121,6 +119,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("resize", resize);
   resize();
+
+  // Track whether DOM targets need updating (resize/scroll-triggered, not every frame)
+  let domTargetsDirty = true;
+  window.addEventListener("resize", () => { domTargetsDirty = true; });
+  // Also mark dirty while the scroller is actively scrolling (scroll-snap settling)
+  const scroller = document.getElementById("main");
+  if (scroller) scroller.addEventListener("scroll", () => { domTargetsDirty = true; }, { passive: true });
 
   function plasticMaterial(hexColor, index, count) {
     const base = new THREE.Color(hexColor);
@@ -359,7 +364,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const baseX = canvasW - cx;
 
       // Adjust vertical anchor slightly for mobile
-      const baseY = (r.bottom - canvasRect.top) - (isMobile ? 25 : 40);
+      // Increased subtraction to move the baseline higher on the screen so blocks don't render too low
+      const baseY = (r.bottom - canvasRect.top) - (isMobile ? 55 : 85);
 
       if (t.anchoredToDOM) {
         t.group.position.set(baseX, baseY, 0);
@@ -468,7 +474,7 @@ document.addEventListener("DOMContentLoaded", () => {
         b.vX = (Math.random() - 0.5) * speedX;
 
         // 2. Depth Pop (Fly TOWARDS the camera so bigger blocks naturally render in front)
-        b.vZ = 100 + Math.random() * 400;
+        b.vZ = 100 + Math.random() * 500;
 
         // 3. Vertical Pop (Reduced to prevent hitting the top of the screen)
         b.vy = -50 - Math.random() * 150;
@@ -541,7 +547,11 @@ document.addEventListener("DOMContentLoaded", () => {
     last = now;
     time += dt;
 
-    updateTargetsFromDOM();
+    // Recalculate DOM positions when dirty (resize/scroll) and section is visible
+    if (domTargetsDirty && (towersVisible || sectionState === "entering")) {
+      updateTargetsFromDOM();
+      domTargetsDirty = false;
+    }
 
     for (const t of towers) {
       const n = t.blocks.length || 1;
@@ -654,7 +664,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    renderer.render(scene, camera);
+    // Skip rendering when towers aren't visible (perf optimization)
+    if (towersVisible || sectionState === "leaving") {
+      renderer.render(scene, camera);
+    }
     tick.rafId = requestAnimationFrame(tick);
   }
 

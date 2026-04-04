@@ -10,9 +10,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
@@ -52,7 +51,7 @@
         <div class="navbar">
             <div class="navbar-left">
                 <a href="index.html"><img class="logo" src="assets/Logo.png" alt="Michael Krahn - Home"></a>
-                <span class="nav-separator">|</span>
+                <span class="nav-separator" aria-hidden="true">|</span>
                 <a href="shop.html" class="nav-btn nav-btn-left" data-en="Shop" data-de="Shop">Shop</a>
             </div>
 
@@ -367,7 +366,7 @@
                             </div>
                         </div>
                         <div class="project-content">
-                            <iframe title="RiE 2024" data-src="https://theothersideoftruth.com/" width="100%"
+                            <iframe title="The Other Side of Truth" data-src="https://theothersideoftruth.com/" width="100%"
                                 height="100%" loading="lazy" referrerpolicy="no-referrer"></iframe>
                             <div class="click-overlay"></div>
                         </div>
@@ -403,7 +402,7 @@
         <!--      Globe & Clouds     -->
         <section id="globe-1" class="globe-section">
             <div class="globe-intro">
-                <h1 class="hero-title" data-en="Explore My Journey" data-de="Entdecke meine Reise">Explore My Journey</h1>
+                <h2 class="hero-title" data-en="Explore My Journey" data-de="Entdecke meine Reise">Explore My Journey</h2>
                 <p class="hero-subtitle" data-en="Scroll down to travel the world with me"
                     data-de="Scrolle nach unten und reise mit mir um die Welt">Scroll down to travel the world with me</p>
             </div>
@@ -424,9 +423,9 @@
             <div class="travel-header">
                 <h2 data-en="My Footprint" data-de="Mein Fußabdruck">My Footprint</h2>
                 <p class="travel-subtitle"
-                    data-en="18 countries, countless memories. Click a card to explore."
-                    data-de="18 Länder, unzählige Erinnerungen. Klicke eine Karte zum Erkunden.">
-                    18 countries, countless memories. Click a card to explore.
+                    data-en="21 countries, countless memories. Click a card to explore."
+                    data-de="21 Länder, unzählige Erinnerungen. Klicke eine Karte zum Erkunden.">
+                    21 countries, countless memories. Click a card to explore.
                 </p>
             </div>
             <div class="travel-showcase">
@@ -562,6 +561,7 @@
     <script src="https://unpkg.com/three-globe@2.45.0/dist/three-globe.min.js" defer></script>
     <script src="https://unpkg.com/topojson-client@3" defer></script>
 
+    <script src="js/gsap-init.js" defer></script>
     <script src="js/custom_cursor.js" defer></script>
     <script src="js/language.js" defer></script>
     <script src="js/navbar.js" defer></script>

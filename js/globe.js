@@ -1,7 +1,6 @@
 /* =====================================================
    GLOBE + Clouds
 ===================================================== */
-gsap.registerPlugin(ScrollTrigger);
 
 const IS_MOBILE_GLOBE = window.innerWidth < 900;
 
@@ -27,23 +26,28 @@ const CAMERA_CONFIG = {
     fov: IS_MOBILE_GLOBE ? 55 : 45,
     section1: {
         startZ: 90,
-        endZ: IS_MOBILE_GLOBE ? 28 : 30,
+        endZ: IS_MOBILE_GLOBE ? 28 : 24, // Full intro blow-in. Distance = 24
     },
+    //Section 2: Blank Globe View (Shift right for text, mid-distance)
     section2: {
-        cameraZ: IS_MOBILE_GLOBE ? 35 : 40,
-        rigX: IS_MOBILE_GLOBE ? -10 : -20,
-        orbitY: IS_MOBILE_GLOBE ? 0.8 : 1.2,
+        cameraZ: IS_MOBILE_GLOBE ? 35 : 20,
+        rigX: IS_MOBILE_GLOBE ? -10 : -8,
+        rigY: IS_MOBILE_GLOBE ? 0.0 : 0.0,
+        orbitY: IS_MOBILE_GLOBE ? 0.8 : 0.4,
     },
+    //Section 3: Country Highlights (Close-up, slightly right of center)
     section3: {
-        cameraZ: IS_MOBILE_GLOBE ? 22 : 22,
-        rigX: 0,
-        rigY: IS_MOBILE_GLOBE ? -0.5 : -1.0,
-        orbitY: IS_MOBILE_GLOBE ? 1.8 : 2.4,
+        cameraZ: IS_MOBILE_GLOBE ? 22 : 16,
+        rigX: IS_MOBILE_GLOBE ? 0 : -2,
+        rigY: IS_MOBILE_GLOBE ? -0.5 : 2.0, 
+        orbitY: IS_MOBILE_GLOBE ? 1.8 : 1.2,
     },
+    //Section 4: Label "Interesse geweckt" & Contact Overlay
     section4: {
-        cameraZ: IS_MOBILE_GLOBE ? 16 : 18,
+        cameraZ: IS_MOBILE_GLOBE ? 16 : 12,
+        rigX: IS_MOBILE_GLOBE ? 0 : 0,
         rigY: IS_MOBILE_GLOBE ? 3.5 : 5.0,
-        orbitY: IS_MOBILE_GLOBE ? 2.8 : 3.4,
+        orbitY: IS_MOBILE_GLOBE ? 2.8 : 1.8,
     }
 };
 
@@ -695,8 +699,8 @@ function stopGlobeAnimation() {
 const clock = new THREE.Clock();
 
 function animate() {
+    if (!isGlobeVisible) return; // Don't schedule next frame if not visible
     globeAnimationId = requestAnimationFrame(animate);
-    if (!isGlobeVisible) return;
 
     const time = clock.getElapsedTime();
 
@@ -710,10 +714,11 @@ function animate() {
     cloudRig.rotation.y += 0.005;
 
     // Animate rainbow stroke on highlighted country — smooth HSL hue cycling
+    // Throttled to every 30 frames (~2/sec) to avoid expensive polygon re-evaluation
     if (currentHighlightedCountry) {
         highlightFrameCounter++;
-        if (highlightFrameCounter % 3 === 0) {
-            const hue = (highlightFrameCounter * 0.5) % 360;
+        if (highlightFrameCounter % 30 === 0) {
+            const hue = (highlightFrameCounter * 1.5) % 360;
             const strokeColor = `hsl(${hue}, 85%, 60%)`;
             applyGlobeHighlight(currentHighlightedCountry, strokeColor);
         }
@@ -753,9 +758,11 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 // SCROLL-DRIVEN CAMERA ANIMATIONS
-// Section 1: Fly through clouds to center stage
+
+// Section 1: Fly through clouds to center stage (Intro Blow-in)
+// Starts as soon as #globe-1 enters the screen, finishes when completely snapped.
 gsap.timeline({
-    scrollTrigger: { trigger: "#globe-1", start: "top 75%", end: "bottom top", scrub: 0.8 }
+    scrollTrigger: { trigger: "#globe-1", start: "top bottom", end: "top top", scrub: 0.8 }
 })
     .fromTo(camera.position,
         { z: CAMERA_CONFIG.section1.startZ },
@@ -767,51 +774,84 @@ gsap.timeline({
         { x: 0, y: 0, ease: "power2.out" },
         0
     )
+    .fromTo(cameraOrbit.rotation,
+        { y: 0 },
+        { y: 0, ease: "power2.out" },
+        0
+    )
     .fromTo(sceneParams,
         { spread: 0.2, spin: 0.0 },
         { spread: 1.2, spin: 0.4, ease: "power2.out" },
         0
     )
-    .to(".hero-title", { y: -120, autoAlpha: 0, filter: "blur(18px)", ease: "power2.out" }, 0.55)
     .to("#vignette-overlay", { opacity: 1, ease: "power2.out" }, 0);
 
-// Section 2: Globe on the Right Border
+// Section 2: Country Highlights
+// Transitions smoothly from config 1 to config 2 while scrolling from 1 to 2.
 gsap.timeline({
-    scrollTrigger: { trigger: "#globe-2", start: "top 75%", end: "bottom top", scrub: 0.8 }
+    scrollTrigger: { trigger: "#globe-2", start: "top bottom", end: "top top", scrub: 0.8 }
 })
+    .to(".hero-title", { y: -120, autoAlpha: 0, filter: "blur(18px)", ease: "power2.in" }, 0) // Fade out title from sec 1
     .fromTo("#globe-2 .copy-block",
         { autoAlpha: 0, y: 40, filter: "blur(12px)" },
-        { autoAlpha: 1, y: 0, filter: "blur(0px)", ease: "power2.out", duration: 0.3 },
-        0
+        { autoAlpha: 1, y: 0, filter: "blur(0px)", ease: "power2.out" },
+        0.3 // fade in slightly later
     )
-    .to(cameraOrbit.rotation, { y: CAMERA_CONFIG.section2.orbitY, ease: "none" }, 0)
-    .to(camera.position, { z: CAMERA_CONFIG.section2.cameraZ, ease: "power1.inOut" }, 0)
-    .to(cameraRig.position, { x: CAMERA_CONFIG.section2.rigX, y: 0, ease: "power2.inOut" }, 0)
-    .to(sceneParams, { spin: "+=0.6", duration: 1 }, 0);
+    .fromTo(cameraOrbit.rotation, 
+        { y: 0 }, 
+        { y: CAMERA_CONFIG.section2.orbitY, ease: "power1.inOut" }, 0
+    )
+    .fromTo(camera.position, 
+        { z: CAMERA_CONFIG.section1.endZ }, 
+        { z: CAMERA_CONFIG.section2.cameraZ, ease: "power1.inOut" }, 0
+    )
+    .fromTo(cameraRig.position, 
+        { x: 0, y: 0 }, 
+        { x: CAMERA_CONFIG.section2.rigX, y: CAMERA_CONFIG.section2.rigY, ease: "power1.inOut" }, 0
+    )
+    .to(sceneParams, { spin: "+=0.6" }, 0);
 
-// Section 3: Close-up & Rotation
+// Section 3: "Interesse geweckt"
 gsap.timeline({
-    scrollTrigger: { trigger: "#globe-3", start: "top 75%", end: "bottom top", scrub: 0.8 }
+    scrollTrigger: { trigger: "#globe-3", start: "top bottom", end: "top top", scrub: 0.8 }
 })
     .fromTo("#globe-3 .copy-block",
         { autoAlpha: 0, y: 40, filter: "blur(12px)" },
-        { autoAlpha: 1, y: 0, filter: "blur(0px)", ease: "power2.out", duration: 0.3 },
-        0
+        { autoAlpha: 1, y: 0, filter: "blur(0px)", ease: "power2.out" },
+        0.3
     )
-    .to(cameraOrbit.rotation, { y: CAMERA_CONFIG.section3.orbitY, ease: "none" }, 0)
-    .to(camera.position, { z: CAMERA_CONFIG.section3.cameraZ, ease: "power2.inOut" }, 0)
-    .to(cameraRig.position, { x: CAMERA_CONFIG.section3.rigX, y: CAMERA_CONFIG.section3.rigY, ease: "power2.inOut" }, 0)
-    .to(sceneParams, { spread: 1.5, ease: "power2.inOut" }, 0);
+    .fromTo(cameraOrbit.rotation, 
+        { y: CAMERA_CONFIG.section2.orbitY }, 
+        { y: CAMERA_CONFIG.section3.orbitY, ease: "power1.inOut" }, 0
+    )
+    .fromTo(camera.position, 
+        { z: CAMERA_CONFIG.section2.cameraZ }, 
+        { z: CAMERA_CONFIG.section3.cameraZ, ease: "power1.inOut" }, 0
+    )
+    .fromTo(cameraRig.position, 
+        { x: CAMERA_CONFIG.section2.rigX, y: CAMERA_CONFIG.section2.rigY }, 
+        { x: CAMERA_CONFIG.section3.rigX, y: CAMERA_CONFIG.section3.rigY, ease: "power1.inOut" }, 0
+    )
+    .to(sceneParams, { spread: 1.5, ease: "power1.inOut" }, 0);
 
-// Section 4: Globe at Lower Border
+// Section 4: Contact Overlay
 gsap.timeline({
-    scrollTrigger: { trigger: "#globe-4", start: "top 75%", end: "bottom top", scrub: 0.8 }
+    scrollTrigger: { trigger: "#globe-4", start: "top bottom", end: "top top", scrub: 0.8 }
 })
-    .to("#globe-4", { autoAlpha: 1 }, 0)
-    .to(cameraOrbit.rotation, { y: CAMERA_CONFIG.section4.orbitY, ease: "none" }, 0)
-    .to(camera.position, { z: CAMERA_CONFIG.section4.cameraZ, ease: "power2.inOut" }, 0)
-    .to(cameraRig.position, { x: 0, y: CAMERA_CONFIG.section4.rigY, ease: "power2.inOut" }, 0)
-    .to(cloudMaterial, { opacity: 0.15, ease: "power2.inOut" }, 0);
+    .to("#globe-4", { autoAlpha: 1, ease: "power2.out" }, 0)
+    .fromTo(cameraOrbit.rotation, 
+        { y: CAMERA_CONFIG.section3.orbitY }, 
+        { y: CAMERA_CONFIG.section4.orbitY, ease: "power1.inOut" }, 0
+    )
+    .fromTo(camera.position, 
+        { z: CAMERA_CONFIG.section3.cameraZ }, 
+        { z: CAMERA_CONFIG.section4.cameraZ, ease: "power1.inOut" }, 0
+    )
+    .fromTo(cameraRig.position, 
+        { x: CAMERA_CONFIG.section3.rigX, y: CAMERA_CONFIG.section3.rigY }, 
+        { x: 0, y: CAMERA_CONFIG.section4.rigY, ease: "power1.inOut" }, 0
+    )
+    .to(cloudMaterial, { opacity: 0.15, ease: "power1.inOut" }, 0);
 
 // Handle Resize
 window.addEventListener('resize', () => {

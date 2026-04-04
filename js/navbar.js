@@ -1,4 +1,4 @@
-gsap.registerPlugin(ScrollTrigger);
+/* GSAP plugin registration handled by gsap-init.js */
 
 /* =====================================================
    MOBILE HAMBURGER MENU
@@ -62,6 +62,9 @@ gsap.registerPlugin(ScrollTrigger);
     navbar.classList.add("is-sticky");
   }
 
+  // GSAP-based FLIP animation requires GSAP + ScrollTrigger
+  if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+
   function flipSticky(makeSticky) {
     const first = navbar.getBoundingClientRect();
     navbar.classList.toggle("is-sticky", makeSticky);
@@ -97,6 +100,7 @@ let heroCharIndex = 0;
 const typingTarget = document.getElementById("typingText");
 
 function typeHeroText() {
+    if (!typingTarget) return;
     if (heroCharIndex <= heroText.length) {
         typingTarget.innerHTML = heroText.slice(0, heroCharIndex);
         heroCharIndex++;

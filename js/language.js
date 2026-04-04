@@ -44,11 +44,8 @@ window.toggleLanguage = toggleLanguage;
 // Load saved language preference
 document.addEventListener('DOMContentLoaded', () => {
     const savedLang = localStorage.getItem('shopLang');
-    if (savedLang) {
-        currentLang = savedLang;
-        // Trigger the toggle to apply saved language
-        if (savedLang === 'de') {
-            toggleLanguage();
-        }
+    if (savedLang && savedLang !== currentLang) {
+        // currentLang starts as 'en'; if saved is 'de', toggle once to apply it
+        toggleLanguage();
     }
 });

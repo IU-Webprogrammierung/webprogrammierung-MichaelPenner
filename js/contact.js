@@ -5,7 +5,6 @@
     
     const SERVICE_ID = 'service_pbuvfcd';
     
-    // Template for email to YOU (the website owner)
     const TEMPLATE_ID = 'template_gzsl61r';
 
     // Initialize EmailJS
@@ -26,7 +25,7 @@
         const fromEmail = document.getElementById('email').value;
         const message = document.getElementById('message').value;
         
-        // Your email where you want to receive messages
+        // My email
         const myEmail = 'michael.penner97@web.de';
 
         // Data for emailjs
@@ -37,7 +36,7 @@
             my_email: myEmail
         };
 
-        // Send email to YOU (website owner)
+        // Send email to ME
         emailjs.send(SERVICE_ID, TEMPLATE_ID, EmailData)
             .then(function(response) {
                 // Both emails sent successfully
@@ -49,9 +48,10 @@
                 alert('Error sending message. Please try again.');
             })
             .finally(function() {
-                // Re-enable button
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Send message';
+                const lang = document.body.getAttribute('data-current-lang') || 'en';
+                const langAttr = submitBtn.getAttribute('data-' + lang);
+                submitBtn.textContent = langAttr || 'Send message';
             });
     });
 })();

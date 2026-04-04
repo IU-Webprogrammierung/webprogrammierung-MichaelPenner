@@ -1,12 +1,8 @@
 :root{
-  /* Use light background from index.html */
-  --bg: #f6f6f8;
+  /* Shop-specific variables (extending style.css) */
   --fg: #0f1115;
   --muted: rgba(15, 17, 21, 0.70);
-  /* Glass effect from style.css */
   --card: rgba(255, 255, 255, 0.12);
-  --glass: rgba(255, 255, 255, 0.12);
-  --glass-border: rgba(255, 255, 255, 0.25);
   --stroke: rgba(15, 17, 21, 0.14);
   --shadow: 0 20px 70px rgba(0,0,0,0.15);
   --radius: 18px;
@@ -180,8 +176,6 @@ body.is-booting .snap-section .media {
 }
 
 .overlay-inner{
-  background: var(--card);
-  border: 1px solid var(--stroke);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 18px 18px 16px;

@@ -1,7 +1,6 @@
 // Wrap everything in this listener
 document.addEventListener("DOMContentLoaded", (event) => {
   
-  gsap.registerPlugin(ScrollTrigger);
 
   /* =====================================================
      SCROLL TO TOP

@@ -4,11 +4,11 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="KitchenAid Restorations by Michael Krahn. Custom-restored vintage KitchenAid stand mixers with premium finishes and handcrafted details.">
     <title>KitchenAid Restorations</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
@@ -21,6 +21,9 @@
 
 <body>
 
+    <!-- Skip Navigation -->
+    <a href="#scroller" class="skip-link" tabindex="0">Skip to main content</a>
+
     <div class="cursor-dot"></div>
     <div class="cursor-outline"></div>
 
@@ -30,7 +33,7 @@
                 <a href="shop.html">
                     <img class="logo" src="assets/Logo.png" alt="Michael Krahn - Shop">
                 </a>
-                <span class="nav-separator">|</span>
+                <span class="nav-separator" aria-hidden="true">|</span>
                 <a href="index.html" class="nav-btn nav-btn-left" data-en="Portfolio" data-de="Portfolio">Portfolio</a>
             </div>
 
@@ -141,8 +144,8 @@
                         <div class="overlay">
                             <div class="overlay-inner">
                                 <div class="price">€ 399</div>
-                                <div class="title" data-en="Matte Black + Minimal Knob"
-                                    data-de="Mattschwarz + Minimalistischer Knopf">Matte Black + Minimal Knob</div>
+                                <div class="title" data-en="Powder Pink + Dark Rose Gold"
+                                    data-de="Puderrosa + Dunkles Roségold">Powder Pink + Dark Rose Gold</div>
                                 <p class="desc"
                                     data-en="Softness meets sophistication. A velvety powder pink matte finish complemented by deep, luxurious dark rose gold hardware. Crowned with a bespoke rose-patterned cover, it is a true statement piece."
                                     data-de="Sanftheit trifft auf Raffinesse. Ein samtiges, puderrosafarbenes Matt-Finish, ergänzt durch tiefe, luxuriöse dunkle Roségold-Elemente. Gekrönt von einer maßgeschneiderten Abdeckung im Rosendesign ist sie ein absolutes Statement-Piece.">
@@ -188,8 +191,7 @@
                         <div class="overlay">
                             <div class="overlay-inner">
                                 <div class="price">€ 379</div>
-                                <div class="title" data-en="Candy Red + Custom Badge" data-de="Rosa & Rosegold">Candy
-                                    Red + Custom Badge</div>
+                                <div class="title" data-en="Matte Reseda + Gloss Olive" data-de="Matt Reseda + Glanzoliv">Matte Reseda + Gloss Olive</div>
                                 <p class="desc"
                                     data-en="Deeply rooted in nature. The matte reseda green body absorbs the light, while high-gloss olive details provide a rich, tactile contrast. Paired with a classic glass bowl for timeless elegance."
                                     data-de="Tief in der Natur verwurzelt. Das matte Resedagrün absorbiert das Licht, während hochglänzende olivgrüne Details einen faszinierenden Kontrast bieten. Kombiniert mit einer klassischen Glasschüssel für zeitlose Eleganz.">
@@ -226,14 +228,13 @@
                 </div>
                 <div class="copy">
                     <div class="glass-container">
-                        <div class="kicker" data-en="KitchenAid Restoration 03" data-de="KitchenAid Restaurierung 04">
+                        <div class="kicker" data-en="KitchenAid Restoration 04" data-de="KitchenAid Restaurierung 04">
                             KitchenAid Restoration 04</div>
                         <h2 data-en="Classic Elegance" data-de="Classic Elegance">Classic Elegance</h2>
                         <div class="overlay">
                             <div class="overlay-inner">
                                 <div class="price">€ 379</div>
-                                <div class="title" data-en="Classic Elegance" data-de="Puderosa & Rosegold">Candy
-                                    Red + Custom Badge</div>
+                                <div class="title" data-en="Signal White + Brushed Gold" data-de="Signalweiß + Gebürstetes Gold">Signal White + Brushed Gold</div>
                                 <p class="desc"
                                     data-en="Minimalist perfection. A flawless, semi-gloss signal white body that reflects light beautifully, elevated by bespoke brushed gold knobs. It is the ultimate expression of clean, architectural luxury."
                                     data-de="Minimalistische Perfektion. Ein makelloser, seidenmatter signalweißer Korpus, der das Licht sanft reflektiert, veredelt durch maßgefertigte Knöpfe aus gebürstetem Gold. Der ultimative Ausdruck von purem, architektonischem Luxus.">
@@ -278,8 +279,7 @@
                         <div class="overlay">
                             <div class="overlay-inner">
                                 <div class="price">€ 379</div>
-                                <div class="title" data-en="Nordic Dove" data-de="Nordic Dove">Candy
-                                    Red + Custom Badge</div>
+                                <div class="title" data-en="Matte Dove Blue + Walnut Trim" data-de="Matt Taubenblau + Walnussholz">Matte Dove Blue + Walnut Trim</div>
                                 <p class="desc"
                                     data-en="Inspired by mid-century modern design. A calming matte dove blue pairs seamlessly with the cool, industrial edge of brushed aluminum. The genuine walnut wood trim brings warmth and masterful craftsmanship to your kitchen."
                                     data-de="Inspiriert vom Mid-Century Modern Design. Ein beruhigendes mattes Taubenblau verbindet sich nahtlos mit der kühlen, industriellen Note von gebürstetem Aluminium. Die Zierleiste aus echtem Walnussholz bringt Wärme und meisterhafte Handwerkskunst in Ihre Küche.">
@@ -392,7 +392,7 @@
                             target="_blank" rel="noopener" aria-label="GitHub">
                             <svg viewBox="0 0 24 24" aria-hidden="true">
                                 <path
-                                    d="M12 .5C5.73.5.75 5.61.75 12c0 5.1 3.29 9.43 7.86 10.96.57.11.78-.25.78-.56v-2.1c-3.2.71-3.88-1.58-3.88-1.58-.53-1.38-1.29-1.74-1.29-1.74-1.05-.74.08-.73.08-.73 1.16.08 1.77 1.22 1.77 1.22 1.03 1.8 2.7 1.28 3.36.98.1-.76.4-1.28.73-1.58-2.55-.3-5.23-1.3-5.23-5.78 0-1.28.45-2.33 1.18-3.15-.12-.3-.51-1.52.11-3.16 0 0 .97-.32 3.18 1.2.1.9-.92-.26 39 2.88-.39.98 0 1.96.13 2.88.39 2.2-1.52 3.18-1.2 3.18-1.2.62 1.64.23 2.86.11 3.16.73.82 1.18 1.87 1.18 3.15 0 4.49-2.69 5.48-5.25 5.77.41.36.78 1.08.78 2.18v3.23c0 .31.21.67.79.56 4.56-1.53 7.85-5.86 7.85-10.96C23.25 5.61 18.27.5 12 .5z" />
+                                    d="M12 .5C5.73.5.75 5.61.75 12c0 5.1 3.29 9.43 7.86 10.96.57.11.78-.25.78-.56v-2.1c-3.2.71-3.88-1.58-3.88-1.58-.53-1.38-1.29-1.74-1.29-1.74-1.05-.74.08-.73.08-.73 1.16.08 1.77 1.22 1.77 1.22 1.03 1.8 2.7 1.28 3.36.98.1-.76.4-1.28.73-1.58-2.55-.3-5.23-1.3-5.23-5.78 0-1.28.45-2.33 1.18-3.15-.12-.3-.51-1.52.11-3.16 0 0 .97-.32 3.18 1.2.92-.26 1.9-.39 2.88-.39.98 0 1.96.13 2.88.39 2.2-1.52 3.18-1.2 3.18-1.2.62 1.64.23 2.86.11 3.16.73.82 1.18 1.87 1.18 3.15 0 4.49-2.69 5.48-5.25 5.77.41.36.78 1.08.78 2.18v3.23c0 .31.21.67.79.56 4.56-1.53 7.85-5.86 7.85-10.96C23.25 5.61 18.27.5 12 .5z" />
                             </svg>
                         </a>
 

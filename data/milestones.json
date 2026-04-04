@@ -20,7 +20,7 @@
     "en": {
       "title": "Primary School",
       "desc": "Technical basics, analytical work, project thinking.",
-      "label": "Primary School Waldbreitbach"
+      "label": "Primary School (Waldbreitbach)"
     },
     "de": {
       "title": "Grundschule",
@@ -45,12 +45,12 @@
     "en": {
       "title": "Lifesaver Badge",
       "desc": "Swimming certification.",
-      "label": "Mannheim"
+      "label": "Lifesaver Badge"
     },
     "de": {
       "title": "DLRG Rettungsschwimmer",
       "desc": "Schwimmabzeichen.",
-      "label": "Mannheim"
+      "label": "Rettungsschwimmer"
     }
   },
   {
@@ -59,12 +59,12 @@
     "en": {
       "title": "High School (Abitur)",
       "desc": "Technical basics, analytical work, project thinking.",
-      "label": "Rhein-Wied-Gymnasium, Neuwied"
+      "label": "High School (Rhein-Wied-Gymnasium)"
     },
     "de": {
       "title": "Abitur",
       "desc": "Technische Grundlagen, analytisches Arbeiten, Projektdenken.",
-      "label": "Rhein-Wied-Gymnasium, Neuwied"
+      "label": "Abitur Rhein-Wied-Gymnasium"
     }
   },
   {
@@ -98,12 +98,12 @@
     "en": {
       "title": "Architecture Studies (HS Koblenz)",
       "desc": "Basics of design, aesthetics, and technical understanding.",
-      "label": "Architecture"
+      "label": "Architecture Studies"
     },
     "de": {
       "title": "Studium Architektur (HS Koblenz)",
       "desc": "Grundlagen Entwurf, Gestaltung, technisches Verständnis.",
-      "label": "Architektur"
+      "label": "Architektur Studium"
     }
   },
   {
@@ -112,12 +112,12 @@
     "en": {
       "title": "Mechanical Engineering (DHBW Mannheim)",
       "desc": "Technical basics, analytical work, project thinking.",
-      "label": "Engineering"
+      "label": "Mechanical Engineering Studies"
     },
     "de": {
       "title": "Maschinenbau (DHBW Mannheim)",
       "desc": "Technische Grundlagen, analytisches Arbeiten, Projektdenken.",
-      "label": "Maschinenbau"
+      "label": "Maschinenbau Studium"
     },
     "images": [
       {
@@ -131,12 +131,12 @@
     "en": {
       "title": "Computational Visualistics (Uni Koblenz)",
       "desc": "Focus: Visual computing, interaction, web/UX-related projects.",
-      "label": "University"
+      "label": "Computational Visualistics Studies (University of Koblenz)"
     },
     "de": {
       "title": "Computervisualistik (Uni Koblenz)",
       "desc": "Schwerpunkt: Visual Computing, Interaktion, Web/UX-nahe Projekte.",
-      "label": "Studium"
+      "label": "Computervisualistik Studium (Universität Koblenz)"
     }
   },
   {
@@ -145,12 +145,12 @@
     "en": {
       "title": "First Web Project",
       "desc": "HTML/CSS Basics, early layouts, small animations.",
-      "label": "2019"
+      "label": "Kinderuni Website 1.0"
     },
     "de": {
       "title": "Erstes Webprojekt",
       "desc": "HTML/CSS Basics, erste Layouts, kleine Animationen.",
-      "label": "2019"
+      "label": "Kinderuni Website 1.0"
     }
   },
   {

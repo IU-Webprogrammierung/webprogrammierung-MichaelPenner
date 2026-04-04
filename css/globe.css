@@ -41,7 +41,6 @@
   display: block;
 }
 
-main,
 .scroller {
   position: relative;
   z-index: 1;
@@ -481,12 +480,6 @@ main,
 }
 
 @media (prefers-reduced-motion: reduce) {
-
-  .about-accent,
-  .about-accent::after,
-  .about-accent::before {
-    animation: none !important;
-  }
 
   .country-card.active {
     animation: none !important;

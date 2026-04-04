@@ -77,7 +77,6 @@
     position: relative;
     --progress: 0;
     /*scroll-snap-align: start;*/
-    position: relative;
 }
 
 .timeline-track {
@@ -195,7 +194,7 @@
     border-radius: 50%;
 
     background: var(--text);
-    border: solid, 2px, var(--text);
+    border: 2px solid var(--text);
     z-index: 2;
     /* Needs to be above the duration bar */
 

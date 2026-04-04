@@ -120,9 +120,6 @@
 
 .about-text-mobile {
   display: block;
-}
-
-.about-text-mobile {
   max-width: 65ch;
 }
 
@@ -370,4 +367,12 @@
 
 #about-skills.is-visible .skill-tower:nth-child(4) {
   transition-delay: 0.9s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-accent,
+  .about-accent::after,
+  .about-accent::before {
+    animation: none !important;
+  }
 }

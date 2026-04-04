@@ -157,10 +157,10 @@ body::before{
   content:"";
   position: fixed;
   /* Make the background larger than viewport so moving it doesn't reveal edges */
-  top: -100%;
-  left: -100%;
-  width: 300%;
-  height: 300%;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
   pointer-events: none;
   z-index: 50;
   opacity: 0.25;
@@ -170,6 +170,7 @@ body::before{
   background-size: 250px 250px;
 
   mix-blend-mode: overlay;
+  will-change: transform;
 
   /* Slower animation for realistic film grain effect */
   animation: grainMove 1.2s steps(10) infinite;
@@ -337,7 +338,9 @@ a{
   text-decoration: none;
   color: var(--text);
   font-weight: 600;
-  cursor: none;
+}
+@media (min-width: 900px) {
+  a { cursor: none; }
 }
 
 a::before{
@@ -428,7 +431,10 @@ a:focus-visible::before{
     box-shadow 0.35s ease,
     border-color 0.35s ease;
 
-  cursor: none;
+  cursor: pointer;
+}
+@media (min-width: 900px) {
+  .btn { cursor: none; }
 }
 
 .btn::before{

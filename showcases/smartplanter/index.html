@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartPlanter | Modular Autonomous Botanical & Hydroponics IoT System</title>
+  <meta name="description" content="A cutting-edge modular Arduino & ESP32-C3 smart planter project featuring dual-stage hydroponics, motorized servo pH dipping, hot-swappable 4-zone soil planters, wireless ESP-NOW CYD touch display, and embedded responsive web dashboard.">
+
+  <!-- Local Self-Hosted Fonts -->
+  <link rel="stylesheet" href="../../css/fonts.css">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Ambient Glow Accents -->
+  <div class="ambient-glow glow-top-left"></div>
+  <div class="ambient-glow glow-bottom-right"></div>
+  <div class="ambient-glow glow-center"></div>
+
+  <!-- Sticky Top Navigation Bar (Designed for iframe or standalone) -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-brand">
+        <div class="brand-badge">
+          <i data-lucide="sprout"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">SmartPlanter<span class="brand-accent">.io</span></span>
+          <span class="brand-sub">ESP32-C3 &bull; CYD ESP-NOW System</span>
+        </div>
+      </a>
+
+      <nav class="nav-menu">
+        <a href="#overview" class="nav-link"><i data-lucide="layers"></i> Overview</a>
+        <a href="#modular-system" class="nav-link"><i data-lucide="cpu"></i> Modular Modules</a>
+        <a href="#cyd-display" class="nav-link"><i data-lucide="monitor"></i> CYD Display</a>
+        <a href="#web-control" class="nav-link"><i data-lucide="smartphone"></i> App & Web</a>
+        <a href="#simulator" class="nav-link"><i data-lucide="play-circle"></i> Live Demo</a>
+        <a href="#code-specs" class="nav-link"><i data-lucide="code-2"></i> Tech Specs</a>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="status-pill">
+          <span class="pulse-dot"></span>
+          <span>ESP-NOW Active (2 Hz)</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="page-container">
+
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero">
+      <div class="hero-content">
+        <div class="hero-pill-badge animate-reveal">
+          <i data-lucide="sparkles"></i>
+          <span>Autonomous IoT Botanical Engineering</span>
+        </div>
+
+        <h1 class="hero-title animate-reveal delay-1">
+          SmartPlanter: Autonomous <span class="gradient-text">Modular Botanics</span> &amp; Dual-Stage Hydroponics
+        </h1>
+
+        <p class="hero-description animate-reveal delay-2">
+          An advanced embedded ecosystem pairing an <strong>ESP32-C3 Super Mini</strong> core with a wireless 
+          <strong>Cheap Yellow Display (CYD)</strong> touch terminal and an embedded SoftAP web dashboard. 
+          Engineered with motorized servo pH bulb protection, laser Time-of-Flight reservoir sensing, 
+          and hot-swappable 4-zone soil irrigation.
+        </p>
+
+        <!-- Quick Spec Tags -->
+        <div class="hero-tags animate-reveal delay-3">
+          <span class="hero-tag"><i data-lucide="microchip"></i> ESP32-C3 Core</span>
+          <span class="hero-tag"><i data-lucide="radio"></i> ESP-NOW 0x504C4E54</span>
+          <span class="hero-tag"><i data-lucide="monitor"></i> 2.8" CYD ILI9341</span>
+          <span class="hero-tag"><i data-lucide="droplet"></i> Dual Hydro Tanks</span>
+          <span class="hero-tag"><i data-lucide="shield-check"></i> Motorized pH Lifter</span>
+          <span class="hero-tag"><i data-lucide="wifi"></i> Zero Router Needed</span>
+        </div>
+
+        <!-- Hero Actions -->
+        <div class="hero-cta-group animate-reveal delay-4">
+          <a href="#modular-system" class="btn btn-primary">
+            <i data-lucide="boxes"></i> Explore Modular System
+          </a>
+          <a href="#cyd-display" class="btn btn-secondary">
+            <i data-lucide="touchpad"></i> CYD Touch Controller
+          </a>
+          <a href="#simulator" class="btn btn-glass">
+            <i data-lucide="activity"></i> Try Live Simulator
+          </a>
+        </div>
+      </div>
+
+      <!-- Hero Visual Showcase (Planter on Window Bench) -->
+      <div class="hero-visual-wrapper animate-reveal delay-2">
+        <div class="hero-card-glow"></div>
+        <div class="hero-image-frame">
+          <img src="assets/images/hero-planter-window.jpg" alt="SmartPlanter sitting on a sunlit oak window bench with lush herbs and CYD wireless display" class="hero-image" id="hero-img">
+
+          <!-- Floating Telemetry Badges on Hero Image -->
+          <div class="floating-telemetry telemetry-pos-1">
+            <div class="telemetry-icon water"><i data-lucide="waves"></i></div>
+            <div class="telemetry-body">
+              <span class="label">Tank 1 (Fresh Water)</span>
+              <span class="value" id="hero-tank1-val">ToF: 78% (54mm)</span>
+            </div>
+          </div>
+
+          <div class="floating-telemetry telemetry-pos-2">
+            <div class="telemetry-icon ph"><i data-lucide="test-tube"></i></div>
+            <div class="telemetry-body">
+              <span class="label">Servo pH Lifter</span>
+              <span class="value" id="hero-ph-val">pH 6.6 &bull; Submerged Safe</span>
+            </div>
+          </div>
+
+          <div class="floating-telemetry telemetry-pos-3">
+            <div class="telemetry-icon cyd"><i data-lucide="radio"></i></div>
+            <div class="telemetry-body">
+              <span class="label">CYD Link (ESP-NOW)</span>
+              <span class="value">Channel 1 &bull; RSSI -42dBm</span>
+            </div>
+          </div>
+
+          <div class="image-overlay-badge">
+            <i data-lucide="sun"></i>
+            <span>Window Bench Deployment</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIVE METRICS BANNER -->
+    <section class="metrics-strip" id="overview">
+      <div class="metric-item">
+        <div class="metric-number">2</div>
+        <div class="metric-label">Hydro Reservoirs</div>
+        <div class="metric-sub">Fresh Water &amp; Nutrient Mix</div>
+      </div>
+      <div class="metric-divider"></div>
+      <div class="metric-item">
+        <div class="metric-number">4</div>
+        <div class="metric-label">Soil Planter Zones</div>
+        <div class="metric-sub">Auto-Detect &amp; PWM Irrigation</div>
+      </div>
+      <div class="metric-divider"></div>
+      <div class="metric-item">
+        <div class="metric-number">2<span class="unit">Hz</span></div>
+        <div class="metric-label">ESP-NOW Telemetry</div>
+        <div class="metric-sub">Zero-Lag Peer Packet Stream</div>
+      </div>
+      <div class="metric-divider"></div>
+      <div class="metric-item">
+        <div class="metric-number">60<span class="unit">s</span></div>
+        <div class="metric-label">Failsafe Cutoff</div>
+        <div class="metric-sub">Pump Overheat Protection</div>
+      </div>
+      <div class="metric-divider"></div>
+      <div class="metric-item">
+        <div class="metric-number">100<span class="unit">%</span></div>
+        <div class="metric-label">Offline Autonomous</div>
+        <div class="metric-sub">No Cloud / Full Local Privacy</div>
+      </div>
+    </section>
+
+    <!-- MODULAR SYSTEM SHOWCASE -->
+    <section class="section" id="modular-system">
+      <div class="section-header">
+        <div class="section-kicker"><i data-lucide="layers"></i> Hardware &amp; Firmware Subsystems</div>
+        <h2 class="section-title">The Engineered <span class="gradient-text">Modular System</span></h2>
+        <p class="section-subtitle">
+          Unlike monolithic commercial planters, SmartPlanter is designed as an interlocking matrix of specialized hardware modules. 
+          Each subsystem operates autonomously with dedicated failsafes and telemetry reporting.
+        </p>
+      </div>
+
+      <!-- Modular Architecture Grid -->
+      <div class="modular-grid">
+
+        <!-- Module 1: Dual Hydro Stage -->
+        <div class="module-card card-hover-effect">
+          <div class="module-badge hydro">
+            <i data-lucide="droplets"></i> Module 01
+          </div>
+          <h3 class="module-title">Dual-Stage Hydroponic Reservoirs</h3>
+          <p class="module-desc">
+            Separates raw freshwater storage from chemical conditioning. <strong>Tank 1</strong> features a non-contact 
+            <strong>Time-of-Flight (VL53L0X)</strong> laser sensor for millimeter-accurate distance measurement immune to condensation, 
+            along with a waterproof <strong>DS18B20 OneWire</strong> temperature sensor. An active charcoal pipeline and transfer pump 
+            replenish <strong>Tank 2</strong> on demand.
+          </p>
+          <ul class="module-specs-list">
+            <li><span>Laser Sensing:</span> <span class="spec-highlight">VL53L0X I2C (GPIO6 / GPIO7)</span></li>
+            <li><span>Level Range:</span> <span class="spec-highlight">30mm (100%) &ndash; 220mm (0%)</span></li>
+            <li><span>Purification:</span> <span class="spec-highlight">Activated Carbon Flow In-Line</span></li>
+            <li><span>Transfer Pump:</span> <span class="spec-highlight">Relay Actuated (GPIO4)</span></li>
+          </ul>
+          <div class="module-footer">
+            <span class="pill-tag"><i data-lucide="check-circle-2"></i> Non-contact sensing</span>
+            <span class="pill-tag"><i data-lucide="check-circle-2"></i> Thermal watchdog</span>
+          </div>
+        </div>
+
+        <!-- Module 2: Servo pH Probe Lifter -->
+        <div class="module-card card-hover-effect featured-module">
+          <div class="module-badge servo">
+            <i data-lucide="sparkle"></i> Module 02 &bull; Key Innovation
+          </div>
+          <h3 class="module-title">Motorized Servo pH Probe Lifter</h3>
+          <p class="module-desc">
+            Glass analog pH probes degrade and drift rapidly if left continuously submerged in nutrient salts. 
+            SmartPlanter introduces an automated <strong>PWM Servo Arm Mechanism</strong>: the probe rests safely retracted 
+            at 15&deg; in air/cap, swings down to 115&deg; into the liquid for a timed 6-second stabilized read cycle, 
+            and instantly lifts back out!
+          </p>
+          <ul class="module-specs-list">
+            <li><span>Servo Lift Pin:</span> <span class="spec-highlight">PWM Servo (GPIO5)</span></li>
+            <li><span>Motion Angles:</span> <span class="spec-highlight">Retracted: 15&deg; | Submerged: 115&deg;</span></li>
+            <li><span>Sampling Window:</span> <span class="spec-highlight">6000ms stabilized reading</span></li>
+            <li><span>Analog Input:</span> <span class="spec-highlight">ADC1 CH0 (GPIO0, 12-bit)</span></li>
+          </ul>
+          <div class="module-footer">
+            <span class="pill-tag highlight"><i data-lucide="shield"></i> 5x Probe Lifespan</span>
+            <span class="pill-tag"><i data-lucide="clock"></i> Auto Dip Cycle</span>
+          </div>
+        </div>
+
+        <!-- Module 3: Precision Peristaltic Dosing Triad -->
+        <div class="module-card card-hover-effect">
+          <div class="module-badge dosing">
+            <i data-lucide="pipette"></i> Module 03
+          </div>
+          <h3 class="module-title">Nutrient &amp; Buffering Dosing Triad</h3>
+          <p class="module-desc">
+            Reservoir 2 integrates three independent micro-peristaltic dosing pumps for targeted chemical balancing: 
+            <strong>Nutrient A</strong> (Nitrogen &amp; Micronutrients), <strong>Nutrient B</strong> (Phosphorus &amp; Potassium), 
+            and <strong>pH Adjuster</strong>. Coordinated with an optical Turbidity/TDS sensor to prevent salt precipitation.
+          </p>
+          <ul class="module-specs-list">
+            <li><span>Pump A (Micro):</span> <span class="spec-highlight">Shift Register / Direct GPIO</span></li>
+            <li><span>Pump B (Macro):</span> <span class="spec-highlight">Independent Calibrated Dosing</span></li>
+            <li><span>Pump C (pH Buff):</span> <span class="spec-highlight">Auto Acid / Base Compensation</span></li>
+            <li><span>Turbidity Sensor:</span> <span class="spec-highlight">ADC1 CH1 (GPIO1)</span></li>
+          </ul>
+          <div class="module-footer">
+            <span class="pill-tag"><i data-lucide="check-circle-2"></i> Milliliter precision</span>
+            <span class="pill-tag"><i data-lucide="check-circle-2"></i> TDS feedback loop</span>
+          </div>
+        </div>
+
+        <!-- Module 4: Hot-Swappable Soil Planters -->
+        <div class="module-card card-hover-effect">
+          <div class="module-badge planters">
+            <i data-lucide="flower-2"></i> Module 04
+          </div>
+          <h3 class="module-title">Hot-Swappable 4-Zone Soil Pots</h3>
+          <p class="module-desc">
+            Supports 1 to 4 modular plant containers. Features automatic disconnect sensing via ADC voltage threshold 
+            (<code>MOISTURE_DISCONNECT_ADC = 3900</code>). When plugged in, each pot gets independent capacitive moisture 
+            readings, individual target humidity setpoints (10&ndash;95%), and a dedicated silent micro-diaphragm pump.
+          </p>
+          <ul class="module-specs-list">
+            <li><span>ADC Inputs:</span> <span class="spec-highlight">GPIO2 (Zone 1), GPIO3 (Zone 2)</span></li>
+            <li><span>Auto Detection:</span> <span class="spec-highlight">Hardware probe disconnect alert</span></li>
+            <li><span>Target Moisture:</span> <span class="spec-highlight">Individually programmable %</span></li>
+            <li><span>Safety Watchdog:</span> <span class="spec-highlight">60-second pump cutoff limit</span></li>
+          </ul>
+          <div class="module-footer">
+            <span class="pill-tag"><i data-lucide="check-circle-2"></i> Daisy-chainable</span>
+            <span class="pill-tag"><i data-lucide="check-circle-2"></i> Dry-run prevention</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Hardware Detail Showcase Block -->
+      <div class="hardware-detail-box">
+        <div class="hardware-detail-text">
+          <div class="detail-kicker"><i data-lucide="wrench"></i> Precision Engineering Inside</div>
+          <h3 class="detail-heading">Clear Acrylic Rig &amp; Subsystem Integration</h3>
+          <p>
+            The prototype combines laser-cut clear acrylic compartments, an ESP32-C3 Super Mini carrier board, 
+            status LED bar, the motorized pH robotic arm, and three color-coded peristaltic pumps. Every fluid circuit 
+            is isolated to avoid electrical ground loops and sensor cross-talk.
+          </p>
+          <div class="feature-bullets">
+            <div class="bullet-item">
+              <i data-lucide="check" class="bullet-icon"></i>
+              <div>
+                <strong>Shift Register Expander Option:</strong> Supports 74HC595 3-wire expansion (Latch GPIO9, Clock GPIO20, Data GPIO21) 
+                to drive 8 relays while leaving pins free on the compact ESP32-C3.
+              </div>
+            </div>
+            <div class="bullet-item">
+              <i data-lucide="check" class="bullet-icon"></i>
+              <div>
+                <strong>Non-Corrosive Capacitive Sensors:</strong> Prevents soil electrolysis and sensor trace oxidation over months of continuous watering.
+              </div>
+            </div>
+            <div class="bullet-item">
+              <i data-lucide="check" class="bullet-icon"></i>
+              <div>
+                <strong>Dual OTA Updates:</strong> Drag-and-drop browser firmware flashing at <code>/update</code> plus ArduinoOTA for instantaneous IDE code uploads over WiFi.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hardware-detail-media">
+          <div class="media-frame">
+            <img src="assets/images/modular-hardware-detail.jpg" alt="Macro detail shot of the SmartPlanter modular acrylic hardware, pH servo lifter, and peristaltic dosing pumps" class="detail-img">
+            <div class="media-badge"><i data-lucide="cpu"></i> Prototype Bench Rig</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTROL PARADIGM 1: CYD DISPLAY -->
+    <section class="section" id="cyd-display">
+      <div class="section-header">
+        <div class="section-kicker"><i data-lucide="monitor"></i> Wireless Dedicated Terminal</div>
+        <h2 class="section-title">ESP32 CYD <span class="gradient-text">Touch Companion Display</span></h2>
+        <p class="section-subtitle">
+          A dedicated bedside or window bench console built on the ESP32-2432S028R ("Cheap Yellow Display"). 
+          Communicating directly with the planter via high-speed, zero-router ESP-NOW at 2.4 GHz.
+        </p>
+      </div>
+
+      <div class="cyd-showcase-container">
+        <!-- Left: Image of CYD on window bench -->
+        <div class="cyd-media-col">
+          <div class="cyd-image-frame card-hover-effect">
+            <img src="assets/images/cyd-touch-terminal.jpg" alt="ESP32 Cheap Yellow Display touch terminal on oak window sill next to plant pot" class="cyd-photo">
+            <div class="cyd-floating-badge">
+              <i data-lucide="radio"></i>
+              <span>ESP-NOW &bull; 0x504C4E54 Magic Packet</span>
+            </div>
+          </div>
+
+          <div class="cyd-features-pills">
+            <div class="cyd-pill"><i data-lucide="zap"></i> Zero Router Dependency</div>
+            <div class="cyd-pill"><i data-lucide="flame"></i> LovyanGFX Differential Engine</div>
+            <div class="cyd-pill"><i data-lucide="save"></i> Persistent NVS Touch Calibration</div>
+            <div class="cyd-pill"><i data-lucide="palette"></i> RGB Heartbeat Status LED</div>
+          </div>
+        </div>
+
+        <!-- Right: Interactive CYD UI Simulator -->
+        <div class="cyd-simulator-col">
+          <div class="simulator-header">
+            <div class="sim-title">
+              <i data-lucide="play"></i>
+              <span>Interactive CYD UI Terminal (Click Tabs to Test!)</span>
+            </div>
+            <div class="sim-screen-res">320 &times; 240 ILI9341 TFT</div>
+          </div>
+
+          <!-- Virtual CYD Hardware Bezel -->
+          <div class="cyd-device-bezel">
+            <!-- Simulated CYD Screen -->
+            <div class="cyd-virtual-screen" id="cyd-screen">
+              
+              <!-- CYD Top Status Bar -->
+              <div class="cyd-screen-statusbar">
+                <div class="cyd-status-left">
+                  <span class="cyd-logo-icon">&#127793;</span>
+                  <span class="cyd-logo-text">SMART PLANTER</span>
+                </div>
+                <div class="cyd-status-right">
+                  <span class="cyd-rssi"><i data-lucide="wifi"></i> -45dBm</span>
+                  <span class="cyd-clock" id="cyd-clock">10:42</span>
+                  <span class="cyd-heartbeat-led"></span>
+                </div>
+              </div>
+
+              <!-- CYD Screen Views (Tabbed) -->
+              <div class="cyd-screen-content">
+
+                <!-- Tab 1: OVERVIEW (Dynamic Topology & Fluid Dynamics) -->
+                <div class="cyd-view active" id="cyd-view-overview">
+                  <div class="cyd-topo-grid">
+                    <!-- Tank 1 Card -->
+                    <div class="cyd-mini-tank tank1">
+                      <div class="tank-title">TANK 1: FRESH</div>
+                      <div class="tank-gauge">
+                        <div class="tank-liquid water-wave" id="cyd-tank1-liquid" style="height: 78%;"></div>
+                        <span class="tank-reading">78%</span>
+                      </div>
+                      <div class="tank-sub">21.4&deg;C &bull; 54mm</div>
+                    </div>
+
+                    <!-- Transfer Pipe Animation -->
+                    <div class="cyd-pipe-connector">
+                      <div class="pipe-line">
+                        <span class="flow-dot"></span>
+                        <span class="flow-dot delay"></span>
+                      </div>
+                      <span class="pipe-label">TRANSFER</span>
+                    </div>
+
+                    <!-- Tank 2 Card (Nutrient & pH) -->
+                    <div class="cyd-mini-tank tank2">
+                      <div class="tank-title">TANK 2: NUTRIENTS</div>
+                      <div class="tank-gauge">
+                        <div class="tank-liquid nutrient-wave" id="cyd-tank2-liquid" style="height: 65%;"></div>
+                        <span class="tank-reading">6.6 pH</span>
+                      </div>
+                      <div class="tank-sub">TDS: 420ppm &bull; DIP OK</div>
+                    </div>
+                  </div>
+
+                  <!-- Plant Zones Mini Strip -->
+                  <div class="cyd-zones-strip">
+                    <div class="cyd-zone-item active">
+                      <div class="zone-top">Z1: Basil</div>
+                      <div class="zone-bar"><div class="zone-fill" style="width: 64%;"></div></div>
+                      <div class="zone-val">64%</div>
+                    </div>
+                    <div class="cyd-zone-item active">
+                      <div class="zone-top">Z2: Mint</div>
+                      <div class="zone-bar"><div class="zone-fill" style="width: 45%;"></div></div>
+                      <div class="zone-val">45%</div>
+                    </div>
+                    <div class="cyd-zone-item idle">
+                      <div class="zone-top">Z3: Thyme</div>
+                      <div class="zone-bar"><div class="zone-fill" style="width: 52%;"></div></div>
+                      <div class="zone-val">52%</div>
+                    </div>
+                    <div class="cyd-zone-item offline">
+                      <div class="zone-top">Z4: Disconn.</div>
+                      <div class="zone-bar"><div class="zone-fill empty"></div></div>
+                      <div class="zone-val">--</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tab 2: RESERVOIRS DETAIL -->
+                <div class="cyd-view" id="cyd-view-reservoirs">
+                  <div class="cyd-res-detail-row">
+                    <div class="cyd-detail-box">
+                      <div class="box-head"><i data-lucide="droplet"></i> Fresh Water Tank</div>
+                      <div class="box-metric">780 <small>ml</small></div>
+                      <div class="box-sub">Laser ToF: 54 mm distance</div>
+                      <div class="box-sub">Temp: 21.4 &deg;C (DS18B20)</div>
+                      <button class="cyd-sim-btn" id="cyd-btn-transfer">Toggle Transfer Pump</button>
+                    </div>
+                    <div class="cyd-detail-box">
+                      <div class="box-head"><i data-lucide="test-tube-2"></i> Nutrient Mix Tank</div>
+                      <div class="box-metric">6.62 <small>pH</small></div>
+                      <div class="box-sub">Turbidity / TDS: 420 ppm</div>
+                      <div class="box-sub">Dosing Pumps: [A:0 B:0 C:0]</div>
+                      <button class="cyd-sim-btn" id="cyd-btn-dip">Trigger Servo pH Dip</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tab 3: PLANTERS DETAIL -->
+                <div class="cyd-view" id="cyd-view-planters">
+                  <div class="cyd-planters-list">
+                    <div class="cyd-planter-row">
+                      <div class="p-info">
+                        <strong>Planter 1 (Basil)</strong>
+                        <span>Moist: 64% &bull; Target: 55%</span>
+                      </div>
+                      <div class="p-controls">
+                        <button class="cyd-mini-btn">-</button>
+                        <span class="p-target">55%</span>
+                        <button class="cyd-mini-btn">+</button>
+                        <button class="cyd-water-btn">Water</button>
+                      </div>
+                    </div>
+                    <div class="cyd-planter-row">
+                      <div class="p-info">
+                        <strong>Planter 2 (Mint)</strong>
+                        <span>Moist: 45% &bull; Target: 50%</span>
+                      </div>
+                      <div class="p-controls">
+                        <button class="cyd-mini-btn">-</button>
+                        <span class="p-target">50%</span>
+                        <button class="cyd-mini-btn">+</button>
+                        <button class="cyd-water-btn">Water</button>
+                      </div>
+                    </div>
+                    <div class="cyd-planter-row">
+                      <div class="p-info">
+                        <strong>Planter 3 (Thyme)</strong>
+                        <span>Moist: 52% &bull; Target: 40%</span>
+                      </div>
+                      <div class="p-controls">
+                        <button class="cyd-mini-btn">-</button>
+                        <span class="p-target">40%</span>
+                        <button class="cyd-mini-btn">+</button>
+                        <button class="cyd-water-btn">Water</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tab 4: SYSTEM DIAGNOSTICS -->
+                <div class="cyd-view" id="cyd-view-system">
+                  <div class="cyd-sys-console">
+                    <div class="sys-line success">[ESP-NOW] Peer Connected: 24:D7:EB:11:0A:4C</div>
+                    <div class="sys-line">[RADIO] Channel 1 &bull; Stream: 2.0 Hz</div>
+                    <div class="sys-line">[CALIB] NVS Touch Calibration Loaded: OK</div>
+                    <div class="sys-line">[FAILSAFE] Pump Auto-Cutoff Watchdog: 60s</div>
+                    <div class="sys-line">[UPTIME] System Active: 4d 18h 32m</div>
+                    <div class="sys-line highlight">[OTA] Firmware Web Updater: Ready</div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- CYD Bottom Touch Navigation Bar (4 Tabs) -->
+              <div class="cyd-tab-bar">
+                <button class="cyd-tab-btn active" data-tab="overview">
+                  <i data-lucide="layout-grid"></i>
+                  <span>Overview</span>
+                </button>
+                <button class="cyd-tab-btn" data-tab="reservoirs">
+                  <i data-lucide="droplets"></i>
+                  <span>Tanks</span>
+                </button>
+                <button class="cyd-tab-btn" data-tab="planters">
+                  <i data-lucide="sprout"></i>
+                  <span>Planters</span>
+                </button>
+                <button class="cyd-tab-btn" data-tab="system">
+                  <i data-lucide="terminal"></i>
+                  <span>System</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="sim-note">
+            <i data-lucide="info"></i>
+            <span>Interactive Simulator recreates the exact 320&times;240 LovyanGFX differential GUI flashed onto the CYD ESP32.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTROL PARADIGM 2: MOBILE & WEB APP -->
+    <section class="section" id="web-control">
+      <div class="section-header">
+        <div class="section-kicker"><i data-lucide="smartphone"></i> Embedded SoftAP Web Application</div>
+        <h2 class="section-title">Browser &amp; Smartphone <span class="gradient-text">Web Dashboard</span></h2>
+        <p class="section-subtitle">
+          Hosted entirely inside the ESP32-C3 flash memory. Connect to the local <strong>"SmartPlanter" WiFi Access Point</strong> 
+          from any smartphone or laptop to access real-time controls, graphs, thresholds, and drag-and-drop OTA updates.
+        </p>
+      </div>
+
+      <div class="web-showcase-container">
+        <!-- Left: Hand holding smartphone photo with blurred window planter -->
+        <div class="web-media-col">
+          <div class="phone-mockup-frame card-hover-effect">
+            <img src="assets/images/mobile-app-control.jpg" alt="Person holding modern smartphone with SmartPlanter Hub dark mode UI in front of window planter" class="phone-photo">
+            <div class="phone-floating-badge">
+              <i data-lucide="wifi"></i>
+              <span>SoftAP: 192.168.4.1 &bull; 0 Cloud Rely</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Web Dashboard Highlights & Live Web UI Features -->
+        <div class="web-features-col">
+          <div class="web-card glass-panel">
+            <div class="web-card-header">
+              <div class="web-card-icon"><i data-lucide="gauge"></i></div>
+              <div>
+                <h3 class="web-card-title">Real-Time Telemetry Stream</h3>
+                <p class="web-card-sub">Dynamic asynchronous REST &amp; WebSocket poll loop</p>
+              </div>
+            </div>
+            <p class="web-card-text">
+              Delivers live visual gauges for water tank levels, fluid temperature, pH levels with safe zone indicators, 
+              and multi-zone soil moisture graphs without refreshing the browser.
+            </p>
+          </div>
+
+          <div class="web-card glass-panel">
+            <div class="web-card-header">
+              <div class="web-card-icon"><i data-lucide="sliders"></i></div>
+              <div>
+                <h3 class="web-card-title">Granular Manual Overrides</h3>
+                <p class="web-card-sub">Direct control over all physical actuators</p>
+              </div>
+            </div>
+            <p class="web-card-text">
+              Manually cycle the transfer pump, trigger a motorized pH servo dipping read sequence, 
+              pulse nutrient dosing pumps, or manually water any individual plant zone with 1-click controls.
+            </p>
+          </div>
+
+          <div class="web-card glass-panel">
+            <div class="web-card-header">
+              <div class="web-card-icon"><i data-lucide="upload-cloud"></i></div>
+              <div>
+                <h3 class="web-card-title">Dual OTA Wireless Firmware Updater</h3>
+                <p class="web-card-sub">Web Drag-and-Drop &amp; Arduino IDE Network Upload</p>
+              </div>
+            </div>
+            <p class="web-card-text">
+              Update both the ESP32-C3 core controller and CYD firmware completely over-the-air. 
+              No need to unscrew the planter casing or connect USB cables once deployed on the window sill.
+            </p>
+          </div>
+
+          <div class="web-card glass-panel">
+            <div class="web-card-header">
+              <div class="web-card-icon"><i data-lucide="shield-check"></i></div>
+              <div>
+                <h3 class="web-card-title">Hardware Pump Safety Watchdog</h3>
+                <p class="web-card-sub">60-second hardware auto-cutoff timer</p>
+              </div>
+            </div>
+            <p class="web-card-text">
+              Every pump command is guarded by <code>PUMP_SAFETY_MAX_RUN_MS = 60000</code>. 
+              Even if a network packet drops or browser crashes, the pumps automatically shut down to prevent overflows.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE DEMO / LIVE SIMULATOR -->
+    <section class="section" id="simulator">
+      <div class="section-header">
+        <div class="section-kicker"><i data-lucide="sliders-horizontal"></i> Interactive Sandbox</div>
+        <h2 class="section-title">Live Hardware <span class="gradient-text">Simulation Laboratory</span></h2>
+        <p class="section-subtitle">
+          Test the planter's automated behaviors in real time! Adjust soil moisture to see auto-irrigation trigger, 
+          dip the motorized pH sensor arm, and inspect live simulated ESP-NOW telemetry packets.
+        </p>
+      </div>
+
+      <div class="interactive-lab-container glass-panel">
+        
+        <!-- Left Lab: Controls & Actuators -->
+        <div class="lab-controls">
+          <div class="lab-box-title">
+            <i data-lucide="sliders"></i> Sensor &amp; Actuator Controls
+          </div>
+
+          <!-- Soil Moisture Slider Planter 1 -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="label">Planter 1 (Sweet Basil) Moisture</span>
+              <span class="value" id="sim-p1-moist-display">34% (Dry &bull; Irrigation Triggered)</span>
+            </div>
+            <input type="range" min="10" max="95" value="34" class="custom-slider" id="sim-p1-slider">
+            <div class="slider-footer">
+              <span>Target Setpoint: <strong>45%</strong></span>
+              <span class="pump-indicator on" id="sim-p1-pump-badge">Pump 1: ACTIVE</span>
+            </div>
+          </div>
+
+          <!-- Soil Moisture Slider Planter 2 -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="label">Planter 2 (Peppermint) Moisture</span>
+              <span class="value" id="sim-p2-moist-display">62% (Optimal)</span>
+            </div>
+            <input type="range" min="10" max="95" value="62" class="custom-slider" id="sim-p2-slider">
+            <div class="slider-footer">
+              <span>Target Setpoint: <strong>50%</strong></span>
+              <span class="pump-indicator off" id="sim-p2-pump-badge">Pump 2: STANDBY</span>
+            </div>
+          </div>
+
+          <!-- Trigger Actions -->
+          <div class="lab-actions-row">
+            <button class="btn btn-action" id="btn-trigger-servo">
+              <i data-lucide="refresh-cw"></i> Dip pH Servo Probe (6s Cycle)
+            </button>
+            <button class="btn btn-action" id="btn-trigger-transfer">
+              <i data-lucide="shuffle"></i> Pulse Fresh Water Transfer
+            </button>
+          </div>
+        </div>
+
+        <!-- Center Lab: Graphic Visualization of Servo Arm & Tanks -->
+        <div class="lab-visualizer">
+          <div class="lab-box-title">
+            <i data-lucide="eye"></i> Mechanical Visualizer
+          </div>
+
+          <!-- Interactive Tank & Servo Rig -->
+          <div class="rig-stage">
+            
+            <!-- Tank 1 (Freshwater) -->
+            <div class="rig-tank">
+              <div class="rig-tank-label">Tank 1: Freshwater</div>
+              <div class="rig-tank-glass">
+                <div class="rig-water-fill" id="rig-water-t1" style="height: 78%;">
+                  <div class="surface-wave"></div>
+                </div>
+                <div class="laser-beam-indicator">
+                  <span class="laser-line"></span>
+                  <span class="laser-tag">ToF VL53L0X</span>
+                </div>
+              </div>
+              <div class="rig-sensor-tag">ToF Distance: <strong id="rig-tof-val">54 mm</strong></div>
+            </div>
+
+            <!-- Inter-tank Transfer Line -->
+            <div class="rig-transfer-line">
+              <div class="pipe-track">
+                <span class="pipe-flow-particle" id="rig-flow-particle"></span>
+              </div>
+              <span class="pipe-badge" id="rig-transfer-badge">Pump Idle</span>
+            </div>
+
+            <!-- Tank 2 (Nutrient Mix & Motorized Servo Arm) -->
+            <div class="rig-tank">
+              <div class="rig-tank-label">Tank 2: Nutrient Mix</div>
+              <div class="rig-tank-glass">
+                <div class="rig-water-fill nutrient" id="rig-water-t2" style="height: 65%;">
+                  <div class="surface-wave"></div>
+                </div>
+
+                <!-- Animated Robotic Servo Arm Mechanism -->
+                <div class="servo-arm-rig" id="rig-servo-assembly">
+                  <div class="servo-base">
+                    <span class="servo-label">PWM Servo</span>
+                  </div>
+                  <div class="servo-lever" id="rig-servo-arm">
+                    <div class="ph-probe-holder">
+                      <div class="glass-ph-bulb"></div>
+                      <span class="probe-label">pH Probe</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <div class="rig-sensor-tag">Servo Angle: <strong id="rig-servo-angle">15&deg; (Retracted)</strong></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right Lab: Live ESP-NOW Packet Terminal -->
+        <div class="lab-terminal">
+          <div class="lab-box-title">
+            <i data-lucide="terminal"></i> Live ESP-NOW Telemetry Packet
+          </div>
+          <div class="packet-dump" id="packet-terminal">
+            <div class="terminal-line comment">// ESP-NOW Packet 0x504C4E54 (2 Hz Stream)</div>
+            <div class="terminal-line"><span class="key">magic:</span> <span class="val">0x504C4E54 ('PLNT')</span></div>
+            <div class="terminal-line"><span class="key">msgType:</span> <span class="val">0x10 (MSG_TELEMETRY)</span></div>
+            <div class="terminal-line"><span class="key">seqNum:</span> <span class="val" id="term-seq">1842</span></div>
+            <div class="terminal-line"><span class="key">waterTempC:</span> <span class="val" id="term-temp">21.40 &deg;C</span></div>
+            <div class="terminal-line"><span class="key">waterDistMm:</span> <span class="val" id="term-dist">54 mm</span></div>
+            <div class="terminal-line"><span class="key">phValue:</span> <span class="val" id="term-ph">6.62 pH</span></div>
+            <div class="terminal-line"><span class="key">phDipping:</span> <span class="val" id="term-dipping">false</span></div>
+            <div class="terminal-line"><span class="key">p1_moist:</span> <span class="val" id="term-p1">34 %</span> (target: 45%)</div>
+            <div class="terminal-line"><span class="key">p1_pumpActive:</span> <span class="val highlight" id="term-p1-pump">true (AUTO)</span></div>
+            <div class="terminal-line"><span class="key">p2_moist:</span> <span class="val" id="term-p2">62 %</span> (target: 50%)</div>
+            <div class="terminal-line"><span class="key">p2_pumpActive:</span> <span class="val" id="term-p2-pump">false</span></div>
+            <div class="terminal-line"><span class="key">wifiRssi:</span> <span class="val">-42 dBm</span></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CODE & FIRMWARE ARCHITECTURE -->
+    <section class="section" id="code-specs">
+      <div class="section-header">
+        <div class="section-kicker"><i data-lucide="code"></i> Embedded Codebase &amp; Protocols</div>
+        <h2 class="section-title">Firmware Architecture &amp; <span class="gradient-text">Protocol Specs</span></h2>
+        <p class="section-subtitle">
+          Clean, modular C++ implementation designed for robustness. Inspect the core protocol structures, 
+          sensor abstraction controllers, and pinout mapping.
+        </p>
+      </div>
+
+      <!-- Code Inspector Tabs -->
+      <div class="code-inspector glass-panel">
+        <div class="code-tabs-bar">
+          <button class="code-tab active" data-code="protocol">
+            <i data-lucide="file-code"></i> CydProtocol.h (ESP-NOW)
+          </button>
+          <button class="code-tab" data-code="config">
+            <i data-lucide="settings"></i> config.h (Pinout &amp; Thresholds)
+          </button>
+          <button class="code-tab" data-code="sensors">
+            <i data-lucide="cpu"></i> Sensors.h (ToF &amp; ADC Filter)
+          </button>
+          <button class="code-tab" data-code="actuators">
+            <i data-lucide="activity"></i> Actuators.h (Servo Dip Sequence)
+          </button>
+        </div>
+
+        <div class="code-content-wrapper">
+          <!-- Snippet 1: CydProtocol.h -->
+          <pre class="code-block active" id="code-protocol"><code>// ESP-NOW Protocol Magic Identifier ('P','L','N','T')
+#define ESPNOW_MAGIC            0x504C4E54
+#define ESPNOW_DEFAULT_CHANNEL  1
+
+// Packed Telemetry Payload (ESP32-C3 Base -> CYD Display)
+#pragma pack(push, 1)
+struct C3TelemetryPayload {
+    // Reservoir 1 (Fresh Water)
+    float    waterTempC;
+    uint8_t  waterLevelPercent;
+    uint16_t waterDistanceMm;
+    uint8_t  transferPumpActive; // bool: 1=ON, 0=OFF
+
+    // Reservoir 2 (Nutrient Mix & Chemistry)
+    float    phValue;
+    float    phVoltage;
+    uint16_t turbidityPpm;
+    uint8_t  phDipping;          // bool: 1=Servo reading cycle in progress
+    uint8_t  dosingPumpA;        // bool: Micro nutrient pump
+    uint8_t  dosingPumpB;        // bool: Macro nutrient pump
+    uint8_t  dosingPumpC;        // bool: pH buffer pump
+
+    // Modular Planter Zones 1 to 4
+    struct {
+        uint8_t connected;       // bool: probe detected
+        uint8_t moisturePercent; // 0..100%
+        uint8_t targetMoisture;  // 10..95%
+        uint8_t pumpActive;      // bool: 1=Watering, 0=Idle
+    } planters[4];
+
+    // System Status
+    uint32_t uptimeMs;
+    int8_t   wifiRssi;           // approximate signal strength
+    uint8_t  autoModeActive;     // 1=Auto-irrigation active
+};
+#pragma pack(pop)</code></pre>
+
+          <!-- Snippet 2: config.h -->
+          <pre class="code-block" id="code-config"><code>// ESP32-C3 SUPER MINI PINOUT MAPPING
+#define PIN_I2C_SDA          6   // VL53L0X Laser ToF Data
+#define PIN_I2C_SCL          7   // VL53L0X Laser ToF Clock
+#define PIN_SERVO_PH         5   // Motorized pH Probe PWM Servo
+#define PIN_ADC_PH           0   // GPIO0 (ADC1 CH0) - Analog pH Glass Probe
+#define PIN_ADC_TURBIDITY    1   // GPIO1 (ADC1 CH1) - Turbidity / TDS Sensor
+#define PIN_MOISTURE_1       2   // GPIO2 (ADC1 CH2) - Planter 1 Soil Moisture
+#define PIN_MOISTURE_2       3   // GPIO3 (ADC1 CH3) - Planter 2 Soil Moisture
+
+#define PIN_RELAY_IRRIG_1    4   // Planter 1 Micro Diaphragm Pump
+#define PIN_RELAY_IRRIG_2    10  // Planter 2 Micro Diaphragm Pump
+
+// MOTORIZED SERVO ARM THRESHOLDS
+#define SERVO_POS_UP         15  // Angle in degrees for retracted probe
+#define SERVO_POS_DOWN       115 // Angle in degrees for submerged probe
+#define SERVO_DIP_DURATION_MS 6000 // Submerge duration for stabilized reading
+
+// PUMP WATCHDOG FAILSAFE
+#define PUMP_SAFETY_MAX_RUN_MS 60000 // 60s hard auto-cutoff for all pumps</code></pre>
+
+          <!-- Snippet 3: Sensors.h -->
+          <pre class="code-block" id="code-sensors"><code>// Dual-Stage ToF Distance & Soil ADC Filter
+uint16_t SensorController::getWaterDistanceMm() {
+    VL53L0X_RangingMeasurementData_t measure;
+    lox.rangingTest(&measure, false);
+    if (measure.RangeStatus != 4) { // Valid phase measurement
+        return measure.RangeMilliMeter;
+    }
+    return lastValidDistanceMm; // Retain filtered fallback
+}
+
+// Planter Disconnect Auto-Detection Logic
+void SensorController::updateSoilMoisture() {
+    for (int i = 0; i < 4; i++) {
+        int rawAdc = analogRead(moisturePins[i]);
+        if (rawAdc > MOISTURE_DISCONNECT_ADC) {
+            planters[i].connected = false;
+            planters[i].moisturePercent = 0;
+        } else {
+            planters[i].connected = true;
+            planters[i].moisturePercent = map(rawAdc, MOISTURE_DRY_ADC, MOISTURE_WET_ADC, 0, 100);
+        }
+    }
+}</code></pre>
+
+          <!-- Snippet 4: Actuators.h -->
+          <pre class="code-block" id="code-actuators"><code>// Motorized Servo Dip Sequence Handler
+void ActuatorController::startPhDipSequence() {
+    if (phDipActive) return;
+    phDipActive = true;
+    phDipStartTime = millis();
+    servoPh.write(SERVO_POS_DOWN); // Submerge probe into Tank 2
+}
+
+void ActuatorController::update() {
+    // Check if 6000ms measurement cycle has elapsed
+    if (phDipActive && (millis() - phDipStartTime >= SERVO_DIP_DURATION_MS)) {
+        servoPh.write(SERVO_POS_UP); // Retract probe safely into air/cap
+        phDipActive = false;
+    }
+
+    // Safety watchdog: enforce 60-second pump cutoff
+    checkPumpSafetyCutoff();
+}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECT SUMMARY & PORTFOLIO FOOTER -->
+    <footer class="portfolio-footer">
+      <div class="footer-container">
+        <div class="footer-left">
+          <div class="footer-logo">
+            <i data-lucide="sprout"></i>
+            <span>SmartPlanter Project</span>
+          </div>
+          <p class="footer-bio">
+            An end-to-end IoT embedded engineering project blending precision mechanics, wireless RF communication, 
+            and modern responsive user interfaces. Designed for zero cloud dependency and long-term autonomy.
+          </p>
+        </div>
+
+        <div class="footer-grid">
+          <div class="footer-col">
+            <h4>Hardware Tech</h4>
+            <ul>
+              <li>ESP32-C3 Super Mini</li>
+              <li>ESP32 CYD 2432S028R</li>
+              <li>VL53L0X Laser ToF</li>
+              <li>DS18B20 OneWire Temp</li>
+              <li>PWM Micro Servo</li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Software Stack</h4>
+            <ul>
+              <li>C++ / Arduino IDE</li>
+              <li>ESP-NOW 2.4GHz RF</li>
+              <li>LovyanGFX Graphics</li>
+              <li>Embedded SoftAP Web</li>
+              <li>Dual OTA Updater</li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Portfolio Embedding</h4>
+            <ul>
+              <li>Responsive iFrame Fit</li>
+              <li>Hardware-Accelerated CSS</li>
+              <li>Zero External Cookies</li>
+              <li>Self-Contained Demo</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 SmartPlanter Project &bull; Created for Portfolio Showcase &bull; Arduino &amp; ESP32 Ecosystem</p>
+        <div class="footer-badges">
+          <span class="badge"><i data-lucide="shield-check"></i> Failsafe Guarded</span>
+          <span class="badge"><i data-lucide="radio"></i> 2.4 GHz ESP-NOW</span>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Script -->
+  <script src="script.js"></script>
+</body>
+</html>

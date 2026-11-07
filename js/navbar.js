@@ -117,23 +117,22 @@ const MAX_VISIBLE_CHARS = 50;
 const TYPING_SPEED = 120;
 const RSS_FEED_URL = "https://www.theverge.com/rss/index.xml";
 
-// Shared news fetcher — single request, used by both tickers
-let cachedNewsString = null;
+const MAKER_STATUS_STRING = "Michael Krahn Maker Studio +++ Creative Lab, 3D Prototyping, Embedded Systems & Custom Solutions +++ ";
+let cachedNewsString = MAKER_STATUS_STRING;
 
 async function fetchNewsString() {
-  if (cachedNewsString) return cachedNewsString;
-  
   try {
-    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_FEED_URL)}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_FEED_URL)}`, { signal: controller.signal });
+    clearTimeout(timeoutId);
     const data = await res.json();
-    if (data.status === 'ok') {
-      cachedNewsString = data.items.map(item => item.title).join("  +++  ") + "  +++  ";
-    } else {
-      throw new Error("Feed load failed");
+    if (data.status === 'ok' && data.items?.length) {
+      cachedNewsString = MAKER_STATUS_STRING + data.items.slice(0, 5).map(item => item.title).join("  +++  ") + "  +++  ";
     }
-  } catch (error) {
-    console.warn("News fetch failed, using fallback.", error);
-    cachedNewsString = "Welcome to my portfolio +++ Current stack: HTML, CSS, JS, GSAP, Three.js +++ ";
+  } catch (_) {
+    // Graceful offline fallback
+    cachedNewsString = MAKER_STATUS_STRING;
   }
   return cachedNewsString;
 }

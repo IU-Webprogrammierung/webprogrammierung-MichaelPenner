@@ -576,11 +576,18 @@ function rotateGlobeTo(countryCode) {
     }
 }
 
+function isGlobe3Active() {
+    const el = document.getElementById('globe-3');
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    return r.top < window.innerHeight * 0.75 && r.bottom > window.innerHeight * 0.25;
+}
+
 function startGalleryAutoCycle() {
     if (galleryAutoTimer) clearInterval(galleryAutoTimer);
     galleryAutoTimer = setInterval(() => {
         // Skip if not in globe-3 view
-        if (globeScrollProgress < 0.35 || globeScrollProgress > 0.75) return;
+        if (!isGlobe3Active()) return;
 
         // Skip if manual pause is active (12 seconds after last click)
         if (Date.now() - galleryManualPause < GALLERY_MANUAL_PAUSE_MS) return;
@@ -650,7 +657,7 @@ let isGlobeVisible = false;
 let globeAnimationId = null;
 let globeScrollProgress = 0;
 
-const globeSections = ['#globe-1', '#globe-2', '#globe-3', '#globe-4', '#contact'];
+const globeSections = ['#globe-1', '#globe-3', '#globe-4', '#contact'];
 
 globeSections.forEach((sectionId) => {
     ScrollTrigger.create({
@@ -786,53 +793,35 @@ gsap.timeline({
     )
     .to("#vignette-overlay", { opacity: 1, ease: "power2.out" }, 0);
 
-// Section 2: Country Highlights
-// Transitions smoothly from config 1 to config 2 while scrolling from 1 to 2.
+// Section 3: Cinematic Sweep directly from Slide 1 into Slide 3 (Journey Presentation)
 gsap.timeline({
-    scrollTrigger: { trigger: "#globe-2", start: "top bottom", end: "top top", scrub: 0.8 }
+    scrollTrigger: { trigger: "#globe-3", start: "top bottom", end: "top top", scrub: 0.9 }
 })
-    .to(".hero-title", { y: -120, autoAlpha: 0, filter: "blur(18px)", ease: "power2.in" }, 0) // Fade out title from sec 1
-    .fromTo("#globe-2 .copy-block",
-        { autoAlpha: 0, y: 40, filter: "blur(12px)" },
+    .to(".hero-title", { y: -100, autoAlpha: 0, filter: "blur(16px)", ease: "power2.in" }, 0)
+    .to(".hero-subtitle", { y: -60, autoAlpha: 0, filter: "blur(12px)", ease: "power2.in" }, 0)
+    .fromTo("#globe-3 .travel-header",
+        { autoAlpha: 0, y: 50, filter: "blur(12px)" },
         { autoAlpha: 1, y: 0, filter: "blur(0px)", ease: "power2.out" },
-        0.3 // fade in slightly later
+        0.25
+    )
+    .fromTo("#globe-3 .travel-showcase",
+        { autoAlpha: 0, y: 50 },
+        { autoAlpha: 1, y: 0, ease: "power2.out" },
+        0.35
     )
     .fromTo(cameraOrbit.rotation, 
         { y: 0 }, 
-        { y: CAMERA_CONFIG.section2.orbitY, ease: "power1.inOut" }, 0
+        { y: CAMERA_CONFIG.section3.orbitY, ease: "power2.inOut" }, 0
     )
     .fromTo(camera.position, 
         { z: CAMERA_CONFIG.section1.endZ }, 
-        { z: CAMERA_CONFIG.section2.cameraZ, ease: "power1.inOut" }, 0
+        { z: CAMERA_CONFIG.section3.cameraZ, ease: "power2.inOut" }, 0
     )
     .fromTo(cameraRig.position, 
         { x: 0, y: 0 }, 
-        { x: CAMERA_CONFIG.section2.rigX, y: CAMERA_CONFIG.section2.rigY, ease: "power1.inOut" }, 0
+        { x: CAMERA_CONFIG.section3.rigX, y: CAMERA_CONFIG.section3.rigY, ease: "power2.inOut" }, 0
     )
-    .to(sceneParams, { spin: "+=0.6" }, 0);
-
-// Section 3: "Interesse geweckt"
-gsap.timeline({
-    scrollTrigger: { trigger: "#globe-3", start: "top bottom", end: "top top", scrub: 0.8 }
-})
-    .fromTo("#globe-3 .copy-block",
-        { autoAlpha: 0, y: 40, filter: "blur(12px)" },
-        { autoAlpha: 1, y: 0, filter: "blur(0px)", ease: "power2.out" },
-        0.3
-    )
-    .fromTo(cameraOrbit.rotation, 
-        { y: CAMERA_CONFIG.section2.orbitY }, 
-        { y: CAMERA_CONFIG.section3.orbitY, ease: "power1.inOut" }, 0
-    )
-    .fromTo(camera.position, 
-        { z: CAMERA_CONFIG.section2.cameraZ }, 
-        { z: CAMERA_CONFIG.section3.cameraZ, ease: "power1.inOut" }, 0
-    )
-    .fromTo(cameraRig.position, 
-        { x: CAMERA_CONFIG.section2.rigX, y: CAMERA_CONFIG.section2.rigY }, 
-        { x: CAMERA_CONFIG.section3.rigX, y: CAMERA_CONFIG.section3.rigY, ease: "power1.inOut" }, 0
-    )
-    .to(sceneParams, { spread: 1.5, ease: "power1.inOut" }, 0);
+    .to(sceneParams, { spread: 1.5, spin: "+=0.9", ease: "power2.inOut" }, 0);
 
 // Section 4: Contact Overlay
 gsap.timeline({

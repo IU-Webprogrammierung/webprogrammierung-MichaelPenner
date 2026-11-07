@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="404 - Seite nicht gefunden | Michael Krahn Maker Studio">
   <title>404 - Page Not Found | Michael Krahn</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400&display=swap"
-    rel="stylesheet">
-
+  <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/404.css">
 
@@ -50,26 +49,28 @@
       </div>
 
       <div class="error-message">
-        <h1>Lost in Space</h1>
-        <p>The page you're looking for seems to have drifted into the void. Let's get you back on track.</p>
+        <h1 data-en="Prototype Not Found" data-de="Prototyp nicht gefunden">Prototyp nicht gefunden</h1>
+        <p data-en="The requested page or component seems to have drifted into the void. Let's get you back on track."
+           data-de="Dieses Bauteil oder diese Seite existiert noch nicht oder ist in der Werkstatt verloren gegangen.">
+          Dieses Bauteil oder diese Seite existiert noch nicht oder ist in der Werkstatt verloren gegangen.
+        </p>
       </div>
 
       <div class="error-cta">
-        <a href="index.html" class="btn btn-home">
+        <a href="index.html" class="btn btn-home" data-en="Back to Studio" data-de="Zurück zum Studio">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
-          Back to Home
+          <span data-en="Back to Studio" data-de="Zurück zum Studio">Zurück zum Studio</span>
         </a>
       </div>
     </div>
   </div>
 
-
   <!-- PLUGINS -->
   <script src="js/custom_cursor.js" defer></script>
-
+  <script src="js/language.js" defer></script>
 
 </body>
 

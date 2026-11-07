@@ -79,8 +79,8 @@ async function initCursor() {
         gsap.set(dot, { xPercent: -50, yPercent: -50 });
         gsap.set(outline, { xPercent: -50, yPercent: -50 });
 
-        const xTo = gsap.quickTo(outline, "x", { duration: 0.4, ease: "power3" });
-        const yTo = gsap.quickTo(outline, "y", { duration: 0.4, ease: "power3" });
+        const xTo = gsap.quickTo(outline, "x", { duration: 0.4, ease: "power3.out" });
+        const yTo = gsap.quickTo(outline, "y", { duration: 0.4, ease: "power3.out" });
 
         window.addEventListener('mousemove', (e) => {
             gsap.set(dot, { x: e.clientX, y: e.clientY });

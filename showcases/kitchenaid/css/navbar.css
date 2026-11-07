@@ -1,0 +1,490 @@
+/* =========================================
+   NAVBAR
+========================================= */
+
+/* =========================================
+  FLOATING NAVBAR
+========================================= */
+.logo {
+  width: 80px;
+  height: auto;
+}
+
+.navbar {
+  position: fixed;
+  top: 30%;
+  left: 6%;
+  transform: translateY(-50%);
+  width: min(76vw, 860px);
+  z-index: 10;
+
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 14px 20px;
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.navbar-left {
+  justify-self: start;
+  padding: 0px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-separator {
+  color: var(--text);
+  font-size: 1.5rem;
+  line-height: 1;
+  opacity: 1;
+  user-select: none;
+}
+
+.navbar-center {
+  display: flex;
+  gap: clamp(16px, 2vw, 28px);
+  justify-self: center;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.navbar-right {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 0px 20px;
+}
+
+.navbar.is-sticky .navbar-right,
+body:not(.is-landing) .navbar-right {
+  display: flex;
+}
+
+
+
+
+/* =========================================
+   STICKY NAVBAR
+========================================= */
+.navbar.is-sticky,
+body:not(.is-landing) .navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: none;
+  width: 100vw;
+  height: 8%;
+  min-height: 60px;
+  z-index: 9999;
+  border: none;
+  border-radius: 0;
+
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--glass-border);
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+
+
+.navbar-miniText {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.78rem;
+  white-space: pre;
+  color: var(--text);
+  text-transform: uppercase;
+  text-align: right;
+  width: 100%;
+  transform: translateY(1px);
+}
+
+.navbar:not(.is-sticky) .navbar-miniText {
+  display: none;
+}
+
+
+
+
+
+
+
+
+/* =========================================
+   NAVBAR LINKS & ACTIVE UNDERLINE
+========================================= */
+.navbar-center a {
+  position: relative;
+  text-decoration: none;
+  color: var(--text);
+  padding-bottom: 4px;
+  font-size: 0.94rem;
+}
+
+.navbar-center a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--text);
+  transition: width 0.3s ease-out;
+}
+
+.navbar-center a:hover::after,
+.navbar-center a.active::after {
+  width: 100%;
+}
+
+
+
+
+
+
+
+
+
+
+/* =========================================
+   MOBILE RESPONSIVE (Max-width: 900px)
+========================================= */
+@media (max-width: 900px) {
+  .logo {
+    width: 60px;
+    height: auto;
+  }
+
+  .navbar {
+    width: 80vw;
+    left: 0vw;
+    padding: 15px;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .navbar-left {
+    order: 1;
+  }
+
+  .navbar-right {
+    order: 2;
+    margin-right: 0;
+    gap: 15px;
+    align-items: center;
+  }
+
+  body.is-landing .navbar-right {
+    display: none;
+  }
+
+  .navbar.is-sticky {
+    grid-template-columns: auto auto;
+  }
+
+  .navbar:not(.is-sticky) .navbar-center {
+    order: 3;
+    width: 100%;
+    margin-top: 15px;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .navbar.is-sticky,
+  body:not(.is-landing) .navbar {
+    left: 0;
+    flex-wrap: nowrap;
+    padding: 0 20px;
+  }
+
+  /* Hamburger toggle always visible on mobile */
+  .navbar.is-sticky .navbar-toggle,
+  body:not(.is-landing) .navbar-toggle,
+  .navbar-toggle {
+    display: flex !important;
+  }
+
+  .navbar-miniText {
+    display: none;
+  }
+
+  /* ---- MOBILE MENU PANEL (Hamburger) ---- */
+  .navbar.is-sticky .navbar-center,
+  body:not(.is-landing) .navbar-center {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+
+    background: rgba(246, 246, 248, 0.92);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+
+    padding: 0;
+    margin-top: 0;
+
+    transform: translateX(-100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9998;
+  }
+
+  .navbar.is-sticky .navbar-center.is-open,
+  body:not(.is-landing) .navbar-center.is-open {
+    transform: translateX(0);
+    z-index: -1;
+  }
+
+  .navbar.is-sticky .navbar-center a,
+  body:not(.is-landing) .navbar-center a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 20px 0;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: background 0.2s ease, color 0.2s ease, opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  /* Staggered entrance for links when menu is open */
+  .navbar.is-sticky .navbar-center.is-open a,
+  body:not(.is-landing) .navbar-center.is-open a {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .navbar.is-sticky .navbar-center.is-open a:nth-child(1),
+  body:not(.is-landing) .navbar-center.is-open a:nth-child(1) { transition-delay: 0.1s; }
+
+  .navbar.is-sticky .navbar-center.is-open a:nth-child(2),
+  body:not(.is-landing) .navbar-center.is-open a:nth-child(2) { transition-delay: 0.15s; }
+
+  .navbar.is-sticky .navbar-center.is-open a:nth-child(3),
+  body:not(.is-landing) .navbar-center.is-open a:nth-child(3) { transition-delay: 0.2s; }
+
+  .navbar.is-sticky .navbar-center.is-open a:nth-child(4),
+  body:not(.is-landing) .navbar-center.is-open a:nth-child(4) { transition-delay: 0.25s; }
+
+  .navbar.is-sticky .navbar-center.is-open a:nth-child(5),
+  body:not(.is-landing) .navbar-center.is-open a:nth-child(5) { transition-delay: 0.3s; }
+
+  .navbar.is-sticky .navbar-center.is-open a:nth-child(6),
+  body:not(.is-landing) .navbar-center.is-open a:nth-child(6) { transition-delay: 0.35s; }
+
+  .navbar.is-sticky .navbar-center.is-open a:nth-child(7),
+  body:not(.is-landing) .navbar-center.is-open a:nth-child(7) { transition-delay: 0.4s; }
+
+  .navbar.is-sticky .navbar-center a:first-child,
+  body:not(.is-landing) .navbar-center a:first-child {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .navbar.is-sticky .navbar-center a:active,
+  body:not(.is-landing) .navbar-center a:active {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+}
+
+
+
+
+
+/* =========================================
+   Language Toggle & Nav Buttons
+========================================= */
+.lang-toggle,
+.nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 10px 15px;
+  cursor: none;
+  transition: all 0.2s ease;
+  color: var(--text);
+}
+
+.nav-btn-left {
+  border: none;
+  padding: 5px 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nav-btn-left:hover {
+  background: transparent;
+  transform: scale(1.05);
+  opacity: 0.8;
+}
+
+.lang-toggle:hover,
+.nav-btn:not(.nav-btn-left):hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.lang-flag {
+  font-size: 1.1rem;
+  line-height: 1;
+  transform: translateY(-1.5px);
+}
+
+
+
+
+
+
+
+
+/* =========================================
+   HAMBURGER MENU ICON
+========================================= */
+.navbar-toggle {
+  display: none;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 99999;
+}
+
+.navbar-toggle span {
+  position: absolute;
+  left: 50%;
+  width: 24px;
+  height: 2px;
+  background-color: var(--text);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+.navbar-toggle span:nth-child(1) {
+  top: 12px;
+}
+
+.navbar-toggle span:nth-child(2) {
+  top: 19px;
+}
+
+.navbar-toggle span:nth-child(3) {
+  top: 26px;
+}
+
+.navbar-toggle.is-active span:nth-child(1) {
+  top: 19px;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.navbar-toggle.is-active span:nth-child(2) {
+  opacity: 0;
+}
+
+.navbar-toggle.is-active span:nth-child(3) {
+  top: 19px;
+  transform: translateX(-50%) rotate(-45deg);
+}
+
+
+
+
+
+
+/* =========================================
+   MOBILE HERO STYLES
+========================================= */
+.mobile-ticker {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--glass-border);
+  padding: 8px 12px;
+  z-index: 10000;
+  overflow: hidden;
+}
+
+.mobile-ticker-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-right: 12px;
+  white-space: nowrap;
+}
+
+.mobile-ticker-content {
+  display: inline-block;
+  white-space: nowrap;
+  animation: tickerScroll 60s linear infinite;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.75rem;
+  color: var(--text);
+  opacity: 0.8;
+}
+
+@keyframes tickerScroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 900px) {
+  .mobile-ticker {
+    display: block;
+  }
+}
+
+
+
+/* =========================================
+   LEGAL PAGES (Imprint & Data Security)
+========================================= */
+body.legal-page .navbar-right {
+  margin-right: 30px;
+}

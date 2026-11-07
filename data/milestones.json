@@ -4,81 +4,43 @@
     "end": "",
     "en": {
       "title": "Birth",
-      "desc": "Born in a small village called Waldbreitbach. I'm staying loyal to my roots.",
+      "desc": "Born in a small village called Waldbreitbach. Where my curiosity for making, taking things apart, and building began.",
       "label": "Birth"
     },
     "de": {
       "title": "Geburt",
-      "desc": "Geboren in einem kleinen Dorf namens Waldbreitbach. Ich bleibe meinen Wurzeln treu.",
+      "desc": "Geboren in einem kleinen Dorf namens Waldbreitbach. Hier begann die Faszination für das Tüfteln und Bauen.",
       "label": "Geburt"
     },
     "images": []
   },
   {
-    "start": "2004-01",
-    "end": "2008-01",
-    "en": {
-      "title": "Primary School",
-      "desc": "Technical basics, analytical work, project thinking.",
-      "label": "Primary School (Waldbreitbach)"
-    },
-    "de": {
-      "title": "Grundschule",
-      "desc": "Technische Grundlagen, analytisches Arbeiten, Projektdenken.",
-      "label": "Grundschule Waldbreitbach"
-    },
-    "images": [
-      {
-        "src": "assets/images/timeline-primaryshool.jpg"
-      },
-      {
-        "src": "assets/images/timeline-primaryshool2.jpg"
-      },
-      {
-        "src": "assets/images/timeline-primaryshool3.jpg"
-      }
-    ]
-  },
-  {
-    "start": "2020",
-    "end": "",
-    "en": {
-      "title": "Lifesaver Badge",
-      "desc": "Swimming certification.",
-      "label": "Lifesaver Badge"
-    },
-    "de": {
-      "title": "DLRG Rettungsschwimmer",
-      "desc": "Schwimmabzeichen.",
-      "label": "Rettungsschwimmer"
-    }
-  },
-  {
-    "start": "2008",
-    "end": "2016",
+    "start": "2008-08",
+    "end": "2016-03",
     "en": {
       "title": "High School (Abitur)",
-      "desc": "Technical basics, analytical work, project thinking.",
-      "label": "High School (Rhein-Wied-Gymnasium)"
+      "desc": "Rhein-Wied-Gymnasium Neuwied. General higher education entrance qualification with focus on sciences and design.",
+      "label": "Abitur (High School)"
     },
     "de": {
       "title": "Abitur",
-      "desc": "Technische Grundlagen, analytisches Arbeiten, Projektdenken.",
+      "desc": "Rhein-Wied-Gymnasium Neuwied. Allgemeine Hochschulreife mit Fokus auf Naturwissenschaften und Gestaltung.",
       "label": "Abitur Rhein-Wied-Gymnasium"
-    }
+    },
+    "images": []
   },
   {
-    "start": "2016",
-    "end": "2017",
+    "start": "2016-04",
+    "end": "2017-03",
     "en": {
       "title": "Work & Travel Australia",
-      "desc": "Had a year with so many experiences while travelling through Australia. Met many friends and developed my character.",
-      "label": "Work and Travel"
+      "desc": "A defining year travelling across Australia – new perspectives, adaptability, great friendships, and personal growth.",
+      "label": "Work & Travel"
     },
     "de": {
       "title": "Work & Travel Australien",
-      "desc": "Hatte ein Jahr mit so vielen Erfahrungen während der Reise durch Australien. Viele Freunde getroffen und meinen Charakter entwickelt.",
-      "label": "Work and Travel"
+      "desc": "Ein prägendes Jahr auf Reisen durch Australien – neue Perspektiven, Unabhängigkeit, Freundschaften und persönliche Entwicklung.",
+      "label": "Work & Travel"
     },
     "images": [
       {
@@ -86,9 +48,6 @@
       },
       {
         "src": "assets/images/timeline-australia2.jpg"
-      },
-      {
-        "src": "assets/images/globe-australia.jpg"
       }
     ]
   },
@@ -97,26 +56,27 @@
     "end": "2018-03",
     "en": {
       "title": "Architecture Studies (HS Koblenz)",
-      "desc": "Basics of design, aesthetics, and technical understanding.",
+      "desc": "Foundations in spatial design, aesthetics, architectural CAD, and form studies.",
       "label": "Architecture Studies"
     },
     "de": {
-      "title": "Studium Architektur (HS Koblenz)",
-      "desc": "Grundlagen Entwurf, Gestaltung, technisches Verständnis.",
+      "title": "Architektur Studium (HS Koblenz)",
+      "desc": "Grundlagen in Raumgestaltung, Formgebung, CAD-Zeichnen und ästhetischem Design.",
       "label": "Architektur Studium"
-    }
+    },
+    "images": []
   },
   {
     "start": "2018-10",
     "end": "2019-09",
     "en": {
       "title": "Mechanical Engineering (DHBW Mannheim)",
-      "desc": "Technical basics, analytical work, project thinking.",
-      "label": "Mechanical Engineering Studies"
+      "desc": "Engineering mechanics, materials, manufacturing principles, and precision 3D CAD modeling.",
+      "label": "Mechanical Engineering"
     },
     "de": {
-      "title": "Maschinenbau (DHBW Mannheim)",
-      "desc": "Technische Grundlagen, analytisches Arbeiten, Projektdenken.",
+      "title": "Maschinenbau Studium (DHBW Mannheim)",
+      "desc": "Konstruktion, Werkstoffkunde, technische Mechanik und Präzisions-CAD als Basis für Hardware-Prototypen.",
       "label": "Maschinenbau Studium"
     },
     "images": [
@@ -130,68 +90,57 @@
     "end": "2026-01",
     "en": {
       "title": "Computational Visualistics (Uni Koblenz)",
-      "desc": "Focus: Visual computing, interaction, web/UX-related projects.",
-      "label": "Computational Visualistics Studies (University of Koblenz)"
+      "desc": "Bridging code and visuals: Visual computing, 3D computer graphics, modern web tech, and interaction design.",
+      "label": "Computational Visualistics"
     },
     "de": {
       "title": "Computervisualistik (Uni Koblenz)",
-      "desc": "Schwerpunkt: Visual Computing, Interaktion, Web/UX-nahe Projekte.",
-      "label": "Computervisualistik Studium (Universität Koblenz)"
-    }
-  },
-  {
-    "start": "2019-10",
-    "end": "2020-03",
-    "en": {
-      "title": "First Web Project",
-      "desc": "HTML/CSS Basics, early layouts, small animations.",
-      "label": "Kinderuni Website 1.0"
+      "desc": "Die Brücke zwischen Code und Grafik: Visual Computing, 3D-Computergrafik, Web-Technologien und Interaktionsdesign.",
+      "label": "Computervisualistik"
     },
-    "de": {
-      "title": "Erstes Webprojekt",
-      "desc": "HTML/CSS Basics, erste Layouts, kleine Animationen.",
-      "label": "Kinderuni Website 1.0"
-    }
+    "images": []
   },
   {
     "start": "2021-04",
-    "end": "2026-01",
+    "end": "2022-03",
     "en": {
-      "title": "HiWi: KinderUni / Web Design",
-      "desc": "Conceptualization, UI implementation, Responsive Design.",
-      "label": "HiWi Web"
+      "title": "Smart Home & IoT Hardware Lab",
+      "desc": "Custom ESP32 microcontroller nodes, sensor design, and deep Home Assistant automation for responsive spaces.",
+      "label": "Smart Home & IoT Lab"
     },
     "de": {
-      "title": "HiWi: KinderUni / Web Design",
-      "desc": "Konzeption, UI-Umsetzung, Responsive Design.",
-      "label": "HiWi Web"
-    }
+      "title": "Smart Home & IoT Hardware Lab",
+      "desc": "Eigene ESP32-Sensoren, Microcontroller-Entwicklung und nahtlose Home Assistant Integrationen für vernetzte Räume.",
+      "label": "Smart Home & IoT Lab"
+    },
+    "images": []
   },
   {
-    "start": "2025-01",
-    "end": "2026-01",
+    "start": "2022-04",
+    "end": "2023-04",
     "en": {
-      "title": "Portfolio Website",
-      "desc": "Scroll animations, parallax, Glass UI, prototyping.",
-      "label": "Portfolio"
+      "title": "Custom Arcade Claw Machine",
+      "desc": "Complete custom build: 3-axis stepper mechanics, electronics, microcontroller firmware, coin mech, and bespoke cabinet.",
+      "label": "Arcade Greifautomat"
     },
     "de": {
-      "title": "Portfolio Webseite",
-      "desc": "Scroll-Animationen, Parallax, Glass UI, Prototyping.",
-      "label": "Portfolio"
-    }
+      "title": "Kirmes-Greifautomat Projekt",
+      "desc": "Vollständiger Eigenbau: 3-Achsen-Schrittmotoren, Steuerungselektronik, Firmware, Münzprüfer und individuelles Holz/Acryl-Gehäuse.",
+      "label": "Kirmes-Greifautomat"
+    },
+    "images": []
   },
   {
     "start": "2022-06-30",
     "end": "",
     "en": {
       "title": "Wedding Vivi & Micha",
-      "desc": "We had our dream wedding on an old castle.",
+      "desc": "Our dream wedding at a historic castle – an unforgettable celebration of love and happiness.",
       "label": "Wedding"
     },
     "de": {
       "title": "Hochzeit Vivi & Micha",
-      "desc": "Wir hatten unsere Traumhochzeit auf einer alten Burg.",
+      "desc": "Unsere Traumhochzeit auf einer alten Burg – ein unvergesslicher Tag voller Freude und Liebe.",
       "label": "Hochzeit"
     },
     "images": [
@@ -202,5 +151,61 @@
         "src": "assets/images/timeline-wedding2.jpg"
       }
     ]
+  },
+  {
+    "start": "2023-05",
+    "end": "2024-03",
+    "en": {
+      "title": "Interactive LED Cloud Ceiling",
+      "desc": "Craftsmanship meets light design & code: Custom 3D hot air balloons, addressable RGB LEDs, and automated mood scenes.",
+      "label": "LED Wolkendecke"
+    },
+    "de": {
+      "title": "Interaktive LED-Wolkendecke & Ballons",
+      "desc": "Kombination aus Handwerk, Lichtdesign und Code: Eigene Heißluftballons, adressierbare LEDs und automatisierte Lichtszenen.",
+      "label": "LED-Wolkendecke"
+    },
+    "images": [
+      {
+        "src": "assets/images/Screenshot 2026-10-29 224853.png"
+      },
+      {
+        "src": "assets/images/Screenshot 2026-10-29 224754.png"
+      }
+    ]
+  },
+  {
+    "start": "2024-04",
+    "end": "2025-06",
+    "en": {
+      "title": "3D Printing & Rapid Prototyping",
+      "desc": "High-precision FDM manufacturing (Bambu Lab), functional assemblies, custom enclosures, and small-batch production.",
+      "label": "3D Rapid Prototyping"
+    },
+    "de": {
+      "title": "3D-Druck & Rapid Prototyping",
+      "desc": "Hochpräziser FDM-Druck (Bambu Lab Flotte), funktionale Baugruppen, maßgeschneiderte Gehäuse und Kleinserienfertigung.",
+      "label": "3D-Druck Prototyping"
+    },
+    "images": [
+      {
+        "src": "assets/images/Screenshot 2026-10-29 224631.png"
+      }
+    ]
+  },
+  {
+    "start": "2025-07",
+    "end": "2026-10",
+    "en": {
+      "title": "Creative Studio & Maker Lab",
+      "desc": "Bespoke technical and creative solutions: turning client ideas into functional reality from CAD to hardware and web experiences.",
+      "label": "Maker Studio & Lab"
+    },
+    "de": {
+      "title": "Creative Studio & Maker Lab",
+      "desc": "Individuelle technische und kreative Lösungen: von der Idee über CAD und 3D-Druck bis zur fertigen Hardware und Web-Präsenz.",
+      "label": "Maker Studio & Lab"
+    },
+    "images": []
   }
 ]

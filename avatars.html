@@ -1,0 +1,287 @@
+<!-- SNAP SCROLLING SECTION: ABOUT ME -->
+<section class="snap-section about-peeking-section">
+
+    <div class="card-stage">
+
+        <!-- EBENE 1 (z-index: 1): Die 4 Avatare hinter der Karte -->
+        <div class="avatars-layer">
+
+            <!-- 1. Du (Oben links / Mitte-links über der Karte) -->
+            <div class="avatar-peeker pos-me" data-character="me">
+                <video class="vid-idle" src="assets/me-idle.webm" autoplay loop muted playsinline></video>
+                <video class="vid-action" src="assets/me-wave.webm" muted playsinline preload="auto"></video>
+            </div>
+
+            <!-- 2. Vivi (Oben Mitte-rechts über der Karte) -->
+            <div class="avatar-peeker pos-wife" data-character="wife">
+                <video class="vid-idle" src="avatars/vivi-idle.mp4" autoplay loop muted playsinline></video>
+                <video class="vid-action" src="avatars/vivi-smile.webm" muted playsinline preload="auto"></video>
+            </div>
+
+            <!-- 3. Mika (Zwischen euch oder leicht rechts oben hervorschauend) -->
+            <div class="avatar-peeker pos-mika" data-character="mika">
+                <video class="vid-idle" src="assets/mika-idle.webm" autoplay loop muted playsinline></video>
+                <video class="vid-action" src="assets/mika-laugh.webm" muted playsinline preload="auto"></video>
+            </div>
+
+            <!-- 4. Coco (Seitlich rechts oder links über die Kartenkante gebeugt) -->
+            <div class="avatar-peeker pos-coco" data-character="coco">
+                <video class="vid-idle" src="assets/coco-idle.webm" autoplay loop muted playsinline></video>
+                <video class="vid-action" src="assets/coco-tilt.webm" muted playsinline preload="auto"></video>
+            </div>
+
+        </div>
+
+        <!-- EBENE 2 (z-index: 2): Deine zentrale Karte (verdeckt die unteren Körper) -->
+        <div class="about-main-card">
+            <span class="card-tag">Über mich</span>
+            <h2>Hi, ich bin Micha.</h2>
+            <p>
+                Entwickler, Maker und Familienmensch. Wenn ich nicht gerade an Smart-Home-Systemen,
+                Mikrocontrollern oder Web-Projekten schraube, bin ich mit meiner Familie und
+                unserem Zwergpudel Coco unterwegs.
+            </p>
+            <p class="hint-text">✨ Tipp: Fahr mit der Maus über unsere Avatare im Hintergrund!</p>
+        </div>
+
+    </div>
+
+</section>
+
+<style>
+    /* 1. Snap-Scrolling Section (100% Bildschirmhöhe) */
+    .about-peeking-section {
+        height: 100vh;
+        width: 100%;
+        scroll-snap-align: start;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #0f1115;
+        /* Exakt an deine Seiten-/Video-Hintergrundfarbe anpassen */
+        overflow: hidden;
+        position: relative;
+        padding: 2rem;
+        box-sizing: border-box;
+    }
+
+    /* 2. Gemeinsame Bühne für Karte + Avatare */
+    .card-stage {
+        position: relative;
+        width: 100%;
+        max-width: 780px;
+        /* Breite deiner zentralen Karte */
+        margin-top: 140px;
+        /* Platz nach oben schaffen, damit die Köpfe reinpassen */
+    }
+
+    /* 3. Die zentrale Karte (Vordergrund, verdeckt die unteren Körperteile) */
+    .about-main-card {
+        position: relative;
+        z-index: 2;
+        /* Liegt ÜBER den Avataren */
+        background: rgba(24, 27, 34, 0.92);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 24px;
+        padding: 3rem;
+        color: #f3f4f6;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+
+    .card-tag {
+        display: inline-block;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #38bdf8;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+    }
+
+    .about-main-card h2 {
+        margin: 0 0 1rem 0;
+        font-size: 2.2rem;
+    }
+
+    .about-main-card p {
+        line-height: 1.65;
+        color: #9ca3af;
+        margin-bottom: 1rem;
+    }
+
+    .hint-text {
+        font-size: 0.85rem;
+        color: #6b7280 !important;
+        margin-top: 1.5rem;
+        margin-bottom: 0 !important;
+    }
+
+    /* 4. Avatar-Ebene (Hintergrund) */
+    .avatars-layer {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        /* Liegt HINTER der Karte */
+        pointer-events: none;
+        /* Erlaubt Klicks durch leere Bereiche, Avatare selbst aktivieren Events wieder */
+    }
+
+    /* 5. Einzelner Avatar-Container */
+    .avatar-peeker {
+        position: absolute;
+        pointer-events: auto;
+        /* Wichtig: Macht den Avatar trotz Hintergrund-Ebene hoverbar! */
+        cursor: pointer;
+        transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: transform;
+    }
+
+    /* Dezentes Vorrücken beim Hover unterstreicht den 3D/Spider-Verse-Effekt */
+    .avatar-peeker:hover {
+        transform: translateY(-8px) scale(1.03);
+    }
+
+    .avatar-peeker video {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        user-select: none;
+        pointer-events: none;
+    }
+
+    /* Action-Video liegt deckungsgleich über dem Idle-Video und ist anfangs unsichtbar */
+    .avatar-peeker .vid-action {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transition: opacity 0.15s ease-in-out;
+    }
+
+    /* Wenn aktiv, wird das Action-Video eingeblendet */
+    .avatar-peeker.is-acting .vid-action {
+        opacity: 1;
+    }
+
+    /* 6. Individuelle Positionierung rund um die Karte (Werte nach Belieben feintunen!) */
+
+    /* Du: Links oben hinter der Karte */
+    .pos-me {
+        width: 310px;
+        height: 310px;
+        top: -210px;
+        /* Zieht dich nach oben aus der Karte heraus */
+        left: 2%;
+        z-index: 2;
+    }
+
+    /* Vivi: Mitte-rechts oben hinter der Karte */
+    .pos-wife {
+        width: 295px;
+        height: 295px;
+        top: -195px;
+        left: 36%;
+        z-index: 1;
+    }
+
+    /* Mika: Zwischen euch / rechts davon, schaut knapp über den Rand */
+    .pos-mika {
+        width: 220px;
+        height: 220px;
+        top: -145px;
+        left: 63%;
+        z-index: 3;
+    }
+
+    /* Coco: Rechts oben an der Ecke (oder seitlich herauslugend) */
+    .pos-coco {
+        width: 210px;
+        height: 210px;
+        top: -135px;
+        right: -2%;
+        z-index: 4;
+    }
+
+    /* 7. Mobile Anpassung (auf kleineren Screens enger zusammenrücken) */
+    @media (max-width: 768px) {
+        .card-stage {
+            margin-top: 110px;
+        }
+
+        .pos-me {
+            width: 170px;
+            height: 170px;
+            top: -115px;
+            left: -2%;
+        }
+
+        .pos-wife {
+            width: 165px;
+            height: 165px;
+            top: -110px;
+            left: 26%;
+        }
+
+        .pos-mika {
+            width: 130px;
+            height: 130px;
+            top: -85px;
+            left: 53%;
+        }
+
+        .pos-coco {
+            width: 125px;
+            height: 125px;
+            top: -80px;
+            right: -2%;
+        }
+
+        .about-main-card {
+            padding: 1.75rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const peekers = document.querySelectorAll('.avatar-peeker');
+
+        peekers.forEach(peeker => {
+            const idleVideo = peeker.querySelector('.vid-idle');
+            const actionVideo = peeker.querySelector('.vid-action');
+            let isPlayingAction = false;
+
+            const triggerAction = () => {
+                // Verhindert Neustart, falls die Wink-Animation gerade schon läuft
+                if (isPlayingAction) return;
+                isPlayingAction = true;
+
+                // Idle-Video kurz auf den Startframe setzen (optional für weichen Übergang)
+                actionVideo.currentTime = 0;
+                peeker.classList.add('is-acting');
+
+                actionVideo.play().catch(() => {
+                    // Fallback falls Browser Autoplay blockiert
+                    peeker.classList.remove('is-acting');
+                    isPlayingAction = false;
+                });
+            };
+
+            // Auslösen bei Maus-Hover (Desktop) und Antippen (Mobile/Tablet)
+            peeker.addEventListener('mouseenter', triggerAction);
+            peeker.addEventListener('touchstart', triggerAction, { passive: true });
+
+            // Sobald das Action-Video (z.B. Winken) einmal durchgelaufen ist -> zurück zum Idle-Loop
+            actionVideo.addEventListener('ended', () => {
+                // Startet das Idle-Video ab Frame 0 (= Endframe des Action-Videos) für 100% nahtlosen Übergang
+                idleVideo.currentTime = 0;
+                idleVideo.play();
+                peeker.classList.remove('is-acting');
+                isPlayingAction = false;
+            });
+        });
+    });
+</script>

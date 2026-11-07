@@ -1,0 +1,276 @@
+/* ==========================================================================
+   SEKTION 3: MANUFAKTUR & SHOPS (Unified 100dvh 3-Column Promotional Hub)
+   ========================================================================== */
+
+#manufaktur {
+  height: 100dvh;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  padding: 84px 6% 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (min-width: 900px) {
+  #manufaktur {
+    padding: 88px 8% 36px;
+  }
+}
+
+.manufaktur-container {
+  width: min(1240px, 100%);
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 0;
+}
+
+/* 3-Column Promotional Showcase Grid */
+.manufaktur-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  width: 100%;
+}
+
+@media (max-width: 920px) {
+  .manufaktur-grid {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+}
+
+/* Promotional Shop Card */
+.promo-shop-card {
+  position: relative;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.76);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.promo-shop-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 44px rgba(15, 23, 42, 0.12);
+  border-color: rgba(15, 23, 42, 0.16);
+}
+
+/* Visual Media Header inside each Card (Larger, Uncluttered Photo Area) */
+.promo-visual {
+  position: relative;
+  flex: 1 1 58%;
+  min-height: 170px;
+  background: #0f172a;
+  overflow: hidden;
+}
+
+.promo-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.promo-shop-card:hover .promo-visual img {
+  transform: scale(1.04);
+}
+
+.promo-visual-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 0.08) 0%,
+    transparent 45%,
+    rgba(15, 23, 42, 0.68) 100%
+  );
+  pointer-events: none;
+}
+
+.promo-top-badges {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  z-index: 2;
+}
+
+.promo-price-pill {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: #0f172a;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+}
+
+/* Edition / Image Switcher Dots on the Visual */
+.promo-visual-bar {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  right: 16px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.promo-visual-caption {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #f8fafc;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.promo-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.promo-swatch-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.promo-swatch-dot.is-active,
+.promo-swatch-dot:hover {
+  transform: scale(1.2);
+  border-color: #ffffff;
+}
+
+/* Card Copy & CTA Body */
+.promo-body {
+  padding: 18px 22px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 1 1 42%;
+  min-height: 0;
+}
+
+.promo-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.promo-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #64748b;
+}
+
+.promo-title {
+  margin: 0;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.18rem, 1.45vw, 1.38rem);
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+.promo-desc {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: #475569;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.promo-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.promo-btn-primary {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #0f172a;
+  color: #ffffff !important;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.promo-btn-primary::before {
+  display: none !important;
+}
+
+.promo-btn-primary:hover {
+  transform: translateY(-1px);
+  background: #1e293b;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.16);
+}
+
+.promo-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: transparent;
+  color: #334155 !important;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.promo-btn-ghost:hover {
+  background: rgba(15, 23, 42, 0.05);
+  border-color: rgba(15, 23, 42, 0.28);
+}

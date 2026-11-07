@@ -20,33 +20,36 @@ document.addEventListener("DOMContentLoaded", () => {
   // =============================
   const IS_MOBILE = window.innerWidth < 900;
 
-  const AMBIENT_IMAGE_GROUPS = [
-    [{ src: "assets/images/timeline-animal.jpg" }, { src: "assets/images/timeline-animal2.jpg" }],
-    [{ src: "assets/images/timeline-food.jpg" }, { src: "assets/images/timeline-food2.jpg" }],
-    [{ src: "assets/images/timeline-friends.jpg" }, { src: "assets/images/timeline-friends(2).jpg" }, { src: "assets/images/timeline-friends(3).jpg"}],
-    [{ src: "assets/images/timeline-travel.jpg" }, { src: "assets/images/timeline-soccer.jpg" }]
+  const AMBIENT_IMAGES = [
+    { src: "assets/images/timeline-wedding.jpg" },
+    { src: "assets/images/timeline-dhbw.jpg" },
+    { src: "assets/images/timeline-australia.jpg" },
+    { src: "assets/images/timeline-travel.jpg" },
+    { src: "assets/images/timeline-wedding2.jpg" },
+    { src: "assets/images/timeline-friends.jpg" }
   ];
 
   const END_DATE = new Date(); END_DATE.setMonth(END_DATE.getMonth());
-  const PADDED_START = new Date("1996-01-28");
+  const PADDED_START = new Date("1995-01-01");
   const TOTAL_TIMESPAN_MS = END_DATE.getTime() - PADDED_START.getTime();
 
   const VIRTUAL_TRACK_WIDTH = 4000;
   timelineTrack.style.width = `${VIRTUAL_TRACK_WIDTH}px`;
   const WINDOW_SPAN = IS_MOBILE ? 0.26 : 0.2;
 
-  // Rope
+  // Rope - subtle, natural suspension physics
   const ROPE_POINT_COUNT = 150;
   const ROPE_BASE_TENSION = 0.1;
-  const ROPE_DAMPING = 0.84;
-  const ROPE_SAG_DEPTH = 60;
-  const ROPE_SCROLL_SENSITIVITY = IS_MOBILE ? 0.12 : 0.04;
+  const ROPE_DAMPING = 0.88;
+  const ROPE_SAG_DEPTH = IS_MOBILE ? 26 : 34;
+  const ROPE_SCROLL_SENSITIVITY = IS_MOBILE ? 0.04 : 0.015;
 
-  // Stick figure
-  const STICKMAN_SIZE = IS_MOBILE ? 28 : 36;
-  const STICKMAN_WALK_SPEED = 2.5;          // walk cycle animation speed (rad/s)
-  const STICKMAN_RUN_SPEED = IS_MOBILE ? 250 : 400; // track px per second
-  const STICKMAN_WALKIN_SPEED = IS_MOBILE ? 80 : 120; // walk-in px per second (slower, deliberate)
+  // Stick figure - Increased size for presence & smooth animation
+  const STICKMAN_SIZE = IS_MOBILE ? 42 : 54;
+  const STICKMAN_WALK_SPEED = 3.2;          // deliberate walk cycle speed (rad/s)
+  const STICKMAN_RUN_CYCLE = 5.6;           // running walk cycle speed (rad/s)
+  const STICKMAN_RUN_SPEED = IS_MOBILE ? 280 : 420; // track px per second
+  const STICKMAN_WALKIN_SPEED = IS_MOBILE ? 85 : 125; // walk-in px per second
   const STICKMAN_END_TRACK_X = VIRTUAL_TRACK_WIDTH * 0.95;
   const OFFSCREEN_MARGIN = 0.10;
 
@@ -98,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const preloadAllImages = async (items) => {
     const srcs = new Set();
     items.forEach(i => { if (Array.isArray(i.images)) i.images.forEach(d => { if (d?.src) srcs.add(d.src); }); });
-    AMBIENT_IMAGE_GROUPS.forEach(g => g.forEach(d => srcs.add(d.src)));
+    AMBIENT_IMAGES.forEach(d => srcs.add(d.src));
     await Promise.all(Array.from(srcs).map(s => loadImageDimensions(s)));
   };
   const getScaledDimensions = (src) => {
@@ -176,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.save();
     ctx.strokeStyle = getTextColor();
     ctx.fillStyle = getTextColor();
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = Math.max(2.8, size * 0.065);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
@@ -188,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const isWalking = Math.abs(walkPhase) > 0.01;
     const legSwing = isWalking ? Math.sin(walkPhase) * 0.45 : 0;
     const armSwing = isWalking ? Math.sin(walkPhase + Math.PI) * 0.4 : 0;
-    const bounceY = isWalking ? Math.abs(Math.sin(walkPhase)) * 3 : 0;
+    const bounceY = isWalking ? Math.abs(Math.sin(walkPhase)) * (size * 0.075) : 0;
 
     // Dramatic lean when tugging at the end
     const leanAngle = atEnd ? tension * 0.65 : tension * 0.25 * -dir;
@@ -211,7 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (atEnd) {
       // Make it look like a dramatic tug-of-war
       const holdDist = limbLen * (1.2 + tension * 0.4);
-      const handSize = 2;
+      const handSize = Math.max(2.5, size * 0.055);
 
       // Upper arm (pulling hard, extending forward)
       const arm1X = -holdDist;
@@ -245,10 +248,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (ropeRemaining > 0.05) {
         const coilX = -dir * limbLen * 0.85;
         const coilY = -bodyLen * 0.45;
-        const coilSize = Math.min(8, ropeRemaining * 12);
+        const coilSize = Math.min(12, ropeRemaining * (size * 0.25));
         ctx.beginPath();
         ctx.arc(coilX, coilY, coilSize, 0, Math.PI * 2);
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = Math.max(1.8, size * 0.04);
         ctx.stroke();
         // Inner loops
         if (coilSize > 3) {
@@ -258,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = Math.max(2.8, size * 0.065);
 
       // FREE ARM: swings forward
       ctx.beginPath();
@@ -289,7 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.translate(x, y + progress * 200);
     ctx.rotate(progress * 2.5);
     ctx.strokeStyle = getTextColor();
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = Math.max(2.8, size * 0.065);
     ctx.lineCap = "round";
     const h = size * 0.18, b = size * 0.35, l = size * 0.28;
     ctx.beginPath(); ctx.arc(0, -b - h, h, 0, Math.PI * 2); ctx.stroke();
@@ -304,6 +307,58 @@ document.addEventListener("DOMContentLoaded", () => {
   // =============================
   // 6) MILESTONES
   // =============================
+  let timelineHasExited = false;
+
+  function resetTimelineAndStickman() {
+    stickmanTrackX = 0;
+    stickmanStarted = true;
+    stickmanRunning = false;
+    stickmanResting = false;
+    stickmanRestTimer = 0;
+    stickmanPlanting = false;
+    stickmanPlantTimer = 0;
+    stickmanWalkingIn = false;
+    polePlanted = false;
+    poleScreenTrackX = 0;
+    stickmanHandTrackX = 0;
+    stickmanHandYOffset = 0;
+    stickman.walkPhase = 0;
+    stickman.facingRight = true;
+    stickman.atEnd = false;
+    stickman.hasFallen = false;
+    stickman.fallTime = 0;
+    stickman.tension = 0;
+    isRopeSnapped = false;
+    snappedPointCount = 0;
+    snapBreakIndex = 0;
+    window._timelineBroken = false;
+    window._timelineEdgeAcc = 0;
+
+    initializeRope();
+
+    document.querySelectorAll('.milestone').forEach(m => {
+      m.classList.remove('falling', 'is-in-view');
+      const dot = m.querySelector('.milestone-dot');
+      if (dot) dot.style.transform = 'translate(-50%, -50%)';
+      const lab = m.querySelector('.milestone-label');
+      if (lab) lab.style.transform = 'translate(-50%, var(--y, 0px))';
+    });
+
+    const ov = document.querySelector(".timeline-overlay");
+    if (ov) ov.style.opacity = "1";
+
+    activeAmbientCards.forEach(c => c.remove());
+    activeAmbientCards.clear();
+    renderedImageSources.clear();
+    slotOccupied.fill(false);
+
+    timelineViewport.scrollTo({ left: 0, behavior: "instant" });
+    previousScrollLeft = 0;
+    scrollVelocity = 0;
+    updateTimelineState();
+    startTimelineAnimations();
+  }
+
   fetch("data/milestones.json")
     .then(r => r.json())
     .then(async (items) => {
@@ -314,10 +369,22 @@ document.addEventListener("DOMContentLoaded", () => {
       startAmbientSpawner();
       resizeStickCanvas();
 
-      const obs = new IntersectionObserver((entries, o) => {
-        if (entries[0].isIntersecting) { stickmanStarted = true; o.disconnect(); }
-      }, { threshold: 0.05 });
-      obs.observe(timelineArea);
+      const cvObs = new IntersectionObserver((entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+          if (timelineHasExited) {
+            resetTimelineAndStickman();
+            timelineHasExited = false;
+          } else if (!stickmanStarted) {
+            stickmanStarted = true;
+          }
+          startTimelineAnimations();
+        } else {
+          timelineHasExited = true;
+          stopTimelineAnimations();
+        }
+      }, { threshold: 0.1 });
+      cvObs.observe(cvSection);
     });
 
   function buildMilestones(items) {
@@ -390,6 +457,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const ropePoints = [];
   let ropeSegmentSpacing = 0;
   let isRopeSnapped = false;
+  let snappedPointCount = 0;
+  let snapBreakIndex = 0;
   let hoveredDotEl = null;
   let lastScrollTimestamp = performance.now();
   let scrollVelocity = 0;
@@ -397,10 +466,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window._timelineEdgeAcc = 0;
   window._timelineTriggerSnap = () => {
+    if (isRopeSnapped) return;
     isRopeSnapped = true;
     window._timelineBroken = true;
     stickman.hasFallen = true;
     stickman.fallTime = 0;
+
+    // Freeze active point count so snapped rope doesn't stretch past stickman's hand
+    const ropeTrackFrac = clamp01(stickmanTrackX / VIRTUAL_TRACK_WIDTH);
+    snappedPointCount = Math.max(4, Math.floor(ropeTrackFrac * ROPE_POINT_COUNT));
+
+    // Place the break dynamically within the visible rope on screen
+    const scrollLeft = timelineViewport.scrollLeft;
+    const startX = poleScreenTrackX;
+    const endX = stickmanHandTrackX;
+    const ropeSpan = Math.max(1, endX - startX);
+
+    const visibleStartFrac = clamp01((scrollLeft - startX) / ropeSpan);
+    const visibleStartIndex = Math.floor(visibleStartFrac * (snappedPointCount - 1));
+    const visibleEndIndex = snappedPointCount - 1;
+    const visibleSpan = visibleEndIndex - visibleStartIndex;
+
+    if (visibleSpan > 6) {
+      snapBreakIndex = Math.floor(visibleStartIndex + visibleSpan * 0.55);
+    } else {
+      snapBreakIndex = Math.floor(snappedPointCount * 0.7);
+    }
+    snapBreakIndex = Math.max(2, Math.min(snappedPointCount - 2, snapBreakIndex));
+
     document.querySelectorAll(".milestone").forEach(m => {
       m.classList.add("falling");
       m.style.setProperty("--fall-dir", (1 + Math.random()) * (Math.random() > 0.5 ? 1 : -1));
@@ -414,7 +507,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ropeSegmentSpacing = VIRTUAL_TRACK_WIDTH / (ROPE_POINT_COUNT - 1);
     ropePoints.length = 0;
     for (let i = 0; i < ROPE_POINT_COUNT; i++) {
-      ropePoints.push({ x: i * ropeSegmentSpacing, y: 0, vy: 0 });
+      ropePoints.push({ x: i * ropeSegmentSpacing, y: 0, vy: 0, vx: 0, snapped: false });
     }
   }
 
@@ -438,7 +531,7 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let i = 0; i < drawnCount; i++) {
         ropePoints[i].x = startX + (endX - startX) * (i / (drawnCount - 1));
       }
-    } else {
+    } else if (!isRopeSnapped) {
       ropePoints[0].x = poleScreenTrackX;
     }
 
@@ -456,12 +549,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (isRopeSnapped) {
-      for (let i = 0; i < ROPE_POINT_COUNT; i++) {
+      const count = snappedPointCount || drawnCount;
+      const mid = snapBreakIndex || Math.floor(count / 2);
+      for (let i = 0; i < count; i++) {
         const pt = ropePoints[i];
         if (!pt.snapped) {
-          const cd = (i - ROPE_POINT_COUNT / 2) / (ROPE_POINT_COUNT / 2);
-          pt.vy = -5 - Math.random() * 10;
-          pt.vx = cd * 15;
+          const isRightPiece = i >= mid;
+          const distFromCut = isRightPiece ? (i - mid) : (mid - 1 - i);
+          const whip = Math.max(0, 1 - distFromCut / 25);
+          pt.vy = -3 - Math.random() * 8 - whip * 6;
+          pt.vx = (isRightPiece ? 1 : -1) * (2 + Math.random() * 4 + whip * 6);
           pt.snapped = true;
         }
         pt.vy += 1.2; pt.y += pt.vy;
@@ -470,14 +567,13 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       for (let i = 0; i < ROPE_POINT_COUNT; i++) {
         const pt = ropePoints[i];
-        if (i > drawnCount) { pt.y = 0; pt.vy = 0; continue; }
+        if (i >= drawnCount) { pt.y = 0; pt.vy = 0; continue; }
         if (i === 0) { pt.y = 0; pt.vy = 0; continue; }
         // Pin the leading edge point to stickman's hand Y offset
-        if (i >= drawnCount - 1 && ropeTrackFrac < 0.99) { pt.y = stickmanHandYOffset; pt.vy = 0; continue; }
-        if (ropeTrackFrac >= 0.99 && i === ROPE_POINT_COUNT - 1) { pt.y = stickmanHandYOffset; continue; }
+        if (i >= drawnCount - 1) { pt.y = stickmanHandYOffset; pt.vy = 0; continue; }
 
         const left = ropePoints[i - 1];
-        const right = ropePoints[Math.min(i + 1, drawnCount)];
+        const right = ropePoints[Math.min(i + 1, drawnCount - 1)];
         let force = ((left.y + right.y) / 2 - pt.y) * tension;
         const nx = (i / (drawnCount || 1)) * 2 - 1;
         force += ((1 - nx * nx) * ROPE_SAG_DEPTH - pt.y) * 0.05;
@@ -485,8 +581,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // Dampen oscillation near the stickman's hand (last 15% of rope)
         const handFrac = drawnCount > 0 ? i / drawnCount : 0;
         const handDampen = handFrac > 0.85 ? ((handFrac - 0.85) / 0.15) : 0; // 0 → 1 near hand
-        const oscillationStrength = (1 - handDampen) * (Math.abs(scrollVelocity) * ROPE_SCROLL_SENSITIVITY + 0.6);
-        force += Math.sin(time * 2 + i * 0.15) * oscillationStrength;
+        const oscillationStrength = (1 - handDampen) * (Math.abs(scrollVelocity) * ROPE_SCROLL_SENSITIVITY + 0.16);
+        force += Math.sin(time * 1.6 + i * 0.12) * oscillationStrength;
 
         if (window._timelineEdgeAcc > 0 && i > drawnCount / 2) {
           const tf = Math.min(1, window._timelineEdgeAcc / 350);
@@ -500,12 +596,18 @@ document.addEventListener("DOMContentLoaded", () => {
         pt.vy = (pt.vy + force) * (ROPE_DAMPING - handDampen * 0.3);
       }
 
-      for (let i = 1; i <= Math.min(drawnCount, ROPE_POINT_COUNT - 1); i++) {
+      for (let i = 1; i <= Math.min(drawnCount - 1, ROPE_POINT_COUNT - 1); i++) {
         const pt = ropePoints[i];
         pt.y += pt.vy;
         if (lockTrackX !== null) {
           const dx = Math.abs(pt.x - lockTrackX);
-          if (dx < 90) { const s = 1 - dx / 90; const ss = s * s * (3 - 2 * s); pt.y -= pt.y * ss * 0.9; pt.vy *= 1 - ss; }
+          if (dx < 80) {
+            const s = 1 - dx / 80;
+            const ss = s * s * (3 - 2 * s);
+            // Gentle buoyant lift under hovered milestone dot
+            pt.y -= ss * 0.45;
+            pt.vy *= (1 - ss * 0.2);
+          }
         }
       }
       // Re-pin pole anchor after integration
@@ -528,7 +630,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const sx = (pt) => pt.x - scrollLeft;
 
     if (isRopeSnapped) {
-      const mid = Math.floor(ROPE_POINT_COUNT / 2);
+      const count = snappedPointCount || drawnCount;
+      const mid = snapBreakIndex || Math.floor(count / 2);
+      if (count < 2) return;
+
+      // Left segment (from anchor pole to break point)
       let d = `M ${sx(ropePoints[0])},${cy + ropePoints[0].y}`;
       for (let i = 0; i < mid - 1; i++) {
         const p = ropePoints[i], q = ropePoints[i + 1];
@@ -536,13 +642,15 @@ document.addEventListener("DOMContentLoaded", () => {
         d += i === 0 ? ` L ${mx},${cy + my}` : ` Q ${sx(p)},${cy + p.y} ${mx},${cy + my}`;
       }
       d += ` L ${sx(ropePoints[mid - 1])},${cy + ropePoints[mid - 1].y}`;
+
+      // Right segment (from break point to stickman trailing hand, terminating strictly at count - 1)
       d += ` M ${sx(ropePoints[mid])},${cy + ropePoints[mid].y}`;
-      for (let i = mid; i < ROPE_POINT_COUNT - 1; i++) {
+      for (let i = mid; i < count - 1; i++) {
         const p = ropePoints[i], q = ropePoints[i + 1];
         const mx = (sx(p) + sx(q)) / 2, my = (p.y + q.y) / 2;
         d += i === mid ? ` L ${mx},${cy + my}` : ` Q ${sx(p)},${cy + p.y} ${mx},${cy + my}`;
       }
-      d += ` L ${sx(ropePoints[ROPE_POINT_COUNT - 1])},${cy + ropePoints[ROPE_POINT_COUNT - 1].y}`;
+      d += ` L ${sx(ropePoints[count - 1])},${cy + ropePoints[count - 1].y}`;
       ropePath.setAttribute("d", d);
     } else if (drawnCount >= 2) {
       let d = `M ${sx(ropePoints[0])},${cy + ropePoints[0].y}`;
@@ -574,7 +682,9 @@ document.addEventListener("DOMContentLoaded", () => {
       else if (fi < 0) yo = ropePoints[0]?.y || 0;
       else yo = 0;
       const dot = m.querySelector('.milestone-dot');
-      if (dot) dot.style.transform = `translate(-50%, calc(-50% + ${yo}px))`;
+      const isHovered = (hoveredDotEl === dot);
+      const scaleStr = isHovered ? ' scale(1.35)' : '';
+      if (dot) dot.style.transform = `translate(-50%, calc(-50% + ${yo}px))${scaleStr}`;
       const lab = m.querySelector('.milestone-label');
       if (lab) lab.style.transform = `translate(-50%, calc(var(--y, 0px) + ${yo}px))`;
     });
@@ -663,9 +773,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Walk-in phase: walk from off-screen left to pole position
+    // Walk-in phase: walk from off-screen left to pole position at start of track
     if (stickmanWalkingIn) {
-      const targetX = scrollLeft + vw * ROPE_START_VW;
+      const targetX = Math.round(Math.min(75, Math.max(35, vw * ROPE_START_VW)));
       stickmanTrackX += STICKMAN_WALKIN_SPEED * dt;
       stickman.walkPhase += dt * STICKMAN_WALK_SPEED;
       stickman.facingRight = true;
@@ -720,7 +830,7 @@ document.addEventListener("DOMContentLoaded", () => {
       stickmanTrackX += STICKMAN_RUN_SPEED * dt;
       if (stickmanTrackX > dynamicEndTrackX) stickmanTrackX = dynamicEndTrackX;
 
-      stickman.walkPhase += dt * STICKMAN_WALK_SPEED;
+      stickman.walkPhase += dt * STICKMAN_RUN_CYCLE;
 
       const newScreenX = stickmanTrackX - scrollLeft;
       if (newScreenX >= offscreenThreshold) {
@@ -746,14 +856,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function drawPlantingStickFigure(ctx, x, y, size, progress) {
-    // progress: 0→1
-    // Phase 1 (0-0.35): Holding pole overhead, winding up
-    // Phase 2 (0.35-0.65): Driving pole into ground
-    // Phase 3 (0.65-1.0): Stepping back, admiring
     ctx.save();
     ctx.strokeStyle = getTextColor();
     ctx.fillStyle = getTextColor();
-    ctx.lineWidth = 2.5;
+    const baseLW = Math.max(2.8, size * 0.065);
+    const poleLW = Math.max(3.8, size * 0.085);
+    const flagLW = Math.max(1.8, size * 0.04);
+    ctx.lineWidth = baseLW;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
@@ -774,7 +883,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // Body
       ctx.beginPath(); ctx.moveTo(0, -bodyLen); ctx.lineTo(0, 0); ctx.stroke();
       // Both arms up holding pole
-      const armAngle = -0.3 - windUp * 0.5; // arms go higher as winding up
       ctx.beginPath(); ctx.moveTo(0, -bodyLen * 0.75); ctx.lineTo(-limbLen * 0.5, -bodyLen - limbLen * 0.6); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(0, -bodyLen * 0.75); ctx.lineTo(limbLen * 0.5, -bodyLen - limbLen * 0.6); ctx.stroke();
       // Legs apart slightly
@@ -785,16 +893,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const poleTilt = -Math.PI / 2 + windUp * 0.4;
       const poleBaseX = 0;
       const poleBaseY = -bodyLen - limbLen * 0.5;
-      ctx.lineWidth = 3.5;
+      ctx.lineWidth = poleLW;
       ctx.beginPath();
       ctx.moveTo(poleBaseX, poleBaseY);
       ctx.lineTo(poleBaseX + Math.cos(poleTilt) * poleLen, poleBaseY + Math.sin(poleTilt) * poleLen);
       ctx.stroke();
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = baseLW;
     } else if (progress < 0.65) {
       // Phase 2: Driving pole into ground
       const drive = (progress - 0.35) / 0.3; // 0→1
-      const poleAngle = -Math.PI / 2 + 0.4 - (0.4 + Math.PI / 2) * drive; // overhead → vertical down
       const plantDepth = drive * poleLen * 0.35;
       ctx.translate(x, y);
 
@@ -815,13 +922,13 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(limbLen * 0.35, limbLen); ctx.stroke();
 
       // Pole going into ground
-      ctx.lineWidth = 3.5;
+      ctx.lineWidth = poleLW;
       const tipX = limbLen * 0.15;
       const tipY = limbLen + plantDepth;
       const topX = tipX + Math.cos(-Math.PI / 2) * poleLen * (1 - drive * 0.35);
       const topY = tipY + Math.sin(-Math.PI / 2) * poleLen * (1 - drive * 0.35);
       ctx.beginPath(); ctx.moveTo(topX, topY); ctx.lineTo(tipX, tipY); ctx.stroke();
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = baseLW;
     } else {
       // Phase 3: Stepping back, admiring the pole
       const back = (progress - 0.65) / 0.35; // 0→1
@@ -831,13 +938,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const poleHeight = size * 1.2;
       const poleBottom = limbLen + size * 0.5;
       ctx.save();
-      ctx.lineWidth = 3.5;
+      ctx.lineWidth = poleLW;
       ctx.beginPath();
       ctx.moveTo(x, y - poleHeight);
       ctx.lineTo(x, y + poleBottom);
       ctx.stroke();
       // Small flag at top
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = flagLW;
       const flagW = size * 0.45;
       const flagH = size * 0.3;
       ctx.beginPath();
@@ -870,11 +977,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ===== SHADOW HELPERS =====
   function drawFloorShadow(ctx, x, y, width, height) {
-    // Draws an elliptical shadow on the "floor" below an object
     ctx.save();
     ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
     ctx.beginPath();
-    ctx.ellipse(x, y + height + 4, width * 0.6, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, y + height + 4, width * 0.6, Math.max(3.5, width * 0.12), 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
@@ -884,17 +990,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const limbLen = size * 0.28;
     ctx.fillStyle = 'rgba(0, 0, 0, 0.10)';
     ctx.beginPath();
-    ctx.ellipse(x, y + limbLen + 4, size * 0.35, 3.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, y + limbLen + 4, size * 0.35, Math.max(3.5, size * 0.08), 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
 
   function drawPole(ctx, x, y, size) {
-    // Draw the planted pole at position (x, y = ropeCenterY)
     ctx.save();
     ctx.strokeStyle = getTextColor();
     ctx.fillStyle = getTextColor();
-    ctx.lineWidth = 3.5;
+    ctx.lineWidth = Math.max(3.8, size * 0.085);
     ctx.lineCap = "round";
 
     const poleHeight = size * 1.2;
@@ -911,7 +1016,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.stroke();
 
     // Small flag/banner at top
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = Math.max(1.8, size * 0.04);
     const flagW = size * 0.45;
     const flagH = size * 0.3;
     ctx.beginPath();
@@ -928,11 +1033,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function drawRestingStickFigure(ctx, x, y, size, restProgress, time) {
-    // restProgress: 0→1 where 0=sleeping, 1=fully standing
     ctx.save();
     ctx.strokeStyle = getTextColor();
     ctx.fillStyle = getTextColor();
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = Math.max(2.8, size * 0.065);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
@@ -1141,49 +1245,76 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function gatherCandidateImages() {
     const cl = getClosestMilestones(3), cands = [];
-    for (const m of cl) { try { const imgs = JSON.parse(m.dataset.images || "[]"); for (const d of imgs) if (d?.src && !renderedImageSources.has(d.src)) cands.push(d); } catch (_) {} }
+    for (const m of cl) {
+      try {
+        const imgs = JSON.parse(m.dataset.images || "[]");
+        for (const d of imgs) if (d?.src && !renderedImageSources.has(d.src)) cands.push(d);
+      } catch (_) {}
+    }
+    if (!cands.length) {
+      AMBIENT_IMAGES.forEach(d => {
+        if (!renderedImageSources.has(d.src)) cands.push(d);
+      });
+    }
+    if (!cands.length) {
+      renderedImageSources.clear();
+      return [...AMBIENT_IMAGES];
+    }
     return cands;
   }
   function findFreeSlot() {
     const free = []; for (let i = 0; i < CARD_SLOTS.length; i++) if (!slotOccupied[i]) free.push(i);
     return free.length ? pickRandom(free) : -1;
   }
-  function spawnImageGroup(group) {
-    if (!ambientContainer) return;
-    let delay = 0;
-    for (const d of group) { if (!renderedImageSources.has(d.src)) { setTimeout(() => spawnAmbientCard(d), delay); delay += 800; } }
-  }
   function spawnAmbientCard(forced = null) {
-    if (!ambientContainer || activeAmbientCards.size >= 3) return;
+    // Allows up to 2 cards simultaneously (no spawn groups, single photo spawns)
+    if (!ambientContainer || activeAmbientCards.size >= 2) return;
     const sr = cvSection.getBoundingClientRect();
-    if (!forced && !(sr.top < window.innerHeight * 0.75 && sr.bottom > window.innerHeight * 0.25)) return;
+    if (!forced && !(sr.top < window.innerHeight * 0.85 && sr.bottom > window.innerHeight * 0.15)) return;
     let img = forced;
-    if (forced) { if (renderedImageSources.has(forced.src)) return; }
-    else { const c = gatherCandidateImages(); if (!c.length) return; img = pickRandom(c); }
-    const si = findFreeSlot(); if (si === -1) return;
-    renderedImageSources.add(img.src); slotOccupied[si] = true;
-    const card = document.createElement("div"); card.className = "ambient-card";
+    if (forced) {
+      if (renderedImageSources.has(forced.src)) return;
+    } else {
+      const c = gatherCandidateImages();
+      if (!c.length) return;
+      img = pickRandom(c);
+    }
+    const si = findFreeSlot();
+    if (si === -1) return;
+    renderedImageSources.add(img.src);
+    slotOccupied[si] = true;
+    const card = document.createElement("div");
+    card.className = "ambient-card";
     const dims = getScaledDimensions(img.src);
     const slot = CARD_SLOTS[si];
-    card.style.left = `${slot.x}%`; card.style.top = `${slot.y}%`;
+    card.style.left = `${slot.x}%`;
+    card.style.top = `${slot.y}%`;
     card.slotIndex = si;
     card.style.setProperty("--w", `${dims.width}px`);
     card.style.setProperty("--h", `${dims.height}px`);
     const imgEl = document.createElement("img");
-    imgEl.src = img.src; imgEl.alt = ""; imgEl.loading = "lazy";
-    card.motion = createCardMotion(); card.age = 0; card.life = 6 + Math.random() * 4;
-    card.imgSrc = img.src; card.px = 0; card.py = 0;
-    card.appendChild(imgEl); ambientContainer.appendChild(card); activeAmbientCards.add(card);
+    imgEl.src = img.src;
+    imgEl.alt = "Timeline milestone";
+    imgEl.loading = "lazy";
+    card.motion = createCardMotion();
+    card.age = 0;
+    card.life = 7.5;
+    card.imgSrc = img.src;
+    card.px = 0;
+    card.py = 0;
+    card.appendChild(imgEl);
+    ambientContainer.appendChild(card);
+    activeAmbientCards.add(card);
     requestAnimationFrame(() => card.classList.add("is-in"));
   }
   let ambientTimer = null;
   function startAmbientSpawner() {
     if (ambientTimer) return;
     ambientTimer = setInterval(() => {
-      const r = Math.random();
-      if (r < 0.1) spawnImageGroup(pickRandom(AMBIENT_IMAGE_GROUPS));
-      else if (r < 0.3) spawnAmbientCard();
-    }, 4500);
+      if (activeAmbientCards.size < 2) {
+        spawnAmbientCard();
+      }
+    }, 5000);
   }
   function stopAmbientSpawner() { if (ambientTimer) { clearInterval(ambientTimer); ambientTimer = null; } }
 
@@ -1191,18 +1322,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // 10) VISIBILITY
   // =============================
   const visSections = new Set();
+  const mainScroller = document.getElementById("main");
   const secObs = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) visSections.add(e.target.id); else visSections.delete(e.target.id); });
     if (visSections.size > 0) startTimelineAnimations(); else stopTimelineAnimations();
-  }, { threshold: 0.01 });
+  }, { root: mainScroller || null, threshold: 0.01 });
   if (cvSection) secObs.observe(cvSection);
-  ["about-skills", "projects"].forEach(id => { const el = document.getElementById(id); if (el) secObs.observe(el); });
 
   // =============================
   // 11) HOVER & TOUCH
   // =============================
   let hoveredCard = null;
   document.addEventListener("mousemove", (e) => {
+    if (visSections.size === 0 || activeAmbientCards.size === 0) return;
     let found = null;
     for (const c of Array.from(activeAmbientCards).reverse()) {
       if (parseFloat(c.style.opacity) < 0.1) continue;
@@ -1263,7 +1395,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const d0 = lerpDate(PADDED_START, END_DATE, leftFrac);
     const d1 = lerpDate(PADDED_START, END_DATE, leftFrac + WINDOW_SPAN);
     if (windowStartLabel && windowEndLabel) {
-      windowStartLabel.textContent = monthYearFmt.format(d0.getFullYear() < 1996 ? new Date("1996-01-01") : d0);
+      windowStartLabel.textContent = monthYearFmt.format(d0.getFullYear() < 1997 ? new Date("1997-01-01") : d0);
       windowEndLabel.textContent = monthYearFmt.format(d1);
     }
   }
@@ -1308,7 +1440,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!main || !cv || !tv) return;
   const getSections = () => [...main.querySelectorAll("section")];
   const getIdx = () => getSections().indexOf(cv);
-  const snapTo = (i) => { const t = getSections()[i]; if (t) t.scrollIntoView({ behavior: "smooth" }); };
+  const snapTo = (i) => {
+    window._sectionNavLockUntil = performance.now() + 950;
+    const t = getSections()[i];
+    if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
   const RESISTANCE = 350;
   let acc = 0, snapped = false, decayAnim = null;
 
@@ -1352,8 +1488,16 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (Math.abs(acc) > RESISTANCE) {
       const ci = getIdx();
-      if (fwd && atE) { snapped = true; if (window._timelineTriggerSnap) window._timelineTriggerSnap(); setTimeout(() => { snapTo(ci + 1); setTimeout(() => snapped = false, 1000); }, 600); }
-      else if (bwd && atS) snapTo(ci - 1);
+      if (fwd && atE) {
+        snapped = true;
+        window._sectionNavLockUntil = performance.now() + 1450;
+        if (window._timelineTriggerSnap) window._timelineTriggerSnap();
+        setTimeout(() => { snapTo(ci + 1); setTimeout(() => snapped = false, 900); }, 600);
+      } else if (bwd && atS) {
+        snapped = true;
+        snapTo(ci - 1);
+        setTimeout(() => { snapped = false; }, 900);
+      }
       acc = 0; window._timelineEdgeAcc = 0; tv.style.transform = "translateX(0)";
     } else { 
       // Start decay almost immediately when scrolling stops

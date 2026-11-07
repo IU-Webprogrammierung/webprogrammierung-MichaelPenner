@@ -4,12 +4,14 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="description" content="KitchenAid Restorations by Michael Krahn. Custom-restored vintage KitchenAid stand mixers with premium finishes and handcrafted details.">
-    <title>KitchenAid Restorations</title>
+    <meta name="description"
+        content="Krahn Manufaktur – Standalone 3D Webshop for custom-restored vintage KitchenAid stand mixers and precision 3D-printed accessories, bayonet docks, and metallic knobs.">
+    <title>Krahn Manufaktur – KitchenAid Restorations &amp; 3D Accessories Shop</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <!-- Preload initial 553KB Meshopt-compressed 3D model for instant startup -->
+    <link rel="preload" href="assets/models/mixer_brown.glb" as="fetch" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/contact.css">
@@ -27,23 +29,38 @@
     <div class="cursor-dot"></div>
     <div class="cursor-outline"></div>
 
+    <!-- Standalone Brand Navbar (Decoupled from Portfolio) -->
     <header id="nav">
-        <div class="navbar">
+        <div class="navbar is-sticky">
             <div class="navbar-left">
-                <a href="shop.html">
-                    <img class="logo" src="assets/Logo.png" alt="Michael Krahn - Shop">
+                <a href="index.html" style="display:flex; align-items:center; gap:10px;">
+                    <img class="logo" src="assets/Logo.png" alt="Krahn Manufaktur Studio">
+                    <div class="brand-lockup">
+                        <span class="brand-title">Krahn Manufaktur</span>
+                        <span class="brand-sub" data-en="Restorations &amp; 3D Parts" data-de="Restaurierung &amp; 3D-Zubehör">Restorations &amp; 3D Parts</span>
+                    </div>
                 </a>
-                <span class="nav-separator" aria-hidden="true">|</span>
-                <a href="index.html" class="nav-btn nav-btn-left" data-en="Portfolio" data-de="Portfolio">Portfolio</a>
             </div>
 
-            <nav class="navbar-center" aria-label="Main navigation">
-                <a href="shop.html" data-en="Models" data-de="Modelle">Models</a>
-                <a href="#info" data-en="Details" data-de="Details">Details</a>
-                <a href="#contact" data-en="Contact" data-de="Kontakt">Contact</a>
+            <nav class="navbar-center" aria-label="Shop navigation">
+                <a href="#mixer-01" data-en="3D Mixers" data-de="3D-Maschinen">3D Mixers</a>
+                <a href="#accessories" data-en="3D Accessories Shop" data-de="3D-Zubehör Shop">3D Accessories Shop</a>
+                <a href="#info" data-en="Manufaktur &amp; Process" data-de="Manufaktur &amp; Prozess">Manufaktur &amp; Process</a>
+                <a href="#contact" data-en="Custom Order" data-de="Wunschdesign">Custom Order</a>
             </nav>
 
             <div class="navbar-right">
+                <a href="admin.html" class="nav-admin-btn" title="Shop Admin Backend">
+                    <span>⚙️</span>
+                    <span data-en="Admin" data-de="Admin">Admin</span>
+                </a>
+
+                <button type="button" class="nav-cart-btn" id="openCartBtn" aria-label="Open Shopping Cart">
+                    <span>🛒</span>
+                    <span data-en="Cart" data-de="Warenkorb">Cart</span>
+                    <span class="nav-cart-badge" id="navCartCount">0</span>
+                </button>
+
                 <button class="lang-toggle" aria-label="Switch language" onclick="toggleLanguage()">
                     <span class="lang-flag">🇩🇪</span>
                 </button>
@@ -64,41 +81,58 @@
         }
       }
     </script>
+
+    <!-- Central Standalone Shop Data & Store -->
+    <script src="data/shop_products.js"></script>
     <script type="module" src="js/shop.js"></script>
 
     <div id="stage" aria-hidden="true">
         <canvas id="main3d"></canvas>
     </div>
 
+    <div id="glbLoaderBadge" role="status" aria-live="polite">
+        <span class="loader-spinner"></span>
+        <span data-en="Loading 3D Edition..." data-de="Lade 3D-Modell...">Loading 3D Edition...</span>
+    </div>
+
     <main id="scroller">
 
-        <!-- BROWN MIXER -->
-        <section class="snap-section" data-model="assets/models/mixer_brown.glb"
-            data-accessory="assets/models/knobs_bronze.glb" data-title="Truffle & Bronze" data-price="€ 349"
-            data-desc="A warm, earthy dark finish in an elegant satin sheen, beautifully contrasted by striking bronze accents. The transparent glass bowl adds a touch of modern lightness to this grounded, organic design.">
+        <!-- 01: BROWN MIXER -->
+        <section id="mixer-01" class="snap-section"
+            data-product-id="mixer-truffle-bronze"
+            data-model="assets/models/mixer_brown.glb"
+            data-accessory="assets/models/knobs_bronze.glb"
+            data-title="Truffle & Bronze"
+            data-price="€ 349">
             <div class="content">
                 <div class="media">
-                    <img class="photo" src="assets/shop_images/mixer_brown(1).jpeg" alt="KitchenAid restoration #1"
-                        loading="lazy" />
+                    <img class="photo" src="assets/shop_images/mixer_brown(1).jpeg" alt="KitchenAid Truffle & Bronze"
+                        fetchpriority="high" />
                     <img class="photo" src="assets/shop_images/mixer_brown(2).jpeg"
-                        alt="KitchenAid restoration #1 sideview" loading="lazy" />
+                        alt="KitchenAid Truffle & Bronze sideview" loading="lazy" />
                 </div>
 
                 <div class="copy">
                     <div class="glass-container">
-                        <div class="kicker" data-en="KitchenAid Restoration 01" data-de="KitchenAid Restaurierung 01">
-                            KitchenAid Restoration 01</div>
-                        <h2 data-en="Truffle & Bronze" data-de="Trüffel & Bronze">Truffle & Bronze</h2>
+                        <div class="kicker-row">
+                            <div class="kicker" data-en="KitchenAid Restoration 01" data-de="KitchenAid Restaurierung 01">
+                                KitchenAid Restoration 01</div>
+                            <span class="stock-pill" data-en="In Stock (1 Edition)" data-de="Auf Lager (1 Unikat)">In Stock (1 Edition)</span>
+                        </div>
+                        <h2 data-en="Truffle &amp; Bronze" data-de="Trüffel &amp; Bronze">Truffle &amp; Bronze</h2>
 
                         <div class="overlay">
                             <div class="overlay-inner">
-                                <div class="price" data-bind="price">€ 349</div>
+                                <div class="price-row">
+                                    <div class="price" data-bind="price">€ 349</div>
+                                    <span class="vat-note" data-en="+ €10 insured DE shipping" data-de="zzgl. 10 € DHL-Versand">+ €10 insured DE shipping</span>
+                                </div>
                                 <div class="title" data-bind="title"
                                     data-en="Unique Glass Bowl + Custom Brass Accessoires"
-                                    data-de="Einzigartige Glaßschüssel + DIY Bronze Accessoires">Unique Glass Bowl +
+                                    data-de="Einzigartige Glasschüssel + DIY Bronze Accessoires">Unique Glass Bowl +
                                     Custom Brass Accessoires</div>
                                 <p class="desc" data-bind="desc"
-                                    data-en="A warm, earthy dark finish in an elegant satin sheen, beautifully contrasted by striking bronze accents. The transparent glass bowl adds a touch of modern lightness to this grounded, organic design."
+                                    data-en="A warm, earthy taupe finish in an elegant satin sheen, beautifully contrasted by striking bronze accents. The transparent glass bowl adds a touch of modern lightness to this grounded, organic design."
                                     data-de="Ein warmes, erdiges Graubraun in elegantem Seidenmatt, wunderschön kontrastiert durch markante Bronze-Akzente. Die transparente Glasschüssel verleiht diesem organischen Design eine moderne Leichtigkeit.">
                                     A warm, earthy taupe finish in an elegant satin sheen, beautifully contrasted by
                                     striking bronze accents. The transparent glass bowl adds a touch of modern lightness
@@ -106,16 +140,29 @@
                                 </p>
 
                                 <div class="accessory">
-                                    <div class="accessory-label" data-en="Accessory Preview" data-de="Zubehör-Vorschau">
-                                        Accessory Preview</div>
-                                    <canvas class="acc-canvas" width="180" height="180"></canvas>
-                                    <div class="accessory-note" data-en="Auto-rotating 3D knob / add-on"
-                                        data-de="Auto-rotierender 3D-Knopf / Zubehör">Auto-rotating 3D knob / add-on
+                                    <div class="accessory-info-col">
+                                        <div class="accessory-label" data-en="3D Accessory Included" data-de="3D-Zubehör inklusive">
+                                            3D Accessory Included</div>
+                                        <div class="accessory-note"
+                                            data-en="Knurled Bronze Knob &amp; Rose Hub Cap Set (also available separately)"
+                                            data-de="Rändel-Knopfset &amp; Rosencover in Bronze (auch einzeln kaufbar)">
+                                            Knurled Bronze Knob &amp; Rose Hub Cap Set (also available separately)
+                                        </div>
+                                        <button type="button" class="acc-quick-buy-btn" data-add-accessory="acc-knobs-bronze"
+                                            data-en="+ Buy Accessory Only (€ 24)" data-de="+ Zubehör einzeln kaufen (24,00 €)">
+                                            + Buy Accessory Only (€ 24)
+                                        </button>
                                     </div>
+                                    <canvas class="acc-canvas" width="150" height="150"></canvas>
                                 </div>
 
-                                <a class="cta" href="#contact" data-en="Request to buy" data-de="Kauf anfragen">Request
-                                    to buy</a>
+                                <div class="cta-row">
+                                    <button type="button" class="cta cta-primary" data-add-product="mixer-truffle-bronze"
+                                        data-en="🛒 Add to Cart" data-de="🛒 In den Warenkorb">🛒 Add to Cart</button>
+                                    <a class="cta" href="#accessories"
+                                        data-en="All 3D Parts ↓" data-de="Alle 3D-Parts ↓">All 3D Parts ↓</a>
+                                    <a class="cta" href="#contact" data-en="Custom Inquiry" data-de="Wunsch-Anfrage">Custom Inquiry</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -123,27 +170,36 @@
             </div>
         </section>
 
-        <!-- ROSE MIXER -->
-        <section class="snap-section" data-model="assets/models/mixer_rose.glb"
-            data-accessory="assets/models/frontpanel_rose.glb" data-title="Velvet Bloom" data-price="€ 399"
-            data-desc="Softness meets sophistication. A velvety powder pink matte finish complemented by deep, luxurious dark rose gold hardware. Crowned with a bespoke rose-patterned cover, it is a true statement piece.">
+        <!-- 02: ROSE MIXER -->
+        <section id="mixer-02" class="snap-section"
+            data-product-id="mixer-velvet-bloom"
+            data-model="assets/models/mixer_rose.glb"
+            data-accessory="assets/models/frontpanel_rose.glb"
+            data-title="Velvet Bloom"
+            data-price="€ 399">
             <div class="content">
                 <div class="media">
-                    <img class="photo" src="assets/shop_images/mixer_rose(1).jpeg" alt="KitchenAid restoration #2"
+                    <img class="photo" src="assets/shop_images/mixer_rose(1).jpeg" alt="KitchenAid Velvet Bloom"
                         loading="lazy" />
                     <img class="photo" src="assets/shop_images/mixer_rose(2).jpeg"
-                        alt="KitchenAid restoration #2 detail" loading="lazy" />
+                        alt="KitchenAid Velvet Bloom detail" loading="lazy" />
                     <img class="photo" src="assets/shop_images/mixer_rose(3).jpeg"
-                        alt="KitchenAid restoration #2 detail" loading="lazy" />
+                        alt="KitchenAid Velvet Bloom detail" loading="lazy" />
                 </div>
                 <div class="copy">
                     <div class="glass-container">
-                        <div class="kicker" data-en="KitchenAid Restoration 02" data-de="KitchenAid Restaurierung 02">
-                            KitchenAid Restoration 02</div>
+                        <div class="kicker-row">
+                            <div class="kicker" data-en="KitchenAid Restoration 02" data-de="KitchenAid Restaurierung 02">
+                                KitchenAid Restoration 02</div>
+                            <span class="stock-pill" data-en="In Stock (1 Edition)" data-de="Auf Lager (1 Unikat)">In Stock (1 Edition)</span>
+                        </div>
                         <h2 data-en="Velvet Bloom" data-de="Velvet Bloom">Velvet Bloom</h2>
                         <div class="overlay">
                             <div class="overlay-inner">
-                                <div class="price">€ 399</div>
+                                <div class="price-row">
+                                    <div class="price">€ 399</div>
+                                    <span class="vat-note" data-en="+ €10 insured DE shipping" data-de="zzgl. 10 € DHL-Versand">+ €10 insured DE shipping</span>
+                                </div>
                                 <div class="title" data-en="Powder Pink + Dark Rose Gold"
                                     data-de="Puderrosa + Dunkles Roségold">Powder Pink + Dark Rose Gold</div>
                                 <p class="desc"
@@ -154,15 +210,26 @@
                                     cover, it is a true statement piece.</p>
 
                                 <div class="accessory">
-                                    <div class="accessory-label" data-en="Accessory Preview" data-de="Zubehör-Vorschau">
-                                        Accessory Preview</div>
-                                    <canvas class="acc-canvas" width="180" height="180"></canvas>
-                                    <div class="accessory-note" data-en="3D rose knob / add-on"
-                                        data-de="3DRose Abdeckung / Zubehör">3D rose knob / add-on</div>
+                                    <div class="accessory-info-col">
+                                        <div class="accessory-label" data-en="3D Accessory Included" data-de="3D-Zubehör inklusive">
+                                            3D Accessory Included</div>
+                                        <div class="accessory-note" data-en="3D Rose Bloom Attachment Hub Cover"
+                                            data-de="3D „Rose Bloom“ Nabenabdeckung in Dunkel-Roségold">3D Rose Bloom Attachment Hub Cover</div>
+                                        <button type="button" class="acc-quick-buy-btn" data-add-accessory="acc-frontpanel-rose"
+                                            data-en="+ Buy Accessory Only (€ 16)" data-de="+ Zubehör einzeln kaufen (16,00 €)">
+                                            + Buy Accessory Only (€ 16)
+                                        </button>
+                                    </div>
+                                    <canvas class="acc-canvas" width="150" height="150"></canvas>
                                 </div>
 
-                                <a class="cta" href="#contact" data-en="Request to buy" data-de="Kauf anfragen">Request
-                                    to buy</a>
+                                <div class="cta-row">
+                                    <button type="button" class="cta cta-primary" data-add-product="mixer-velvet-bloom"
+                                        data-en="🛒 Add to Cart" data-de="🛒 In den Warenkorb">🛒 Add to Cart</button>
+                                    <a class="cta" href="#accessories"
+                                        data-en="All 3D Parts ↓" data-de="Alle 3D-Parts ↓">All 3D Parts ↓</a>
+                                    <a class="cta" href="#contact" data-en="Custom Inquiry" data-de="Wunsch-Anfrage">Custom Inquiry</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -170,27 +237,36 @@
             </div>
         </section>
 
-        <!-- GREEN MIXER -->
-        <section class="snap-section" data-model="assets/models/mixer_green_glass.glb"
-            data-accessory="assets/models/accessoires_base_green.glb" data-title="Reseda & Olive" data-price="€ 379"
-            data-desc="Deeply rooted in nature. The matte reseda green body absorbs the light, while high-gloss olive details provide a rich, tactile contrast. Paired with a classic glass bowl for timeless elegance.">
+        <!-- 03: GREEN MIXER -->
+        <section id="mixer-03" class="snap-section"
+            data-product-id="mixer-reseda-olive"
+            data-model="assets/models/mixer_green_glass.glb"
+            data-accessory="assets/models/accessoires_base_green.glb"
+            data-title="Reseda & Olive"
+            data-price="€ 379">
             <div class="content">
                 <div class="media">
-                    <img class="photo" src="assets/shop_images/mixer_green(1).jpeg" alt="KitchenAid restoration #3"
+                    <img class="photo" src="assets/shop_images/mixer_green(1).jpeg" alt="KitchenAid Reseda & Olive"
                         loading="lazy" />
                     <img class="photo" src="assets/shop_images/mixer_green(2).jpeg"
-                        alt="KitchenAid restoration detail #5" loading="lazy" />
+                        alt="KitchenAid Reseda & Olive detail" loading="lazy" />
                     <img class="photo" src="assets/shop_images/mixer_green(3).jpeg"
-                        alt="KitchenAid restoration detail #6" loading="lazy" />
+                        alt="KitchenAid Reseda & Olive detail" loading="lazy" />
                 </div>
                 <div class="copy">
                     <div class="glass-container">
-                        <div class="kicker" data-en="KitchenAid Restoration 03" data-de="KitchenAid Restaurierung 03">
-                            KitchenAid Restoration 03</div>
-                        <h2 data-en="Reseda & Olive" data-de="Reseda & Oliv">Reseda & Olive</h2>
+                        <div class="kicker-row">
+                            <div class="kicker" data-en="KitchenAid Restoration 03" data-de="KitchenAid Restaurierung 03">
+                                KitchenAid Restoration 03</div>
+                            <span class="stock-pill" data-en="In Stock (1 Edition)" data-de="Auf Lager (1 Unikat)">In Stock (1 Edition)</span>
+                        </div>
+                        <h2 data-en="Reseda &amp; Olive" data-de="Reseda &amp; Oliv">Reseda &amp; Olive</h2>
                         <div class="overlay">
                             <div class="overlay-inner">
-                                <div class="price">€ 379</div>
+                                <div class="price-row">
+                                    <div class="price">€ 379</div>
+                                    <span class="vat-note" data-en="+ €10 insured DE shipping" data-de="zzgl. 10 € DHL-Versand">+ €10 insured DE shipping</span>
+                                </div>
                                 <div class="title" data-en="Matte Reseda + Gloss Olive" data-de="Matt Reseda + Glanzoliv">Matte Reseda + Gloss Olive</div>
                                 <p class="desc"
                                     data-en="Deeply rooted in nature. The matte reseda green body absorbs the light, while high-gloss olive details provide a rich, tactile contrast. Paired with a classic glass bowl for timeless elegance."
@@ -198,16 +274,29 @@
                                     Deeply rooted in nature. The matte reseda green body absorbs the light, while
                                     high-gloss olive details provide a rich, tactile contrast. Paired with a classic
                                     glass bowl for timeless elegance.</p>
+
                                 <div class="accessory">
-                                    <div class="accessory-label" data-en="Accessory Preview" data-de="Zubehör-Vorschau">
-                                        Accessory Preview</div>
-                                    <canvas class="acc-canvas" width="220" height="220"></canvas>
-                                    <div class="accessory-note" data-en="Auto-rotating 3D knob / add-on"
-                                        data-de="Auto-rotierender 3D-Knopf / Zubehör">Auto-rotating 3D knob / add-on
+                                    <div class="accessory-info-col">
+                                        <div class="accessory-label" data-en="Matching 3D Organizer" data-de="Passender 3D-Halter">
+                                            Matching 3D Organizer</div>
+                                        <div class="accessory-note" data-en="3-Slot Bayonet Attachment Organizer Dock"
+                                            data-de="3-fach Bajonett-Aufsatzhalterung für Rührwerkzeuge">3-Slot Bayonet Attachment Organizer Dock
+                                        </div>
+                                        <button type="button" class="acc-quick-buy-btn" data-add-accessory="acc-dock-green"
+                                            data-en="+ Buy Organizer Dock (€ 29)" data-de="+ Halterung einzeln kaufen (29,00 €)">
+                                            + Buy Organizer Dock (€ 29)
+                                        </button>
                                     </div>
+                                    <canvas class="acc-canvas" width="150" height="150"></canvas>
                                 </div>
-                                <a class="cta" href="#contact" data-en="Request to buy" data-de="Kauf anfragen">Request
-                                    to buy</a>
+
+                                <div class="cta-row">
+                                    <button type="button" class="cta cta-primary" data-add-product="mixer-reseda-olive"
+                                        data-en="🛒 Add to Cart" data-de="🛒 In den Warenkorb">🛒 Add to Cart</button>
+                                    <a class="cta" href="#accessories"
+                                        data-en="All 3D Parts ↓" data-de="Alle 3D-Parts ↓">All 3D Parts ↓</a>
+                                    <a class="cta" href="#contact" data-en="Custom Inquiry" data-de="Wunsch-Anfrage">Custom Inquiry</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -215,25 +304,34 @@
             </div>
         </section>
 
-        <!-- WHITE MIXER -->
-        <section class="snap-section" data-model="assets/models/mixer_white.glb"
-            data-accessory="assets/models/frontpanel_red.glb" data-title="Classic Elegance" data-price="€ 379"
-            data-desc="Minimalist perfection. A flawless, semi-gloss signal white body that reflects light beautifully, elevated by bespoke brushed gold knobs. It is the ultimate expression of clean, architectural luxury.">
+        <!-- 04: WHITE MIXER -->
+        <section id="mixer-04" class="snap-section"
+            data-product-id="mixer-classic-elegance"
+            data-model="assets/models/mixer_white.glb"
+            data-accessory="assets/models/frontpanel_red.glb"
+            data-title="Classic Elegance"
+            data-price="€ 379">
             <div class="content">
                 <div class="media">
-                    <img class="photo" src="assets/shop_images/mixer_white(1).jpeg" alt="KitchenAid restoration #3"
+                    <img class="photo" src="assets/shop_images/mixer_white(1).jpeg" alt="KitchenAid Classic Elegance"
                         loading="lazy" />
                     <img class="photo" src="assets/shop_images/mixer_white(2).jpeg"
-                        alt="KitchenAid restoration detail #5" loading="lazy" />
+                        alt="KitchenAid Classic Elegance detail" loading="lazy" />
                 </div>
                 <div class="copy">
                     <div class="glass-container">
-                        <div class="kicker" data-en="KitchenAid Restoration 04" data-de="KitchenAid Restaurierung 04">
-                            KitchenAid Restoration 04</div>
+                        <div class="kicker-row">
+                            <div class="kicker" data-en="KitchenAid Restoration 04" data-de="KitchenAid Restaurierung 04">
+                                KitchenAid Restoration 04</div>
+                            <span class="stock-pill" data-en="In Stock (1 Edition)" data-de="Auf Lager (1 Unikat)">In Stock (1 Edition)</span>
+                        </div>
                         <h2 data-en="Classic Elegance" data-de="Classic Elegance">Classic Elegance</h2>
                         <div class="overlay">
                             <div class="overlay-inner">
-                                <div class="price">€ 379</div>
+                                <div class="price-row">
+                                    <div class="price">€ 379</div>
+                                    <span class="vat-note" data-en="+ €10 insured DE shipping" data-de="zzgl. 10 € DHL-Versand">+ €10 insured DE shipping</span>
+                                </div>
                                 <div class="title" data-en="Signal White + Brushed Gold" data-de="Signalweiß + Gebürstetes Gold">Signal White + Brushed Gold</div>
                                 <p class="desc"
                                     data-en="Minimalist perfection. A flawless, semi-gloss signal white body that reflects light beautifully, elevated by bespoke brushed gold knobs. It is the ultimate expression of clean, architectural luxury."
@@ -241,16 +339,29 @@
                                     Minimalist perfection. A flawless, semi-gloss signal white body that reflects light
                                     beautifully, elevated by bespoke brushed gold knobs. It is the ultimate expression
                                     of clean, architectural luxury.</p>
+
                                 <div class="accessory">
-                                    <div class="accessory-label" data-en="Accessory Preview" data-de="Zubehör-Vorschau">
-                                        Accessory Preview</div>
-                                    <canvas class="acc-canvas" width="220" height="220"></canvas>
-                                    <div class="accessory-note" data-en="Auto-rotating 3D knob / add-on"
-                                        data-de="Auto-rotierender 3D-Knopf / Zubehör">Auto-rotating 3D knob / add-on
+                                    <div class="accessory-info-col">
+                                        <div class="accessory-label" data-en="3D Front Trim" data-de="3D-Frontblende">
+                                            3D Front Trim</div>
+                                        <div class="accessory-note" data-en="Custom Architectural Front Badge &amp; Hub Ring"
+                                            data-de="Architektonische Stirnblende &amp; Nabenring">Custom Architectural Front Badge &amp; Hub Ring
+                                        </div>
+                                        <button type="button" class="acc-quick-buy-btn" data-add-accessory="acc-frontpanel-red"
+                                            data-en="+ Buy Front Trim (€ 19)" data-de="+ Blende einzeln kaufen (19,00 €)">
+                                            + Buy Front Trim (€ 19)
+                                        </button>
                                     </div>
+                                    <canvas class="acc-canvas" width="150" height="150"></canvas>
                                 </div>
-                                <a class="cta" href="#contact" data-en="Request to buy" data-de="Kauf anfragen">Request
-                                    to buy</a>
+
+                                <div class="cta-row">
+                                    <button type="button" class="cta cta-primary" data-add-product="mixer-classic-elegance"
+                                        data-en="🛒 Add to Cart" data-de="🛒 In den Warenkorb">🛒 Add to Cart</button>
+                                    <a class="cta" href="#accessories"
+                                        data-en="All 3D Parts ↓" data-de="Alle 3D-Parts ↓">All 3D Parts ↓</a>
+                                    <a class="cta" href="#contact" data-en="Custom Inquiry" data-de="Wunsch-Anfrage">Custom Inquiry</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -258,27 +369,36 @@
             </div>
         </section>
 
-        <!-- BLUE MIXER -->
-        <section class="snap-section" data-model="assets/models/mixer_blue.glb"
-            data-accessory="assets/models/frontpanel_white.glb" data-title="Nordic Dove" data-price="€ 379"
-            data-desc="High-gloss candy finish, polished trim, optional badge customization. Tuned for visual impact under warm light.">
+        <!-- 05: BLUE MIXER -->
+        <section id="mixer-05" class="snap-section"
+            data-product-id="mixer-nordic-dove"
+            data-model="assets/models/mixer_blue.glb"
+            data-accessory="assets/models/frontpanel_white.glb"
+            data-title="Nordic Dove"
+            data-price="€ 379">
             <div class="content">
                 <div class="media">
-                    <img class="photo" src="assets/shop_images/mixer_blue(1).jpeg" alt="KitchenAid restoration #3"
+                    <img class="photo" src="assets/shop_images/mixer_blue(1).jpeg" alt="KitchenAid Nordic Dove"
                         loading="lazy" />
                     <img class="photo" src="assets/shop_images/mixer_blue(2).jpeg"
-                        alt="KitchenAid restoration detail #5" loading="lazy" />
+                        alt="KitchenAid Nordic Dove detail" loading="lazy" />
                     <img class="photo" src="assets/shop_images/mixer_blue(3).jpeg"
-                        alt="KitchenAid restoration detail #6" loading="lazy" />
+                        alt="KitchenAid Nordic Dove detail" loading="lazy" />
                 </div>
                 <div class="copy">
                     <div class="glass-container">
-                        <div class="kicker" data-en="KitchenAid Restoration 05" data-de="KitchenAid Restaurierung 05">
-                            KitchenAid Restoration 05</div>
+                        <div class="kicker-row">
+                            <div class="kicker" data-en="KitchenAid Restoration 05" data-de="KitchenAid Restaurierung 05">
+                                KitchenAid Restoration 05</div>
+                            <span class="stock-pill" data-en="In Stock (1 Edition)" data-de="Auf Lager (1 Unikat)">In Stock (1 Edition)</span>
+                        </div>
                         <h2 data-en="Nordic Dove" data-de="Nordic Dove">Nordic Dove</h2>
                         <div class="overlay">
                             <div class="overlay-inner">
-                                <div class="price">€ 379</div>
+                                <div class="price-row">
+                                    <div class="price">€ 379</div>
+                                    <span class="vat-note" data-en="+ €10 insured DE shipping" data-de="zzgl. 10 € DHL-Versand">+ €10 insured DE shipping</span>
+                                </div>
                                 <div class="title" data-en="Matte Dove Blue + Walnut Trim" data-de="Matt Taubenblau + Walnussholz">Matte Dove Blue + Walnut Trim</div>
                                 <p class="desc"
                                     data-en="Inspired by mid-century modern design. A calming matte dove blue pairs seamlessly with the cool, industrial edge of brushed aluminum. The genuine walnut wood trim brings warmth and masterful craftsmanship to your kitchen."
@@ -286,20 +406,63 @@
                                     Inspired by mid-century modern design. A calming matte dove blue pairs seamlessly
                                     with the cool, industrial edge of brushed aluminum. The genuine walnut wood trim
                                     brings warmth and masterful craftsmanship to your kitchen.</p>
+
                                 <div class="accessory">
-                                    <div class="accessory-label" data-en="Accessory Preview" data-de="Zubehör-Vorschau">
-                                        Accessory Preview</div>
-                                    <canvas class="acc-canvas" width="220" height="220"></canvas>
-                                    <div class="accessory-note" data-en="Auto-rotating 3D knob / add-on"
-                                        data-de="Auto-rotierender 3D-Knopf / Zubehör">Auto-rotating 3D knob / add-on
+                                    <div class="accessory-info-col">
+                                        <div class="accessory-label" data-en="3D Nordic Trim" data-de="3D Nordic-Blende">
+                                            3D Nordic Trim</div>
+                                        <div class="accessory-note" data-en="Minimalist Flush Front Plate &amp; Hub Cap"
+                                            data-de="Flächenbündige Nordic-Frontblende &amp; Kappe">Minimalist Flush Front Plate &amp; Hub Cap
+                                        </div>
+                                        <button type="button" class="acc-quick-buy-btn" data-add-accessory="acc-frontpanel-white"
+                                            data-en="+ Buy Nordic Trim (€ 19)" data-de="+ Blende einzeln kaufen (19,00 €)">
+                                            + Buy Nordic Trim (€ 19)
+                                        </button>
                                     </div>
+                                    <canvas class="acc-canvas" width="150" height="150"></canvas>
                                 </div>
-                                <a class="cta" href="#contact" data-en="Request to buy" data-de="Kauf anfragen">Request
-                                    to buy</a>
+
+                                <div class="cta-row">
+                                    <button type="button" class="cta cta-primary" data-add-product="mixer-nordic-dove"
+                                        data-en="🛒 Add to Cart" data-de="🛒 In den Warenkorb">🛒 Add to Cart</button>
+                                    <a class="cta" href="#accessories"
+                                        data-en="All 3D Parts ↓" data-de="Alle 3D-Parts ↓">All 3D Parts ↓</a>
+                                    <a class="cta" href="#contact" data-en="Custom Inquiry" data-de="Wunsch-Anfrage">Custom Inquiry</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- ==================================================================
+             STANDALONE BUYABLE 3D ACCESSORIES & UPGRADE PARTS CATALOG
+             ================================================================== -->
+        <section id="accessories" class="snap-section">
+            <div class="accessories-wrapper">
+                <header class="accessories-header">
+                    <div>
+                        <div class="kicker" data-en="Custom 3D Parts &amp; Organizers" data-de="3D-Manufaktur Zubehör &amp; Halterungen">
+                            Custom 3D Parts &amp; Organizers
+                        </div>
+                        <h2 data-en="Buyable 3D Accessories &amp; Upgrade Parts"
+                            data-de="3D-Zubehör &amp; Custom-Parts einzeln kaufen">
+                            Buyable 3D Accessories &amp; Upgrade Parts
+                        </h2>
+                        <p data-en="Every custom 3D-printed attachment dock, knurled metallic lever knob, and sculpted front hub cover is available individually for your own KitchenAid mixer."
+                           data-de="Alle maßgefertigten 3D-Bajonetthalterungen, gerändelten Metall-Bedienknöpfe und skulpturalen Nabenabdeckungen sind auch einzeln für deine eigene KitchenAid bestellbar.">
+                            Every custom 3D-printed attachment dock, knurled metallic lever knob, and sculpted front hub cover is available individually for your own KitchenAid mixer.
+                        </p>
+                    </div>
+                    <button type="button" class="cta cta-primary" onclick="window.openKACart && window.openKACart()"
+                        data-en="🛒 View Shopping Cart" data-de="🛒 Warenkorb öffnen">
+                        🛒 View Shopping Cart
+                    </button>
+                </header>
+
+                <!-- Populated dynamically by js/shop.js from window.KAShopStore -->
+                <div class="accessories-grid" id="accessoriesGrid"></div>
             </div>
         </section>
 
@@ -316,67 +479,106 @@
                 <div class="info-grid">
                     <div class="info-item">
                         <h3 data-en="Completely Overhauled" data-de="Komplett Überholt">Completely Overhauled</h3>
-                        <p data-en="Deep cleaned, regreased, with new seals and gears. Ready for daily use."
-                            data-de="Gereinigt, neu gefettet, Verschleißteile ersetzt. Technisch in Bestform.">
-                            Deep cleaned, regreased, with new seals and gears. Ready for daily use.
+                        <p data-en="Deep cleaned, regreased with food-safe lubricant, with new seals and gears. Ready for decades of daily use."
+                            data-de="Gereinigt, mit lebensmittelechtem Fett neu geschmiert, Dichtungen und Verschleißteile ersetzt. Technisch in Bestform.">
+                            Deep cleaned, regreased with food-safe lubricant, with new seals and gears. Ready for decades of daily use.
                         </p>
                     </div>
                     <div class="info-item">
-                        <h3 data-en="Premium Finish" data-de="Premium Lackierung">Premium Finish</h3>
-                        <p data-en="High-quality 2K automotive paint and metallic pastes for maximum durability."
-                            data-de="Hochwertige 2K-Lacke und Metallic-Pasten, extrem widerstandsfähig.">
-                            High-quality 2K automotive paint and metallic pastes for maximum durability.
+                        <h3 data-en="Premium 2K Finish" data-de="Premium 2K-Lackierung">Premium 2K Finish</h3>
+                        <p data-en="High-quality 2K automotive paint and metallic pastes for maximum scratch &amp; stain durability."
+                            data-de="Hochwertige 2K-Automobillacke und Metallic-Pasten, extrem widerstandsfähig und pflegeleicht.">
+                            High-quality 2K automotive paint and metallic pastes for maximum scratch &amp; stain durability.
                         </p>
                     </div>
                     <div class="info-item">
-                        <h3 data-en="Custom Builds & Bowls" data-de="Sonderanfertigungen">Custom Builds & Bowls</h3>
-                        <p data-en="Custom restorations from €349. 3D-printed adapters available for non-standard bowls."
-                            data-de="Wunschfarbe ab 349 €. 3D-gedruckte Adapter für Standard-Schüsseln verfügbar.">
-                            Custom restorations from €349. 3D-printed adapters available for non-standard bowls.
+                        <h3 data-en="3D Parts &amp; Organizers" data-de="3D-Parts &amp; Halterungen">3D Parts &amp; Organizers</h3>
+                        <p data-en="Spring-loaded bayonet docks, knurled knobs, and custom front covers printed in carbon/metallic PETG."
+                            data-de="Federbelastete Bajonett-Halterungen, Rändelknöpfe und Frontblenden aus widerstandsfähigem PETG.">
+                            Spring-loaded bayonet docks, knurled knobs, and custom front covers printed in carbon/metallic PETG.
                         </p>
                     </div>
                     <div class="info-item">
-                        <h3 data-en="Pricing & Shipping" data-de="Preise & Versand">Pricing & Shipping</h3>
-                        <p data-en="Pre-built models from €299. Shipping within DE €10. Private sale."
-                            data-de="Ab 299 € zzgl. 10 € Versand in DE. Privatverkauf ohne Gewährleistung.">
-                            Pre-built models from €299. Shipping within DE €10. Private sale.
+                        <h3 data-en="Shipping &amp; Checkout" data-de="Versand &amp; Bestellung">Shipping &amp; Checkout</h3>
+                        <p data-en="Order directly via the cart: €4.90 shipping for accessories, €10 insured shipping for stand mixers within Germany."
+                            data-de="Direkt über den Warenkorb bestellbar: 4,90 € Versand für Zubehör, 10,00 € versicherter Versand für Maschinen in DE.">
+                            Order directly via the cart: €4.90 shipping for accessories, €10 insured shipping for stand mixers within Germany.
                         </p>
                     </div>
+                </div>
+
+                <div style="margin-top: 22px; padding: 14px 20px; border-radius: 16px; background: linear-gradient(135deg, rgba(254, 243, 199, 0.92) 0%, rgba(253, 230, 138, 0.88) 100%); border: 1px solid #f59e0b; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
+                    <div>
+                        <strong style="display: block; color: #78350f; font-size: 0.95rem;" data-en="💡 Want a completely custom KitchenAid color or 3D part?" data-de="💡 Du willst deine eigene Maschine umbauen lassen oder eine Wunschfarbe?">💡 Du willst deine eigene Maschine umbauen lassen oder eine Wunschfarbe?</strong>
+                        <span style="color: #92400e; font-size: 0.84rem;" data-en="Custom 2K paint color, bespoke 3D-printed knobs/adapters, or overhauling your own mixer." data-de="Wunschfarbe (2K-Lack), maßgefertigte 3D-Knöpfe/Adapter oder Komplett-Überholung deiner eigenen Maschine.">Wunschfarbe (2K-Lack), maßgefertigte 3D-Knöpfe/Adapter oder Komplett-Überholung deiner eigenen Maschine.</span>
+                    </div>
+                    <a href="#contact"
+                       onclick="window.prefillPortfolioContact && window.prefillPortfolioContact({ subject: 'Anfrage: Komplett eigenes Custom KitchenAid-Design', category: 'Custom KitchenAid' }); return false;"
+                       style="padding: 9px 16px; border-radius: 999px; background: #d97706; color: #fff; font-weight: 700; font-size: 0.82rem; text-decoration: none;"
+                       data-en="Request Custom Design →" data-de="Wunsch-Design anfragen →">Wunsch-Design anfragen →</a>
                 </div>
             </div>
         </section>
 
+        <!-- CUSTOM COMMISSION CONTACT SECTION -->
         <section id="contact">
             <div class="contact-wrapper glass">
                 <header class="contact-header">
-                    <h2 data-en="Contact" data-de="Kontakt">Contact</h2>
-                    <p data-en="Interested in exchanging ideas, feedback or collaboration? Feel free to send me a message."
-                        data-de="Interesse an Austausch, Feedback oder Zusammenarbeit? Schreib mir gern eine Nachricht.">
-                        Interested in exchanging ideas, feedback or collaboration? Feel free to send me a message.</p>
+                    <h2 data-en="Custom Commission &amp; Restoration Inquiry" data-de="Wunsch-Design &amp; Restaurierungs-Anfrage">Custom Commission &amp; Restoration Inquiry</h2>
+                    <p data-en="Want to send in your own KitchenAid for a custom 2K paint job or need a bespoke 3D-printed part? Send a message directly."
+                        data-de="Du möchtest deine eigene KitchenAid in Wunschfarbe lackieren lassen oder suchst ein spezielles 3D-Ersatzteil? Schreib mir direkt.">
+                        Want to send in your own KitchenAid for a custom 2K paint job or need a bespoke 3D-printed part? Send a message directly.</p>
                 </header>
 
                 <form id="contact-form" class="contact-form" autocomplete="off">
-                    <div class="form-group">
-                        <label for="name" data-en="Name" data-de="Name">Name</label>
-                        <input id="name" type="text" placeholder="Your name" data-placeholder-en="Your name"
-                            data-placeholder-de="Dein Name" required>
+                    <input type="hidden" id="contactCategory" name="category" value="Custom KitchenAid">
+
+                    <div class="hp-field" aria-hidden="true">
+                        <label for="website_url">Website</label>
+                        <input id="website_url" name="website_url" type="text" tabindex="-1" autocomplete="off">
+                    </div>
+
+                    <div class="form-row-two">
+                        <div class="form-group">
+                            <label for="name" data-en="Name *" data-de="Name *">Name *</label>
+                            <input id="name" name="name" type="text" placeholder="Your name" data-placeholder-en="Your name"
+                                data-placeholder-de="Dein Name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" data-en="Email *" data-de="E-Mail *">Email *</label>
+                            <input id="email" name="email" type="email" placeholder="your@email.com" data-placeholder-en="your@email.com"
+                                data-placeholder-de="deine@email.de" required>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="email" data-en="Email" data-de="E-Mail">Email</label>
-                        <input id="email" type="email" placeholder="your@email.com" data-placeholder-en="your@email.com"
-                            data-placeholder-de="deine@email.de" required>
+                        <label for="subject" data-en="Subject / Custom Request" data-de="Betreff / Wunsch-Projekt">Subject / Custom Request</label>
+                        <input id="subject" name="subject" type="text"
+                            value="Anfrage: Custom KitchenAid Design / Restaurierung"
+                            placeholder="Selected model or custom request"
+                            data-placeholder-en="Selected model or custom request"
+                            data-placeholder-de="Gewähltes Modell oder Wunsch-Anfrage" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="message" data-en="Message" data-de="Nachricht">Message</label>
-                        <textarea id="message" rows="5" placeholder="Your message..."
+                        <label for="message" data-en="Message *" data-de="Nachricht *">Message *</label>
+                        <textarea id="message" name="message" rows="3" placeholder="Your message..."
                             data-placeholder-en="Your message..." data-placeholder-de="Deine Nachricht..."
                             required></textarea>
                     </div>
 
-                    <button type="submit" class="btn" data-en="Send message" data-de="Nachricht senden">Send
-                        message</button>
+                    <div id="contactFeedback" class="contact-feedback" role="status" aria-live="polite"></div>
+
+                    <div class="contact-submit-row">
+                        <button type="submit" class="btn" data-en="Send inquiry" data-de="Anfrage absenden">Send
+                            inquiry</button>
+                        <span class="contact-privacy-note"
+                              data-en="🔒 Direct encrypted transmission via our German mail server."
+                              data-de="🔒 Direkter verschlüsselter Versand über deutschen Mailserver.">
+                            🔒 Direkter verschlüsselter Versand über deutschen Mailserver.
+                        </span>
+                    </div>
                 </form>
             </div>
         </section>
@@ -387,23 +589,6 @@
             <div class="footer-inner">
                 <div class="footer-left">
                     <div class="social">
-                        <a class="social-btn"
-                            href="https://github.com/IU-Webprogrammierung/webprogrammierung-MichaelKrahn"
-                            target="_blank" rel="noopener" aria-label="GitHub">
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path
-                                    d="M12 .5C5.73.5.75 5.61.75 12c0 5.1 3.29 9.43 7.86 10.96.57.11.78-.25.78-.56v-2.1c-3.2.71-3.88-1.58-3.88-1.58-.53-1.38-1.29-1.74-1.29-1.74-1.05-.74.08-.73.08-.73 1.16.08 1.77 1.22 1.77 1.22 1.03 1.8 2.7 1.28 3.36.98.1-.76.4-1.28.73-1.58-2.55-.3-5.23-1.3-5.23-5.78 0-1.28.45-2.33 1.18-3.15-.12-.3-.51-1.52.11-3.16 0 0 .97-.32 3.18 1.2.92-.26 1.9-.39 2.88-.39.98 0 1.96.13 2.88.39 2.2-1.52 3.18-1.2 3.18-1.2.62 1.64.23 2.86.11 3.16.73.82 1.18 1.87 1.18 3.15 0 4.49-2.69 5.48-5.25 5.77.41.36.78 1.08.78 2.18v3.23c0 .31.21.67.79.56 4.56-1.53 7.85-5.86 7.85-10.96C23.25 5.61 18.27.5 12 .5z" />
-                            </svg>
-                        </a>
-
-                        <a class="social-btn" href="https://www.linkedin.com/in/NoAccountYet" target="_blank"
-                            rel="noopener" aria-label="LinkedIn">
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path
-                                    d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 23.5h4V7.98h-4V23.5zM8.5 7.98h3.83v2.12h.06c.53-1 1.83-2.06 3.77-2.06 4.03 0 4.78 2.65 4.78 6.1v9.36h-4v-8.3c0-1.98-.03-4.52-2.76-4.52-2.76 0-3.18 2.16-3.18 4.39v8.43h-4V7.98z" />
-                            </svg>
-                        </a>
-
                         <a class="social-btn" href="https://www.instagram.com/micha.krahn/" target="_blank"
                             rel="noopener" aria-label="Instagram">
                             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -419,15 +604,129 @@
                 </div>
 
                 <div class="footer-center">
-                    <p>© 2026 – Michael Krahn</p>
-                    <p><a href="imprint.html" data-en="Imprint" data-de="Impressum">Imprint</a> | <a
-                            href="datasecurity.html" data-en="Privacy" data-de="Datenschutz">Privacy</a></p>
+                    <p>© 2026 – Krahn Manufaktur • Standalone KitchenAid 3D Shop</p>
+                    <p>
+                        <a href="imprint.html" data-en="Imprint" data-de="Impressum">Imprint</a> |
+                        <a href="datasecurity.html" data-en="Privacy" data-de="Datenschutz">Privacy</a> |
+                        <a href="admin.html" data-en="Admin Backend" data-de="Admin-Backend">Admin Backend</a>
+                    </p>
                 </div>
             </div>
         </footer>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <!-- ==================================================================
+         SLIDE-OUT SHOPPING CART DRAWER
+         ================================================================== -->
+    <div class="cart-backdrop" id="cartBackdrop"></div>
+    <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping Cart">
+        <div class="cart-drawer-header">
+            <h3 data-en="Shopping Cart" data-de="Warenkorb">Shopping Cart</h3>
+            <button type="button" class="drawer-close-btn" id="closeCartBtn" aria-label="Close cart">&times;</button>
+        </div>
+
+        <div class="cart-drawer-body" id="cartDrawerBody"></div>
+
+        <div class="cart-drawer-footer" id="cartDrawerFooter" style="display:none;">
+            <div class="cart-summary-line">
+                <span data-en="Subtotal" data-de="Zwischensumme">Subtotal</span>
+                <span id="cartSubtotalVal">€ 0</span>
+            </div>
+            <div class="cart-summary-line">
+                <span data-en="Shipping (DE)" data-de="Versand (DE)">Shipping (DE)</span>
+                <span id="cartShippingVal">€ 0</span>
+            </div>
+            <div class="cart-summary-line is-total">
+                <span data-en="Total" data-de="Gesamtsumme">Total</span>
+                <span id="cartTotalVal">€ 0</span>
+            </div>
+
+            <button type="button" class="checkout-launch-btn" id="proceedToCheckoutBtn"
+                data-en="Proceed to Checkout →" data-de="Weiter zur Kasse →">
+                Proceed to Checkout →
+            </button>
+        </div>
+    </aside>
+
+    <!-- ==================================================================
+         CHECKOUT MODAL OVERLAY
+         ================================================================== -->
+    <div class="shop-modal-backdrop" id="checkoutModalBackdrop" role="dialog" aria-modal="true">
+        <div class="shop-modal-dialog">
+            <div class="shop-modal-header">
+                <h3 data-en="Checkout – Krahn Manufaktur" data-de="Kasse – Krahn Manufaktur">Checkout – Krahn Manufaktur</h3>
+                <button type="button" class="drawer-close-btn" id="closeCheckoutModalBtn" aria-label="Close checkout">&times;</button>
+            </div>
+            <div class="shop-modal-body" id="checkoutModalBodyContent">
+                <form id="kaCheckoutForm" class="checkout-grid">
+                    <div>
+                        <h4 style="margin:0 0 14px; font-size:1.05rem;" data-en="1. Shipping &amp; Billing Address" data-de="1. Liefer- &amp; Rechnungsadresse">1. Shipping &amp; Billing Address</h4>
+                        <div class="checkout-field-grid">
+                            <div class="checkout-field">
+                                <label data-en="First Name *" data-de="Vorname *">First Name *</label>
+                                <input type="text" name="firstName" required placeholder="Max">
+                            </div>
+                            <div class="checkout-field">
+                                <label data-en="Last Name *" data-de="Nachname *">Last Name *</label>
+                                <input type="text" name="lastName" required placeholder="Mustermann">
+                            </div>
+                            <div class="checkout-field">
+                                <label data-en="Email Address *" data-de="E-Mail-Adresse *">Email Address *</label>
+                                <input type="email" name="email" required placeholder="max@example.com">
+                            </div>
+                            <div class="checkout-field">
+                                <label data-en="Phone (optional)" data-de="Telefon (optional)">Phone (optional)</label>
+                                <input type="tel" name="phone" placeholder="+49 ...">
+                            </div>
+                            <div class="checkout-field full-span">
+                                <label data-en="Street &amp; House Number *" data-de="Straße &amp; Hausnummer *">Street &amp; House Number *</label>
+                                <input type="text" name="street" required placeholder="Musterstraße 12">
+                            </div>
+                            <div class="checkout-field">
+                                <label data-en="Postal Code *" data-de="PLZ *">Postal Code *</label>
+                                <input type="text" name="zip" required placeholder="56588">
+                            </div>
+                            <div class="checkout-field">
+                                <label data-en="City *" data-de="Stadt / Ort *">City *</label>
+                                <input type="text" name="city" required placeholder="Waldbreitbach">
+                            </div>
+                            <div class="checkout-field full-span">
+                                <label data-en="Order Notes / Color Requests (optional)" data-de="Bestellhinweise / Farbwünsche (optional)">Order Notes / Color Requests (optional)</label>
+                                <textarea name="notes" rows="2" placeholder="Optional notes..."></textarea>
+                            </div>
+                        </div>
+
+                        <h4 style="margin:20px 0 10px; font-size:1.05rem;" data-en="2. Payment Method" data-de="2. Zahlungsart">2. Payment Method</h4>
+                        <div class="payment-methods">
+                            <label class="payment-option-card">
+                                <input type="radio" name="paymentMethod" value="invoice" checked>
+                                <span data-en="Bank Transfer / Invoice" data-de="Vorkasse / Überweisung">Bank Transfer / Invoice</span>
+                                <small style="color:#64748b;" data-en="IBAN after checkout" data-de="IBAN nach Bestellung">IBAN after checkout</small>
+                            </label>
+                            <label class="payment-option-card">
+                                <input type="radio" name="paymentMethod" value="paypal">
+                                <span>PayPal</span>
+                                <small style="color:#64748b;" data-en="Buyer Protection" data-de="Käuferschutz">Buyer Protection</small>
+                            </label>
+                            <label class="payment-option-card">
+                                <input type="radio" name="paymentMethod" value="pickup">
+                                <span data-en="Workshop Pickup" data-de="Abholung (56588)">Workshop Pickup</span>
+                                <small style="color:#64748b;" data-en="Pay on pickup" data-de="Bar bei Abholung">Pay on pickup</small>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="checkout-launch-btn" style="margin-top:20px;"
+                            data-en="Place Binding Order Now" data-de="Jetzt zahlungspflichtig bestellen">
+                            Place Binding Order Now
+                        </button>
+                    </div>
+
+                    <div class="checkout-order-box" id="checkoutOrderSummaryBox"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="js/navbar.js" defer></script>
     <script src="js/contact.js" defer></script>
     <script src="js/custom_cursor.js" defer></script>

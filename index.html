@@ -473,6 +473,40 @@
         <div class="case-modal-dialog"></div>
     </div>
 
+    <!-- Non-intrusive GDPR / TDDDG Storage Notice -->
+    <div id="portfolioConsentBanner" role="region" aria-label="Datenschutz-Hinweis"
+         style="position:fixed;bottom:16px;left:16px;right:16px;max-width:620px;margin:0 auto;z-index:9990;padding:14px 18px;border-radius:14px;background:rgba(15,23,42,0.92);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.18);box-shadow:0 14px 34px rgba(0,0,0,0.35);color:#f8fafc;display:none;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:0.84rem;line-height:1.45;">
+        <div style="flex:1;min-width:220px;">
+            <strong style="display:block;margin-bottom:2px;" data-en="Privacy &amp; Local Storage (GDPR / TDDDG)" data-de="Datenschutz &amp; Lokaler Speicher (§ 25 TDDDG)">Datenschutz &amp; Lokaler Speicher (§ 25 TDDDG)</strong>
+            <span data-en="This site uses self-hosted local fonts and strictly necessary local storage (language preference) without tracking cookies."
+                  data-de="Diese Website nutzt ausschließlich selbst gehostete lokale Schriften und technisch notwendige lokale Speichereinträge (Sprachauswahl) ohne Tracking-Cookies.">
+                Diese Website nutzt ausschließlich selbst gehostete lokale Schriften und technisch notwendige lokale Speichereinträge (Sprachauswahl) ohne Tracking-Cookies.
+            </span>
+            <a href="datasecurity.html" style="color:#93c5fd;text-decoration:underline;margin-left:4px;" data-en="Privacy Policy" data-de="Datenschutzerklärung">Datenschutzerklärung</a>
+        </div>
+        <button type="button" id="portfolioConsentBtn"
+                style="min-height:44px;min-width:110px;padding:8px 16px;border-radius:999px;border:none;background:#38bdf8;color:#0f172a;font-weight:700;cursor:pointer;"
+                data-en="Got it" data-de="Verstanden">Verstanden</button>
+    </div>
+    <script>
+        (function () {
+            var KEY = 'mk_portfolio_consent_v1';
+            var banner = document.getElementById('portfolioConsentBanner');
+            var btn = document.getElementById('portfolioConsentBtn');
+            try {
+                if (window.self === window.top && localStorage.getItem(KEY) !== 'accepted' && banner) {
+                    banner.style.display = 'flex';
+                }
+            } catch (e) {}
+            if (btn) {
+                btn.addEventListener('click', function () {
+                    try { localStorage.setItem(KEY, 'accepted'); } catch (e) {}
+                    if (banner) banner.style.display = 'none';
+                });
+            }
+        })();
+    </script>
+
     <!-- PLUGINS -->
     <script>
         const originalWarn = console.warn;

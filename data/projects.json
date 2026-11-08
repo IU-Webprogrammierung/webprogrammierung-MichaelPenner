@@ -187,7 +187,7 @@
           "TMC2209 Steppers",
           "Bambu Lab 3D Print"
         ],
-        "liveUrl": "showcases/clawmachine/index.html",
+        "liveUrl": "../greifarm/frontend/iframe.html",
         "liveLabel": {
           "de": "Interaktive CloudCatcher Showcase-Seite öffnen ↗",
           "en": "Open Interactive CloudCatcher Showcase ↗"
@@ -292,7 +292,7 @@
           "Peristaltic Pumps",
           "3D-Printed Enclosure"
         ],
-        "liveUrl": "showcases/smartplanter/index.html",
+        "liveUrl": "../smartplanter/index.html",
         "liveLabel": {
           "de": "SmartPlanter Live-Simulator & Showcase öffnen ↗",
           "en": "Open SmartPlanter Live Simulator & Showcase ↗"
@@ -396,8 +396,8 @@
         "en": "Own Project • Scrollytelling"
       },
       "displayUrl": "https://clawmachine.michaelkrahn.de",
-      "iframeUrl": "showcases/clawmachine/iframe.html",
-      "externalUrl": "showcases/clawmachine/index.html",
+      "iframeUrl": "../greifarm/frontend/iframe.html",
+      "externalUrl": "../greifarm/frontend/iframe.html",
       "mobilePreviewImg": "assets/projects/claw_hero.jpg",
       "tags": [
         "Scrollytelling",
@@ -416,8 +416,8 @@
         "en": "Own Webshop • React & Three.js"
       },
       "displayUrl": "https://schildwerk.michaelkrahn.de",
-      "iframeUrl": "showcases/schildwerk/index.html",
-      "externalUrl": "showcases/schildwerk/index.html",
+      "iframeUrl": "../schildwebsite/dist/index.html",
+      "externalUrl": "../schildwebsite/dist/index.html",
       "mobilePreviewImg": "assets/projects/env-door-sign-street.jpg",
       "tags": [
         "React + TypeScript",
@@ -436,8 +436,8 @@
         "en": "Own Project • Live Simulator"
       },
       "displayUrl": "https://smartplanter.michaelkrahn.de",
-      "iframeUrl": "showcases/smartplanter/index.html",
-      "externalUrl": "showcases/smartplanter/index.html",
+      "iframeUrl": "../smartplanter/index.html",
+      "externalUrl": "../smartplanter/index.html",
       "mobilePreviewImg": "assets/projects/hero-planter-window.jpg",
       "tags": [
         "Interactive CYD UI",
@@ -455,9 +455,9 @@
         "de": "Eigener 3D-Shop • Three.js PBR",
         "en": "Own 3D Shop • Three.js PBR"
       },
-      "displayUrl": "https://michaelkrahn.de/shop.html",
-      "iframeUrl": "shop.html",
-      "externalUrl": "shop.html",
+      "displayUrl": "https://kitchenaid.michaelkrahn.de",
+      "iframeUrl": "../kitchenaid-shop/index.html",
+      "externalUrl": "../kitchenaid-shop/index.html",
       "mobilePreviewImg": "assets/shop_images/mixer_brown(1).jpeg",
       "tags": [
         "Three.js GLB",
@@ -508,7 +508,7 @@
   ],
   "manufaktur": {
     "kitchenaid": {
-      "showroomUrl": "shop.html",
+      "showroomUrl": "../kitchenaid-shop/index.html",
       "models": [
         {
           "id": "truffle-bronze",
@@ -613,7 +613,7 @@
       ]
     },
     "schildwerk": {
-      "shopUrl": "showcases/schildwerk/index.html",
+      "shopUrl": "../schildwebsite/dist/index.html",
       "externalDomainHint": "schildwerk.michaelkrahn.de",
       "previews": [
         {
@@ -663,7 +663,7 @@
       ]
     },
     "arcade": {
-      "showcaseUrl": "showcases/clawmachine/index.html",
+      "showcaseUrl": "../greifarm/frontend/iframe.html",
       "images": [
         "assets/projects/claw_hero.jpg",
         "assets/projects/claw_closeup.jpg",
